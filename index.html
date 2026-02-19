@@ -6,337 +6,400 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
-<title>Private Moments</title>
+<title>Private Space</title>
 <style>
 :root {
-  --bg-white: #fff;
-  --bg-pink: #fddae9;
-  --bg-black: #1a1a1a;
-  --text-white: #fff;
-  --text-black: #333;
-  --accent: #ff69b4;
-  --shadow: 0 2px 18px rgba(0,0,0,0.1);
+  --bg:white;
+  --purple:#9f7aea;
+  --gray:#999;
 }
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-body {
-  background-color: var(--bg-white);
-  color: var(--text-black);
-  transition: all 0.3s ease;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-/* 2026新年横幅 · 元宵节后自动隐藏 */
-.newYearBanner{
-  background:linear-gradient(90deg,#9f7aea,#d49fff);
-  color:#fff;text-align:center;padding:10px 14px;font-size:14px;
-  border-radius:14px;margin:10px 20px 0;
-}
-.newYearBanner span{
-  font-weight:bold;
-}
-#ageModal{
-  position:fixed;top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,0.7);z-index:99999;
-  display:grid;place-items:center;
-}
-.ageBox{
-  background:#fff;width:90%;max-width:340px;
-  border-radius:20px;padding:30px;text-align:center;
-}
-.ageBox h3{color:#9f7aea;margin-bottom:10px}
-.ageBox p{font-size:14px;color:#666;line-height:1.6;margin-bottom:20px}
-.ageInput{
-  width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;
-  margin-bottom:10px;text-align:center;
-}
-.ageBtn{
-  padding:12px 25px;border-radius:12px;border:none;
-  background:#9f7aea;color:#fff;width:100%;margin-bottom:8px;
-}
-.ageBtn.no{background:#f2f2f2;color:#666}
-#accessModal{
-  position:fixed;top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,0.6);z-index:9999;
-  display:grid;place-items:center;
-}
-.accessBox{
-  background:#fff;width:90%;max-width:340px;
-  border-radius:20px;padding:30px;text-align:center;
-}
-.accessBox h3{color:#9f7aea;margin-bottom:10px}
-.accessBox p{font-size:14px;color:#666;margin-bottom:20px}
-.accessInput{
-  width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;
-  margin-bottom:10px;text-align:center;
-}
-.accessBtn{
-  padding:12px;border-radius:12px;border:none;
-  background:#9f7aea;color:#fff;width:100%;margin-bottom:8px;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+body{background:var(--bg);padding-bottom:70px}
+/* 加载 */
 #loading{position:fixed;inset:0;background:#fff;display:grid;place-items:center;z-index:9999}
-.loader{width:45px;height:45px;border:4px solid #f0f0f0;border-top:4px solid #9f7aea;border-radius:50%;animation:spin .6s linear infinite}
+.loader{width:40px;height:40px;border:4px solid #eee;border-top:4px solid var(--purple);border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.warning{
-  background:#f3eeff;color:#9f7aea;text-align:center;
-  padding:10px 14px;font-size:12px;border-radius:12px;
-  margin:10px 20px;
-}
-#register{
-  background:#fff;margin:20px;border-radius:20px;padding:25px;display:none;
-}
-#register h3{text-align:center;color:#9f7aea;margin-bottom:15px}
-#register input,#register select{
-  width:100%;margin:8px 0;padding:12px;border:1px solid #ddd;border-radius:12px;
-}
-#register button{
-  width:100%;margin-top:10px;padding:12px;background:#9f7aea;color:#fff;border:none;border-radius:12px;
-}
-.profile{
-  background:#fff;margin:0 20px 15px;border-radius:20px;padding:30px 20px;text-align:center;
-}
-.avatar{width:90px;height:90px;border-radius:50%;border:3px solid #e2d9ff;margin:0 auto 12px;object-fit:cover;}
-.name{font-size:22px;font-weight:600;color:#333;margin-bottom:6px}
-.bio{color:#999;margin-bottom:16px}
-.btns{display:flex;justify-content:center;gap:10px;margin:20px 0}
-.btn{padding:10px 16px;border-radius:12px;border:none;background:#9f7aea;color:#fff}
-.album{background:#fff;margin:20px;border-radius:20px;padding:20px;display:none}
-.album h3{color:#9f7aea;margin-bottom:14px}
-.album-warning{
-  background:#ffe6e6;color:#cc0000;text-align:center;
-  padding:8px 12px;font-size:12px;border-radius:8px;margin-bottom:12px;font-weight:bold;
-}
+/* 年龄验证 */
+#ageModal{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;display:grid;place-items:center}
+.age-box{background:white;padding:30px;border-radius:20px;width:90%;max-width:340px;text-align:center}
+.age-box h3{color:var(--purple);margin-bottom:10px}
+.age-box input{width:100%;padding:12px;border-radius:12px;border:1px solid #ddd;margin:10px 0;text-align:center}
+.age-box button{width:100%;padding:12px;border-radius:12px;background:var(--purple);color:white;border:none;margin-top:6px}
+.age-box .no{background:#f2f2f2;color:#333}
+/* 访问密钥 */
+#accessModal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:998;display:grid;place-items:center}
+.access-box{background:white;padding:30px;border-radius:20px;width:90%;max-width:340px;text-align:center}
+.access-box h3{color:var(--purple);margin-bottom:10px}
+.access-box input{width:100%;padding:12px;border-radius:12px;border:1px solid #ddd;margin:10px 0}
+.access-box button{width:100%;padding:12px;border-radius:12px;background:var(--purple);color:white;border:none;margin-top:6px}
+/* 管理员登录 */
+#adminLogin{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:none;place-items:center}
+.admin-login-box{background:white;padding:30px;border-radius:20px;width:90%;max-width:340px;text-align:center}
+.admin-login-box h3{color:var(--purple)}
+.admin-login-box input{width:100%;padding:12px;border-radius:12px;border:1px solid #ddd;margin:12px 0}
+.admin-login-box button{width:100%;padding:12px;background:var(--purple);color:white;border:none;border-radius:12px}
+/* 管理员面板 */
+#adminPanel{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1001;display:none;place-items:center}
+.admin-box{background:white;width:90%;max-width:360px;padding:25px;border-radius:20px}
+.admin-box h3{color:var(--purple);margin-bottom:16px}
+.admin-card{background:#f8f5ff;padding:16px;border-radius:14px;margin-bottom:12px}
+.admin-card h4{margin-bottom:8px}
+.switch{display:flex;justify-content:space-between;align-items:center}
+.switch label{width:50px;height:26px;background:#ddd;border-radius:20px;position:relative}
+.switch label::after{content:'';position:absolute;width:22px;height:22px;background:white;border-radius:50%;top:2px;left:2px;transition:.2s}
+.switch input:checked + label{background:var(--purple)}
+.switch input:checked + label::after{left:26px}
+.admin-box button{padding:10px 14px;background:var(--purple);color:white;border:none;border-radius:12px;width:100%;margin-top:10px}
+/* 注册 */
+#register{display:none;padding:20px}
+#register h3{color:var(--purple);text-align:center;margin-bottom:16px}
+#register input,#register select{width:100%;padding:12px;border-radius:12px;border:1px solid #ddd;margin:8px 0}
+#register button{width:100%;padding:12px;background:var(--purple);color:white;border:none;border-radius:12px;margin-top:6px}
+/* 内容区 */
+#content{display:none}
+/* 底部导航 */
+.nav{position:fixed;bottom:0;left:0;width:100%;background:white;border-top:1px solid #eee;display:flex;padding:10px 0;z-index:10}
+.nav-item{flex:1;text-align:center;font-size:12px;color:var(--gray)}
+.nav-item.active{color:var(--purple)}
+.nav-item i{display:block;font-size:20px;margin-bottom:4px}
+/* 页面 */
+.page{display:none;padding:20px}
+.page.active{display:block}
+/* 首页 */
+.profile{text-align:center;background:white;border-radius:20px;padding:25px;margin-bottom:16px}
+.avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid #e2d9ff}
+.name{font-size:22px;font-weight:bold;margin-top:10px}
+.bio{color:var(--gray);margin:6px 0 16px}
+.btns{display:flex;gap:10px;justify-content:center}
+.btn{padding:10px 14px;background:var(--purple);color:white;border:none;border-radius:12px}
+/* 相册 */
+.album{background:white;padding:20px;border-radius:20px}
+.album h3{color:var(--purple);margin-bottom:12px}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.grid img{
-  width:100%;aspect-ratio:1;border-radius:12px;
-  filter:blur(18px);transition:all 0.3s;object-fit:cover;
-}
+.grid img{width:100%;aspect-ratio:1;border-radius:10px;object-fit:cover;filter:blur(18px);transition:.3s}
 .grid img.show{filter:blur(0)}
-.chat-room{
-  background:#fff;margin:20px;border-radius:20px;padding:20px;
-}
-.chat-room h3{color:#9f7aea;margin-bottom:14px}
-#chatMessages{
-  height:180px;overflow-y:auto;padding:10px;
-  background:#f8f5ff;border-radius:12px;margin-bottom:10px;
-}
-.chat-item{padding:8px 12px;background:#fff;border-radius:8px;margin-bottom:8px}
-.chat-name{font-size:12px;color:#9f7aea;font-weight:bold}
-.chat-text{font-size:14px;color:#333}
-#chatInput{
-  width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;margin-bottom:8px;
-}
-.chatBtn{
-  width:100%;padding:12px;background:#9f7aea;color:#fff;border:none;border-radius:12px;
-}
-.qrcode{
-  background:#fff;margin:20px;padding:20px;border-radius:20px;text-align:center;
-}
-.qrcode img{width:160px;margin:10px auto;border-radius:12px;object-fit:cover;}
+/* 聊天 */
+.chat{background:white;padding:20px;border-radius:20px;margin-top:16px}
+.chat h3{color:var(--purple);margin-bottom:12px}
+#msgs{height:180px;overflow-y:auto;background:#f8f5ff;padding:10px;border-radius:12px}
+.msg{background:white;padding:8px 12px;border-radius:8px;margin-bottom:8px}
+.msg-name{font-size:12px;color:var(--purple)}
+.chat-input{display:flex;gap:8px;margin-top:10px}
+.chat-input input{flex:1;padding:12px;border:1px solid #ddd;border-radius:12px}
+.chat-input button{padding:12px 16px;background:var(--purple);color:white;border:none;border-radius:12px}
+/* 动态 */
+.feed-item{background:white;padding:16px;border-radius:14px;margin-bottom:12px}
+.feed-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.feed-avatar{width:40px;height:40px;border-radius:50%}
+.feed-images{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:10px 0}
+.feed-images img{width:100%;aspect-ratio:1;border-radius:8px;object-fit:cover}
+/* 资料 */
+.profile-page{background:white;padding:25px;border-radius:20px;text-align:center}
+.profile-page .avatar{width:120px;height:120px}
+.profile-page .name{font-size:26px}
+.info{text-align:left;margin-top:20px}
+.info .item{padding:12px 0;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between}
 </style>
 </head>
 <body>
-<!-- 新年横幅会自动判断时间，元宵节后自动消失 -->
-<div id="newYearBanner" class="newYearBanner" style="display:none;">
-🎉 <span>2026马年大吉 · 万事顺意</span> 🎉
-<br>祝您和家人新春快乐，平安喜乐
-</div>
-<div id="ageModal">
-  <div class="ageBox">
-    <h3>⚠️ 年龄认证</h3>
-    <p>本内容为私密成人向<br><b>仅限18周岁以上浏览</b></p>
-    <input type="number" class="ageInput" id="birthYear" placeholder="请输入出生年份（如：2000）">
-    <button class="ageBtn" onclick="checkRealAge()">确认并进入</button>
-    <button class="ageBtn no" onclick="closePage()">我未满18周岁</button>
-  </div>
-</div>
-<div id="accessModal">
-  <div class="accessBox">
-    <h3>🔒 访问受限</h3>
-    <p>本空间为私密内容<br>需申请通过或使用分享密钥才可查看</p>
-    <input class="accessInput" id="shareKey" placeholder="输入分享密钥">
-    <button class="accessBtn" onclick="useShareKey()">使用分享密钥进入</button>
-    <button class="accessBtn" style="background:#f2f2f2;color:#333" onclick="sendApply()">申请访问权限</button>
-  </div>
-</div>
+
 <div id="loading"><div class="loader"></div></div>
-<div class="warning">
-  ⚠️ 未满18岁禁止访问 · 内容仅对受邀用户开放
+
+<!-- 年龄验证 -->
+<div id="ageModal">
+  <div class="age-box">
+    <h3>年龄认证</h3>
+    <p>仅限18岁以上访问</p >
+    <input type="number" id="birthYear" placeholder="输入出生年份">
+    <button onclick="checkAge()">确认进入</button>
+    <button class="no" onclick="closePage()">未满18岁</button>
+  </div>
 </div>
+
+<!-- 访问密钥 -->
+<div id="accessModal">
+  <div class="access-box">
+    <h3>访问密钥</h3>
+    <input id="keyInput" placeholder="请输入分享密钥">
+    <button onclick="useKey()">确定进入</button>
+    <button onclick="openAdminLogin()" style="margin-top:8px;background:#f2f2f2;color:#333">管理员登录</button>
+  </div>
+</div>
+
+<!-- 管理员登录 -->
+<div id="adminLogin">
+  <div class="admin-login-box">
+    <h3>管理员登录</h3>
+    <input id="adminPwd" type="password" placeholder="输入管理员密码">
+    <button onclick="adminLogin()">登录</button>
+    <button onclick="closeAdminLogin()" style="margin-top:8px;background:#f2f2f2;color:#333">返回</button>
+  </div>
+</div>
+
+<!-- 管理员面板 -->
+<div id="adminPanel">
+  <div class="admin-box">
+    <h3>⚙️ 管理员后台</h3>
+    <div class="admin-card">
+      <h4>私密相册访问权限</h4>
+      <div class="switch">
+        <span>允许普通用户查看相册</span>
+        <input type="checkbox" id="albumOpen">
+        <label for="albumOpen"></label>
+      </div>
+    </div>
+    <div class="admin-card">
+      <h4>当前密钥</h4>
+      <p>Saxon95</p >
+    </div>
+    <button onclick="saveAdminSetting()">保存设置</button>
+    <button onclick="closeAdminPanel()" style="background:#f2f2f2;color:#333">关闭</button>
+  </div>
+</div>
+
+<!-- 注册 -->
 <div id="register">
-  <h3>🌸 进入私密世界</h3>
-  <input type="text" id="name" placeholder="昵称">
-  <input type="number" id="age" placeholder="年龄（自动校验）">
+  <h3>注册信息</h3>
+  <input id="nick" placeholder="昵称">
+  <input id="age" placeholder="年龄" type="number">
   <select id="gender">
     <option value="男">男</option>
     <option value="女">女</option>
     <option value="保密">保密</option>
   </select>
-  <input type="text" id="bust" placeholder="胸围（cm）">
-  <input type="text" id="waist" placeholder="腰围（cm）">
-  <input type="text" id="privateSize" placeholder="尺寸（cm/A-G）">
-  <input type="text" id="style" placeholder="风格展示">
-  <button onclick="userRegister()">完成注册</button>
+  <input id="bust" placeholder="胸围">
+  <input id="waist" placeholder="腰围">
+  <input id="size" placeholder="尺寸">
+  <input id="style" placeholder="风格">
+  <button onclick="doRegister()">完成注册</button>
 </div>
-<div id="content" style="display:none">
-  <div class="profile">
-    <img class="avatar" src="https://picsum.photos/200/200">
-    <div class="name">私密世界</div>
-    <div class="bio">淡紫纯欲风 · 仅限好友访问</div>
-    <div class="btns">
-      <button class="btn" onclick="showShare()">分享链接与二维码</button>
-      <button class="btn" onclick="unlockContent()">管理员解锁清晰图</button>
+
+<!-- 主内容 -->
+<div id="content">
+  <!-- 首页 -->
+  <div id="home" class="page active">
+    <div class="profile">
+      < img class="avatar" src="https://picsum.photos/200/200">
+      <div class="name">私密空间</div>
+      <div class="bio">仅限好友访问</div>
+      <div class="btns">
+        <button class="btn" onclick="openAdminPanel()">管理员面板</button>
+      </div>
+    </div>
+
+    <div class="album">
+      <h3>📸 私密相册</h3>
+      <div class="grid" id="photoGrid">
+        < img src="https://picsum.photos/300/300?1">
+        < img src="https://picsum.photos/300/300?2">
+        < img src="https://picsum.photos/300/300?3">
+        < img src="https://picsum.photos/300/300?4">
+        < img src="https://picsum.photos/300/300?5">
+        < img src="https://picsum.photos/300/300?6">
+      </div>
+    </div>
+
+    <div class="chat">
+      <h3>💬 聊天</h3>
+      <div id="msgs"></div>
+      <div class="chat-input">
+        <input id="msgInput" placeholder="输入消息">
+        <button onclick="sendMsg()">发送</button>
+      </div>
     </div>
   </div>
-  <div class="qrcode" id="qrcodeBox" style="display:none">
-    <h4>分享访问</h4>
-    <img src="https://picsum.photos/300/300">
-    <p>扫码或用分享密钥访问</p>
-    <p style="margin-top:8px;font-weight:bold">分享密钥：Saxon95</p>
-  </div>
-  <div class="album" id="album">
-    <div class="album-warning">
-      ⚠️ 私密内容 · 未满18周岁禁止查看
-    </div>
-    <h3>📸 私密相册</h3>
-    <div class="grid" id="photoGrid">
-      <img src="https://picsum.photos/300/300?1">
-      <img src="https://picsum.photos/300/300?2">
-      <img src="https://picsum.photos/300/300?3">
-      <img src="https://picsum.photos/300/300?4">
-      <img src="https://picsum.photos/300/300?5">
-      <img src="https://picsum.photos/300/300?6">
+
+  <!-- 动态 -->
+  <div id="feed" class="page">
+    <div class="feed-item">
+      <div class="feed-header">
+        < img class="feed-avatar" src="https://picsum.photos/40/40">
+        <div>
+          <div>私密空间</div>
+          <div style="font-size:12px;color:#999">今天</div>
+        </div>
+      </div>
+      <div>新的一年，平安喜乐</div>
+      <div class="feed-images">
+        < img src="https://picsum.photos/300/300?11">
+      </div>
     </div>
   </div>
-  <div class="chat-room">
-    <h3>💬 私密聊天</h3>
-    <div id="chatMessages"></div>
-    <input id="chatInput" placeholder="输入消息...">
-    <button class="chatBtn" onclick="sendChat()">发送</button>
+
+  <!-- 个人资料 -->
+  <div id="userinfo" class="page">
+    <div class="profile-page">
+      < img class="avatar" src="https://picsum.photos/200/200">
+      <div class="name" id="infoNick">--</div>
+      <div class="bio">私密空间</div>
+      <div class="info">
+        <div class="item"><span>年龄</span><span id="infoAge">--</span></div>
+        <div class="item"><span>性别</span><span id="infoGender">--</span></div>
+        <div class="item"><span>胸围</span><span id="infoBust">--</span></div>
+        <div class="item"><span>腰围</span><span id="infoWaist">--</span></div>
+        <div class="item"><span>尺寸</span><span id="infoSize">--</span></div>
+        <div class="item"><span>风格</span><span id="infoStyle">--</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导航 -->
+  <div class="nav">
+    <div class="nav-item active" onclick="go('home')"><i>🏠</i><span>首页</span></div>
+    <div class="nav-item" onclick="go('feed')"><i>📰</i><span>动态</span></div>
+    <div class="nav-item" onclick="go('userinfo')"><i>👤</i><span>资料</span></div>
   </div>
 </div>
+
 <script>
 const SHARE_KEY = "Saxon95";
 const ADMIN_PASS = "admin888";
-// 屏蔽辱骂、人身攻击、诈骗相关（安全合规）
-const filterList = [
-  "骂人","脏话","侮辱","攻击","滚蛋","有病","白痴","傻瓜","废物",
-  "骗子","诈骗","借钱","转账","汇款","红包","付费","收费","充值",
-  "贷款","套现","刷单","担保","押金","返现","银行卡"
-];
-function filterText(text){
-  let res = text;
-  filterList.forEach(w => {
-    let reg = new RegExp(w,"gi");
-    res = res.replace(reg,"***");
-  });
-  return res;
-}
-// ========== 2026新年横幅 · 元宵节（2026-03-03）后自动消失 ==========
-function showNewYearBanner(){
-  const today = new Date();
-  const yuanXiao = new Date(2026, 2, 3); // 2026元宵节 3月3日
-  const banner = document.getElementById('newYearBanner');
-  if(today <= yuanXiao){
-    banner.style.display = 'block';
-  } else {
-    banner.style.display = 'none';
+
+// 本地配置
+let config = JSON.parse(localStorage.getItem("config")) || {
+  albumOpen: false
+};
+
+// 页面加载
+window.onload = () => {
+  setTimeout(()=>document.getElementById("loading").style.display="none",500);
+  if(localStorage.getItem("ageOk")){
+    document.getElementById("ageModal").style.display="none";
+    if(localStorage.getItem("user")){
+      document.getElementById("accessModal").style.display="none";
+      document.getElementById("content").style.display="block";
+      loadUserInfo();
+      refreshAlbum();
+    }
   }
-}
-// 年龄验证（优化：本地存储记住验证状态）
-function checkRealAge(){
-  var birth = document.getElementById("birthYear").value;
-  if(!birth || birth.length<4){alert("请输入正确出生年份");return;}
-  var age = new Date().getFullYear() - birth;
+};
+
+// 年龄验证
+function checkAge(){
+  let y = document.getElementById("birthYear").value;
+  if(!y || y.length<4) return alert("请输入正确年份");
+  let age = new Date().getFullYear() - parseInt(y);
   if(age>=18){
-    localStorage.setItem("ageVerified", "true"); // 记住已验证
+    localStorage.setItem("ageOk","1");
     document.getElementById("ageModal").style.display="none";
   }else{
-    alert("未满18周岁，禁止访问");
+    alert("未满18岁禁止访问");
   }
 }
-function closePage(){
-  document.body.innerHTML="<h1 style='text-align:center;margin-top:50px'>请未成年人离开</h1>";
-}
-// 访问权限
-function useShareKey(){
-  const key=document.getElementById("shareKey").value.trim();
-  if(key===SHARE_KEY){
+
+// 使用密钥
+function useKey(){
+  let v = document.getElementById("keyInput").value.trim();
+  if(v === SHARE_KEY){
     document.getElementById("accessModal").style.display="none";
     document.getElementById("register").style.display="block";
   }else{
-    alert("分享密钥不正确");
+    alert("密钥不正确");
   }
 }
-function sendApply(){
-  alert("已提交访问申请，请等待主人同意");
-}
+
 // 注册
-function userRegister(){
-  const name=document.getElementById("name").value.trim();
-  const age=document.getElementById("age").value;
-  if(!name||!age){alert("请填写完整信息");return;}
-  if(age<18){alert("未满18岁禁止访问");return;}
-  localStorage.setItem("hasAccess","yes");
-  localStorage.setItem("username",name);
+function doRegister(){
+  let nick = document.getElementById("nick").value;
+  let age = document.getElementById("age").value;
+  if(!nick || !age) return alert("请填写完整");
+  let user = {
+    nick, age,
+    gender: document.getElementById("gender").value,
+    bust: document.getElementById("bust").value,
+    waist: document.getElementById("waist").value,
+    size: document.getElementById("size").value,
+    style: document.getElementById("style").value
+  };
+  localStorage.setItem("user", JSON.stringify(user));
   document.getElementById("register").style.display="none";
   document.getElementById("content").style.display="block";
-  document.getElementById("album").style.display="block";
-  alert("注册成功，欢迎进入私密世界");
+  loadUserInfo();
+  refreshAlbum();
 }
-// 解锁相册
-function unlockContent(){
-  const p=prompt("请输入管理员密码：");
-  if(p===ADMIN_PASS){
-    document.querySelectorAll("#photoGrid img").forEach(i=>i.classList.add("show"));
-    alert("已解锁全部清晰内容");
+
+// 加载资料
+function loadUserInfo(){
+  let u = JSON.parse(localStorage.getItem("user"));
+  if(!u) return;
+  document.getElementById("infoNick").innerText = u.nick;
+  document.getElementById("infoAge").innerText = u.age;
+  document.getElementById("infoGender").innerText = u.gender;
+  document.getElementById("infoBust").innerText = u.bust || "--";
+  document.getElementById("infoWaist").innerText = u.waist || "--";
+  document.getElementById("infoSize").innerText = u.size || "--";
+  document.getElementById("infoStyle").innerText = u.style || "--";
+}
+
+// 相册显示控制
+function refreshAlbum(){
+  let imgs = document.querySelectorAll("#photoGrid img");
+  if(config.albumOpen){
+    imgs.forEach(i=>i.classList.add("show"));
+  }else{
+    imgs.forEach(i=>i.classList.remove("show"));
   }
 }
-function showShare(){
-  document.getElementById("qrcodeBox").style.display="block";
+
+// 页面切换
+function go(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  event.currentTarget.classList.add("active");
 }
-// 聊天发送
-function sendChat(){
-  const input=document.getElementById("chatInput");
-  let text=input.value.trim();
-  if(!text)return;
-  text=filterText(text);
-  const user=localStorage.getItem("username")||"访客";
-  const box=document.getElementById("chatMessages");
-  const div=document.createElement("div");
-  div.className="chat-item";
-  div.innerHTML=`<div class="chat-name">${user}</div><div class="chat-text">${text}</div>`;
-  box.appendChild(div);
-  box.scrollTop=box.scrollHeight;
-  input.value="";
+
+// 发送消息
+function sendMsg(){
+  let i = document.getElementById("msgInput");
+  let t = i.value.trim();
+  if(!t) return;
+  let u = JSON.parse(localStorage.getItem("user")) || {nick:"用户"};
+  let ms = document.getElementById("msgs");
+  let d = document.createElement("div");
+  d.className = "msg";
+  d.innerHTML = `<div class="msg-name">${u.nick}</div>${t}`;
+  ms.appendChild(d);
+  ms.scrollTop = ms.scrollHeight;
+  i.value = "";
 }
-// 页面加载（优化：优先检查本地存储）
-window.onload=function(){
-  showNewYearBanner(); // 新年横幅自动显示/隐藏
-  setTimeout(()=>{
-    document.getElementById("loading").style.display="none";
-    // 优先检查本地存储
-    if(localStorage.getItem("ageVerified") === "true") {
-      document.getElementById("ageModal").style.display="none";
-      if(localStorage.getItem("hasAccess")==="yes"){
-        document.getElementById("accessModal").style.display="none";
-        document.getElementById("content").style.display="block";
-        document.getElementById("album").style.display="block";
-      }
-    }
-  },500);
+
+// 管理员
+function openAdminLogin(){
+  document.getElementById("adminLogin").style.display="grid";
 }
-// 防右键、防截图
-document.addEventListener('contextmenu',e=>e.preventDefault());
-document.addEventListener('keydown',e=>{
-  if(e.key==="F12"||e.key==="PrintScreen"||(e.ctrlKey&&["s","u"].includes(e.key.toLowerCase()))){
-    e.preventDefault();
+function closeAdminLogin(){
+  document.getElementById("adminLogin").style.display="none";
+}
+function adminLogin(){
+  let p = document.getElementById("adminPwd").value;
+  if(p === ADMIN_PASS){
+    localStorage.setItem("admin","ok");
+    closeAdminLogin();
+    alert("管理员登录成功");
+  }else{
+    alert("密码错误");
   }
-});
+}
+function openAdminPanel(){
+  if(!localStorage.getItem("admin")) return alert("请先登录管理员");
+  document.getElementById("albumOpen").checked = config.albumOpen;
+  document.getElementById("adminPanel").style.display="grid";
+}
+function closeAdminPanel(){
+  document.getElementById("adminPanel").style.display="none";
+}
+function saveAdminSetting(){
+  config.albumOpen = document.getElementById("albumOpen").checked;
+  localStorage.setItem("config", JSON.stringify(config));
+  refreshAlbum();
+  alert("已保存");
+  closeAdminPanel();
+}
+
+function closePage(){
+  document.body.innerHTML = "<h1>禁止访问</h1>";
+}
 </script>
 </body>
 </html>

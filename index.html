@@ -278,17 +278,6 @@
             pointer-events: none;
         }
 
-        .qrcard {
-            text-align: center;
-            margin-top: 20px;
-        }
-        #qrcode {
-            width: 120px;
-            height: 120px;
-            border-radius: 12px;
-            margin: 10px auto;
-        }
-
         img {
             pointer-events: none !important;
             -webkit-user-drag: none !important;
@@ -317,12 +306,6 @@
         </div>
 
         <div id="postList" style="margin-top:14px"></div>
-
-        <div class="card qrcard">
-            <h3 style="color:var(--main)">📱 扫码快速进入</h3>
-            <canvas id="qrcode"></canvas>
-            <p style="font-size:12px;color:var(--sub)">扫一扫打开小空间</p>
-        </div>
     </div>
 
     <div id="profilePage" class="page">
@@ -452,7 +435,6 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <script>
 const MY_SECRET_KEY = "MY_SELF_2025";
 let is_visitor = true;
@@ -663,14 +645,6 @@ function refreshView(){
     document.getElementById('viewCount').innerText=`👀 浏览量：${views}（仅自己可见）`;
 }
 
-function genQrcode(){
-    try{
-        QRCode.toCanvas(document.getElementById('qrcode'), window.location.href,{
-            width:120, margin:1, color:{dark:'#ff70a6', light:'#fff'}
-        });
-    }catch(e){}
-}
-
 function refreshAll(){
     refreshProfile();
     refreshPosts();
@@ -680,10 +654,9 @@ function refreshAll(){
     refreshView();
 }
 
-// 启动：直接进，不转圈
+// 启动
 lockForVisitors();
 refreshAll();
-genQrcode();
 </script>
 </body>
 </html>

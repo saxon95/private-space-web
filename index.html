@@ -1,251 +1,123 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>我的小空间</title>
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:PingFang SC,Helvetica Neue,sans-serif}
-        :root{--bg:#fdf6fb;--card:#fff;--text:#444;--sub:#999;--main:#ff8fb7;--tag:#ffe0f0;--tagtext:#ff5a95}
-        body{background:var(--bg);color:var(--text);padding:20px 15px 60px}
-        .card{background:var(--card);border-radius:16px;padding:18px;margin-bottom:14px}
-        .profile{text-align:center}
-        .avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;margin-bottom:10px}
-        .name{font-size:20px;font-weight:700;margin-bottom:8px}
-        .tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
-        .tag{background:var(--tag);color:var(--tagtext);padding:4px 9px;border-radius:12px;font-size:12px}
-        .info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0}
-        .info-label{color:var(--sub)}
-        .title{font-size:16px;font-weight:700;margin-bottom:12px;color:var(--main)}
-        .post img,.post video{width:100%;border-radius:12px;margin-top:8px}
-        .post{margin-bottom:12px}
-        .like-bar{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:14px;color:#666}
-        .like{color:var(--main);cursor:pointer}
-        .comment-box{margin-top:10px}
-        .comment-input{width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;margin-top:6px}
-        .comment-item{font-size:13px;color:#555;margin-top:6px;padding-left:4px}
-        .countdown{font-size:12px;color:var(--main);margin-top:6px}
-        #imgViewer{position:fixed;inset:0;background:#000000e6;display:none;place-items:center;z-index:999}
-        #viewerImg{max-width:90%;max-height:90vh;border-radius:12px}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的小空间</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:PingFang SC,Helvetica Neue,sans-serif}
+:root{--bg:#fdf6fb;--card:#fff;--text:#444;--sub:#999;--main:#ff8fb7;--tag:#ffe0f0;--tagtext:#ff5a95}
+body{background:var(--bg);color:var(--text);padding:20px 15px 60px}
+.card{background:var(--card);border-radius:16px;padding:18px;margin-bottom:14px}
+.profile{text-align:center}
+.avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;margin-bottom:10px}
+.name{font-size:20px;font-weight:700;margin-bottom:8px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
+.tag{background:var(--tag);color:var(--tagtext);padding:4px 9px;border-radius:12px;font-size:12px}
+.info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0}
+.info-label{color:var(--sub)}
+.title{font-size:16px;font-weight:700;margin-bottom:12px;color:var(--main)}
+.post img,.post video{width:100%;border-radius:12px;margin-top:8px}
+.post{margin-bottom:12px}
+.like-bar{margin-top:10px;font-size:14px;color:var(--main);cursor:pointer}
+.countdown{font-size:12px;color:var(--main);margin-top:6px}
+</style>
 </head>
 <body>
 
 <div class="card profile">
-    < img class="avatar" id="avatar">
-    <div class="name" id="name"></div>
-    <div class="tags" id="tags"></div>
+< img class="avatar" id="avatar">
+<div class="name" id="name"></div>
+<div class="tags" id="tags"></div>
 </div>
 
 <div class="card">
-    <div class="info-row">
-        <span class="info-label">身高</span>
-        <span id="height">--</span>
-    </div>
-    <div class="info-row">
-        <span class="info-label">体重</span>
-        <span id="weight">--</span>
-    </div>
-    <div class="info-row">
-        <span class="info-label">尺寸</span>
-        <span id="size">--</span>
-    </div>
-    < img id="sizeImg" style="width:100%;border-radius:12px;margin-top:12px;display:none">
+<div class="info-row">
+<span class="info-label">身高</span>
+<span id="height">--</span>
+</div>
+<div class="info-row">
+<span class="info-label">体重</span>
+<span id="weight">--</span>
+</div>
+<div class="info-row">
+<span class="info-label">尺寸</span>
+<span id="size">--</span>
+</div>
+< img id="sizeImg" style="width:100%;border-radius:12px;margin-top:12px;display:none">
 </div>
 
 <div class="card">
-    <div class="title">📝 动态</div>
-    <div id="posts"></div>
+<div class="title">📝 动态</div>
+<div id="posts"></div>
 </div>
 
 <div class="card">
-    <div class="title">🔒 限时私房</div>
-    <div id="privates"></div>
-</div>
-
-<div id="imgViewer" onclick="closeViewer()">
-    < img id="viewerImg">
+<div class="title">🔒 限时私房</div>
+<div id="privates"></div>
 </div>
 
 <script>
-// 从 localStorage 读取数据
-let user = JSON.parse(localStorage.getItem('user')) || {};
-let posts = JSON.parse(localStorage.getItem('posts')) || [];
-let privates = JSON.parse(localStorage.getItem('private')) || [];
+let user = JSON.parse(localStorage.getItem('user')) || {}
+let posts = JSON.parse(localStorage.getItem('posts')) || []
+let privates = JSON.parse(localStorage.getItem('private')) || []
 
-// 初始化页面
-initPage();
+document.getElementById('avatar').src = user.avatar || ''
+document.getElementById('name').innerText = user.name || '小可爱'
+document.getElementById('height').innerText = user.height || '--'
+document.getElementById('weight').innerText = user.weight || '--'
+document.getElementById('size').innerText = user.size || '--'
 
-function initPage() {
-    // 1. 填充个人资料
-    document.getElementById('avatar').src = user.avatar || '';
-    document.getElementById('name').innerText = user.name || '小可爱';
-    document.getElementById('height').innerText = user.height || '--';
-    document.getElementById('weight').innerText = user.weight || '--';
-    document.getElementById('size').innerText = user.size || '--';
-
-    if (user.sizeImg) {
-        const sizeImgEl = document.getElementById('sizeImg');
-        sizeImgEl.src = user.sizeImg;
-        sizeImgEl.style.display = 'block';
-    }
-
-    // 2. 渲染标签
-    let tagHtml = '';
-    (user.style || []).forEach(t => {
-        tagHtml += `<span class="tag">${t}</span>`;
-    });
-    document.getElementById('tags').innerHTML = tagHtml;
-
-    // 3. 渲染动态和私房内容
-    renderPosts();
-    renderPrivates();
+if (user.sizeImg) {
+let img = document.getElementById('sizeImg')
+img.src = user.sizeImg
+img.style.display = 'block'
 }
 
-// 渲染动态列表
-function renderPosts() {
-    const postsContainer = document.getElementById('posts');
-    postsContainer.innerHTML = '';
+let tagHtml = ''
+;(user.style || []).forEach(t => {
+tagHtml += `<span class="tag">${t}</span>`
+})
+document.getElementById('tags').innerHTML = tagHtml
 
-    posts.forEach((post, index) => {
-        const postEl = document.createElement('div');
-        postEl.className = 'post card';
-
-        // 文本内容
-        if (post.txt) {
-            const textEl = document.createElement('div');
-            textEl.innerText = post.txt;
-            postEl.appendChild(textEl);
-        }
-
-        // 图片或视频
-        if (post.type === 'img' && post.url) {
-            const imgEl = document.createElement('img');
-            imgEl.src = post.url;
-            imgEl.onclick = () => view(imgEl);
-            postEl.appendChild(imgEl);
-        } else if (post.type === 'vid' && post.url) {
-            const videoEl = document.createElement('video');
-            videoEl.src = post.url;
-            videoEl.controls = true;
-            postEl.appendChild(videoEl);
-        }
-
-        // 点赞和评论栏
-        const likeBar = document.createElement('div');
-        likeBar.className = 'like-bar';
-
-        const likeBtn = document.createElement('div');
-        likeBtn.className = 'like';
-        likeBtn.innerText = post.like ? '❤️ 已点赞' : '🤍 点赞';
-        likeBtn.onclick = () => toggleLike(index);
-        likeBar.appendChild(likeBtn);
-
-        const commentLabel = document.createElement('div');
-        commentLabel.innerText = '评论';
-        likeBar.appendChild(commentLabel);
-        postEl.appendChild(likeBar);
-
-        // 评论区
-        const commentBox = document.createElement('div');
-        commentBox.className = 'comment-box';
-
-        const commentInput = document.createElement('input');
-        commentInput.className = 'comment-input';
-        commentInput.id = `commentInput${index}`;
-        commentInput.placeholder = '说点什么...';
-        commentBox.appendChild(commentInput);
-
-        const sendBtn = document.createElement('button');
-        sendBtn.className = 'btn';
-        sendBtn.style = 'padding:6px;width:100%;margin-top:4px;background:var(--main);color:#fff;border:none;border-radius:8px';
-        sendBtn.innerText = '发送';
-        sendBtn.onclick = () => addComment(index);
-        commentBox.appendChild(sendBtn);
-
-        // 评论列表
-        const commentsList = document.createElement('div');
-        commentsList.id = `comments${index}`;
-        (post.comments || []).forEach(c => {
-            const commentItem = document.createElement('div');
-            commentItem.className = 'comment-item';
-            commentItem.innerText = `• ${c}`;
-            commentsList.appendChild(commentItem);
-        });
-        commentBox.appendChild(commentsList);
-
-        postEl.appendChild(commentBox);
-        postsContainer.appendChild(postEl);
-    });
+function toggleLike(i){
+posts[i].like = !posts[i].like
+localStorage.setItem('posts', JSON.stringify(posts))
+renderPosts()
 }
 
-// 渲染私房内容
-function renderPrivates() {
-    const privatesContainer = document.getElementById('privates');
-    privatesContainer.innerHTML = '';
-
-    // 过滤过期内容
-    const activePrivates = privates.filter(p => p.exp > Date.now());
-
-    activePrivates.forEach(p => {
-        const privateEl = document.createElement('div');
-        privateEl.className = 'private card';
-
-        if (p.type === 'img' && p.url) {
-            const imgEl = document.createElement('img');
-            imgEl.src = p.url;
-            imgEl.onclick = () => view(imgEl);
-            privateEl.appendChild(imgEl);
-        } else if (p.type === 'vid' && p.url) {
-            const videoEl = document.createElement('video');
-            videoEl.src = p.url;
-            videoEl.controls = true;
-            privateEl.appendChild(videoEl);
-        }
-
-        // 倒计时
-        const left = p.exp - Date.now();
-        const h = Math.floor(left / 3600000);
-        const m = Math.floor((left % 3600000) / 60000);
-        const countdownEl = document.createElement('div');
-        countdownEl.className = 'countdown';
-        countdownEl.innerText = `剩余 ${h}时${m}分`;
-        privateEl.appendChild(countdownEl);
-
-        privatesContainer.appendChild(privateEl);
-    });
+function renderPosts(){
+let html = ''
+posts.forEach((p,i)=>{
+html += `
+<div class="post card">
+${p.txt || ''}
+${p.type === 'img' ? `< img src="${p.url}">` : ''}
+${p.type === 'vid' ? `<video src="${p.url}" controls></video>` : ''}
+<div class="like-bar" onclick="toggleLike(${i})">
+${p.like ? '❤️ 已点赞' : '🤍 点赞'}
+</div>
+</div>`
+})
+document.getElementById('posts').innerHTML = html
 }
+renderPosts()
 
-// 切换点赞状态
-function toggleLike(index) {
-    posts[index].like = !posts[index].like;
-    localStorage.setItem('posts', JSON.stringify(posts));
-    renderPosts();
-}
-
-// 添加评论
-function addComment(index) {
-    const input = document.getElementById(`commentInput${index}`);
-    const val = input.value.trim();
-    if (!val) return;
-
-    if (!posts[index].comments) posts[index].comments = [];
-    posts[index].comments.push(val);
-    localStorage.setItem('posts', JSON.stringify(posts));
-    input.value = '';
-    renderPosts();
-}
-
-// 查看大图
-function view(img) {
-    document.getElementById('viewerImg').src = img.src;
-    document.getElementById('imgViewer').style.display = 'grid';
-}
-
-// 关闭查看器
-function closeViewer() {
-    document.getElementById('imgViewer').style.display = 'none';
-}
+privates = privates.filter(p => p.exp > Date.now())
+let privateHtml = ''
+privates.forEach(p => {
+let left = p.exp - Date.now()
+let h = Math.floor(left / 3600000)
+let m = Math.floor((left % 3600000) / 60000)
+privateHtml += `
+<div class="private card">
+${p.type === 'img' ? `< img src="${p.url}">` : ''}
+${p.type === 'vid' ? `<video src="${p.url}" controls></video>` : ''}
+<div class="countdown">剩余 ${h}时${m}分</div>
+</div>
+`
+})
+document.getElementById('privates').innerHTML = privateHtml
 </script>
 </body>
 </html>

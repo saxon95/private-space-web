@@ -16,6 +16,7 @@
   .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:10px}
   input,textarea,button{width:100%;margin:6px 0;padding:12px;border-radius:8px;border:1px solid #ddd}
   button{background:#ff6b9d;color:white;border:none}
+  .del-btn{background:#ff4444;margin-top:8px}
 
   /* 四宫格预览 */
   .grid-4{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
@@ -29,7 +30,8 @@
   <div class="tab active" onclick="tab(0)">发动态</div>
   <div class="tab" onclick="tab(1)">资料设置</div>
   <div class="tab" onclick="tab(2)">Show 照片墙</div>
-  <div class="tab" onclick="tab(3)">私信查看</div>
+  <div class="tab" onclick="tab(3)">动态管理</div>
+  <div class="tab" onclick="tab(4)">私信查看</div>
 </div>
 
 <!-- 发动态 -->
@@ -65,8 +67,13 @@
   </div>
 </div>
 
-<!-- 私信查看 -->
+<!-- 动态管理（可删除） -->
 <div class="page" id="p3">
+  <div id="postManage"></div>
+</div>
+
+<!-- 私信查看 -->
+<div class="page" id="p4">
   <div class="card" id="msgList"></div>
 </div>
 
@@ -75,11 +82,12 @@
 function tab(i){
   document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j==i))
   document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',j==i))
-  if(i==3)loadMsgs()
-  if(i==2)loadPreview()
+  if(i==3) loadPosts()
+  if(i==4) loadMsgs()
+  if(i==2) loadPreview()
 }
 
-// 发动态（不乱码）
+// 发动态
 function post(){
   const text=document.getElementById('text').value
   const posts=JSON.parse(localStorage.getItem('posts')||'[]')
@@ -137,6 +145,44 @@ function loadPreview(){
     img.src=ph[i]||''
     g.appendChild(img)
   }
+}
+
+// 动态管理（可删除）
+function loadPosts(){
+  const posts=JSON.parse(localStorage.getItem('posts')||'[]')
+  const pm=document.getElementById('postManage')
+  pm.innerHTML=''
+  posts.forEach((p,idx)=>{
+    const c=document.createElement('div')
+    c.className='card'
+    c.innerText=p.txt||'无内容'
+    if(p.type==='img'&&p.url){
+      const img=document.createElement('img')
+      img.src=p.url
+      img.style.width='100%'
+      img.style.borderRadius='8px'
+      img.style.marginTop='8px'
+      c.appendChild(img)
+    }
+    if(p.type==='vid'&&p.url){
+      const v=document.createElement('video')
+      v.src=p.url
+      v.controls=true
+      v.style.width='100%'
+      v.style.marginTop='8px'
+      c.appendChild(v)
+    }
+    const del=document.createElement('button')
+    del.className='del-btn'
+    del.innerText='删除这条动态'
+    del.onclick=()=>{
+      posts.splice(idx,1)
+      localStorage.setItem('posts',JSON.stringify(posts))
+      loadPosts()
+    }
+    c.appendChild(del)
+    pm.appendChild(c)
+  })
 }
 
 // 查看私信

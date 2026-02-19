@@ -55,6 +55,11 @@ body{background:var(--bg);padding-bottom:70px}
 #register h3{color:var(--purple);text-align:center;margin-bottom:16px}
 #register input,#register select{width:100%;padding:12px;border-radius:12px;border:1px solid #ddd;margin:8px 0}
 #register button{width:100%;padding:12px;background:var(--purple);color:white;border:none;border-radius:12px;margin-top:6px}
+/* 头像选择 */
+#avatarPicker{display:none;padding:20px;background:white;border-radius:20px;margin:12px 0}
+.avatar-options{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.avatar-option{width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid transparent;cursor:pointer}
+.avatar-option.selected{border-color:var(--purple)}
 /* 内容区 */
 #content{display:none}
 /* 底部导航 */
@@ -72,6 +77,11 @@ body{background:var(--bg);padding-bottom:70px}
 .bio{color:var(--gray);margin:6px 0 16px}
 .btns{display:flex;gap:10px;justify-content:center}
 .btn{padding:10px 14px;background:var(--purple);color:white;border:none;border-radius:12px}
+/* 统计 */
+.stats{display:flex;justify-content:space-around;background:white;border-radius:20px;padding:16px;margin-bottom:16px}
+.stat-item{text-align:center}
+.stat-number{font-size:20px;font-weight:600;color:var(--purple)}
+.stat-label{font-size:12px;color:var(--gray)}
 /* 相册 */
 .album{background:white;padding:20px;border-radius:20px}
 .album h3{color:var(--purple);margin-bottom:12px}
@@ -109,7 +119,7 @@ body{background:var(--bg);padding-bottom:70px}
 <div id="ageModal">
   <div class="age-box">
     <h3>年龄认证</h3>
-    <p>仅限18岁以上访问</p >
+    <p>仅限18岁以上访问</p>
     <input type="number" id="birthYear" placeholder="输入出生年份">
     <button onclick="checkAge()">确认进入</button>
     <button class="no" onclick="closePage()">未满18岁</button>
@@ -150,7 +160,12 @@ body{background:var(--bg);padding-bottom:70px}
     </div>
     <div class="admin-card">
       <h4>当前密钥</h4>
-      <p>Saxon95</p >
+      <p>Saxon95</p>
+    </div>
+    <div class="admin-card">
+      <h4>访问统计</h4>
+      <p>总访问：<span id="totalVisit">0</span></p>
+      <p>在线人数：<span id="onlineCount">1</span></p>
     </div>
     <button onclick="saveAdminSetting()">保存设置</button>
     <button onclick="closeAdminPanel()" style="background:#f2f2f2;color:#333">关闭</button>
@@ -170,7 +185,16 @@ body{background:var(--bg);padding-bottom:70px}
   <input id="bust" placeholder="胸围">
   <input id="waist" placeholder="腰围">
   <input id="size" placeholder="尺寸">
-  <input id="style" placeholder="风格">
+  <input id="style" placeholder="风格（如：性感、纯欲）">
+  <div id="avatarPicker">
+    <h4 style="margin-bottom:10px">选择头像</h4>
+    <div class="avatar-options">
+      <img class="avatar-option" src="https://picsum.photos/200/200?1" onclick="selectAvatar(this)">
+      <img class="avatar-option" src="https://picsum.photos/200/200?2" onclick="selectAvatar(this)">
+      <img class="avatar-option" src="https://picsum.photos/200/200?3" onclick="selectAvatar(this)">
+      <img class="avatar-option" src="https://picsum.photos/200/200?4" onclick="selectAvatar(this)">
+    </div>
+  </div>
   <button onclick="doRegister()">完成注册</button>
 </div>
 
@@ -179,23 +203,34 @@ body{background:var(--bg);padding-bottom:70px}
   <!-- 首页 -->
   <div id="home" class="page active">
     <div class="profile">
-      < img class="avatar" src="https://picsum.photos/200/200">
-      <div class="name">私密空间</div>
+      <img class="avatar" id="mainAvatar" src="https://picsum.photos/200/200">
+      <div class="name" id="homeName">私密空间</div>
       <div class="bio">仅限好友访问</div>
       <div class="btns">
         <button class="btn" onclick="openAdminPanel()">管理员面板</button>
       </div>
     </div>
 
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-number" id="statVisit">0</div>
+        <div class="stat-label">访问人数</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="statOnline">1</div>
+        <div class="stat-label">在线人数</div>
+      </div>
+    </div>
+
     <div class="album">
       <h3>📸 私密相册</h3>
       <div class="grid" id="photoGrid">
-        < img src="https://picsum.photos/300/300?1">
-        < img src="https://picsum.photos/300/300?2">
-        < img src="https://picsum.photos/300/300?3">
-        < img src="https://picsum.photos/300/300?4">
-        < img src="https://picsum.photos/300/300?5">
-        < img src="https://picsum.photos/300/300?6">
+        <img src="https://picsum.photos/300/300?1">
+        <img src="https://picsum.photos/300/300?2">
+        <img src="https://picsum.photos/300/300?3">
+        <img src="https://picsum.photos/300/300?4">
+        <img src="https://picsum.photos/300/300?5">
+        <img src="https://picsum.photos/300/300?6">
       </div>
     </div>
 
@@ -213,15 +248,15 @@ body{background:var(--bg);padding-bottom:70px}
   <div id="feed" class="page">
     <div class="feed-item">
       <div class="feed-header">
-        < img class="feed-avatar" src="https://picsum.photos/40/40">
+        <img class="feed-avatar" src="https://picsum.photos/40/40?1">
         <div>
-          <div>私密空间</div>
+          <div id="feedName">私密空间</div>
           <div style="font-size:12px;color:#999">今天</div>
         </div>
       </div>
       <div>新的一年，平安喜乐</div>
       <div class="feed-images">
-        < img src="https://picsum.photos/300/300?11">
+        <img src="https://picsum.photos/300/300?11">
       </div>
     </div>
   </div>
@@ -229,16 +264,16 @@ body{background:var(--bg);padding-bottom:70px}
   <!-- 个人资料 -->
   <div id="userinfo" class="page">
     <div class="profile-page">
-      < img class="avatar" src="https://picsum.photos/200/200">
+      <img class="avatar" id="infoAvatar" src="https://picsum.photos/200/200">
       <div class="name" id="infoNick">--</div>
-      <div class="bio">私密空间</div>
+      <div class="bio" id="infoStyle">--</div>
       <div class="info">
         <div class="item"><span>年龄</span><span id="infoAge">--</span></div>
         <div class="item"><span>性别</span><span id="infoGender">--</span></div>
         <div class="item"><span>胸围</span><span id="infoBust">--</span></div>
         <div class="item"><span>腰围</span><span id="infoWaist">--</span></div>
         <div class="item"><span>尺寸</span><span id="infoSize">--</span></div>
-        <div class="item"><span>风格</span><span id="infoStyle">--</span></div>
+        <div class="item"><span>风格</span><span id="infoStyleDetail">--</span></div>
       </div>
     </div>
   </div>
@@ -257,7 +292,8 @@ const ADMIN_PASS = "admin888";
 
 // 本地配置
 let config = JSON.parse(localStorage.getItem("config")) || {
-  albumOpen: false
+  albumOpen: false,
+  visitCount: 0
 };
 
 // 页面加载
@@ -270,8 +306,12 @@ window.onload = () => {
       document.getElementById("content").style.display="block";
       loadUserInfo();
       refreshAlbum();
+      updateStats();
     }
   }
+  // 增加访问计数
+  config.visitCount++;
+  localStorage.setItem("config", JSON.stringify(config));
 };
 
 // 年龄验证
@@ -293,9 +333,18 @@ function useKey(){
   if(v === SHARE_KEY){
     document.getElementById("accessModal").style.display="none";
     document.getElementById("register").style.display="block";
+    document.getElementById("avatarPicker").style.display="block";
   }else{
     alert("密钥不正确");
   }
+}
+
+// 头像选择
+let selectedAvatar = "https://picsum.photos/200/200";
+function selectAvatar(el){
+  document.querySelectorAll(".avatar-option").forEach(o=>o.classList.remove("selected"));
+  el.classList.add("selected");
+  selectedAvatar = el.src;
 }
 
 // 注册
@@ -309,19 +358,25 @@ function doRegister(){
     bust: document.getElementById("bust").value,
     waist: document.getElementById("waist").value,
     size: document.getElementById("size").value,
-    style: document.getElementById("style").value
+    style: document.getElementById("style").value,
+    avatar: selectedAvatar
   };
   localStorage.setItem("user", JSON.stringify(user));
   document.getElementById("register").style.display="none";
   document.getElementById("content").style.display="block";
   loadUserInfo();
   refreshAlbum();
+  updateStats();
 }
 
 // 加载资料
 function loadUserInfo(){
   let u = JSON.parse(localStorage.getItem("user"));
   if(!u) return;
+  document.getElementById("mainAvatar").src = u.avatar;
+  document.getElementById("infoAvatar").src = u.avatar;
+  document.getElementById("homeName").innerText = u.nick;
+  document.getElementById("feedName").innerText = u.nick;
   document.getElementById("infoNick").innerText = u.nick;
   document.getElementById("infoAge").innerText = u.age;
   document.getElementById("infoGender").innerText = u.gender;
@@ -329,6 +384,7 @@ function loadUserInfo(){
   document.getElementById("infoWaist").innerText = u.waist || "--";
   document.getElementById("infoSize").innerText = u.size || "--";
   document.getElementById("infoStyle").innerText = u.style || "--";
+  document.getElementById("infoStyleDetail").innerText = u.style || "--";
 }
 
 // 相册显示控制
@@ -339,6 +395,14 @@ function refreshAlbum(){
   }else{
     imgs.forEach(i=>i.classList.remove("show"));
   }
+}
+
+// 更新统计
+function updateStats(){
+  document.getElementById("statVisit").innerText = config.visitCount;
+  document.getElementById("totalVisit").innerText = config.visitCount;
+  document.getElementById("statOnline").innerText = 1;
+  document.getElementById("onlineCount").innerText = 1;
 }
 
 // 页面切换
@@ -384,6 +448,8 @@ function adminLogin(){
 function openAdminPanel(){
   if(!localStorage.getItem("admin")) return alert("请先登录管理员");
   document.getElementById("albumOpen").checked = config.albumOpen;
+  document.getElementById("totalVisit").innerText = config.visitCount;
+  document.getElementById("onlineCount").innerText = 1;
   document.getElementById("adminPanel").style.display="grid";
 }
 function closeAdminPanel(){

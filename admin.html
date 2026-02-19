@@ -16,8 +16,6 @@ body{background:#f5f5f5;padding-bottom:60px}
 input,textarea,button{width:100%;margin:6px 0;padding:12px;border-radius:8px;border:1px solid #ddd}
 button{background:#ff6b9d;color:white;border:none}
 .del{background:#ff4444;margin-top:8px}
-.grid-4{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
-.grid-4 img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px}
 </style>
 </head>
 <body>
@@ -25,8 +23,7 @@ button{background:#ff6b9d;color:white;border:none}
 <div class="tab-bar">
   <div class="tab active" onclick="tab(0)">发动态</div>
   <div class="tab" onclick="tab(1)">资料设置</div>
-  <div class="tab" onclick="tab(2)">Show 照片墙</div>
-  <div class="tab" onclick="tab(3)">动态管理</div>
+  <div class="tab" onclick="tab(2)">动态管理</div>
 </div>
 
 <div class="page active" id="p0">
@@ -49,17 +46,6 @@ button{background:#ff6b9d;color:white;border:none}
 </div>
 
 <div class="page" id="p2">
-  <div class="card">
-    <input type="file" id="p1" accept="image/*">
-    <input type="file" id="p2" accept="image/*">
-    <input type="file" id="p3" accept="image/*">
-    <input type="file" id="p4" accept="image/*">
-    <button onclick="saveShow()">保存Show四宫格</button>
-    <div class="grid-4" id="preview"></div>
-  </div>
-</div>
-
-<div class="page" id="p3">
   <div id="postManage"></div>
 </div>
 
@@ -67,11 +53,10 @@ button{background:#ff6b9d;color:white;border:none}
 function tab(i){
   document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j==i))
   document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',j==i))
-  if(i==3)loadPosts()
-  if(i==2)loadPreview()
+  if(i==2)loadPosts()
 }
 
-// 辅助函数：将文件转为 Base64
+// 辅助函数：将文件转为 Base64，确保图片永久可用
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -91,11 +76,11 @@ async function post(){
 
   if (img) {
     p.type = 'img';
-    p.url = await fileToBase64(img); // 存储 Base64
+    p.url = await fileToBase64(img); // 存储为 Base64
   }
   if (vid) {
     p.type = 'vid';
-    p.url = await fileToBase64(vid); // 存储 Base64
+    p.url = await fileToBase64(vid); // 存储为 Base64
   }
 
   posts.unshift(p);
@@ -112,31 +97,6 @@ function saveProfile(){
   }
   localStorage.setItem('user',JSON.stringify(user))
   alert('保存成功')
-}
-
-async function saveShow(){
-  const p = [];
-  for(let i=1;i<=4;i++){
-    const f = document.getElementById('p'+i).files[0];
-    if(f) p.push(await fileToBase64(f)); // 存储 Base64
-  }
-  const u = JSON.parse(localStorage.getItem('user') || '{}');
-  u.photos = p;
-  localStorage.setItem('user', JSON.stringify(u));
-  alert('保存成功');
-  loadPreview();
-}
-
-function loadPreview(){
-  const u=JSON.parse(localStorage.getItem('user')||'{}')
-  const ph=u.photos||[]
-  const g=document.getElementById('preview')
-  g.innerHTML=''
-  for(let i=0;i<4;i++){
-    const img=document.createElement('img')
-    img.src=ph[i]||''
-    g.appendChild(img)
-  }
 }
 
 function loadPosts(){

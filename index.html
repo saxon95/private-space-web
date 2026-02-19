@@ -2,117 +2,37 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>我的小空间</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'PingFang SC', 'Helvetica Neue', sans-serif;
-        }
-        :root {
-            --bg: #fdf6fb;
-            --card: #ffffff;
-            --text: #444;
-            --sub: #999;
-            --main: #ff8fb7;
-            --tag: #ffe0f0;
-            --tagtext: #ff5a95;
-        }
-        body {
-            background: var(--bg);
-            color: var(--text);
-            padding: 20px 15px 60px;
-        }
-        .card {
-            background: var(--card);
-            border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 14px;
-        }
-        .profile {
-            text-align: center;
-        }
-        .avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 10px;
-        }
-        .name {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            justify-content: center;
-            margin-top: 10px;
-        }
-        .tag {
-            background: var(--tag);
-            color: var(--tagtext);
-            padding: 4px 9px;
-            border-radius: 12px;
-            font-size: 12px;
-        }
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .info-label {
-            color: var(--sub);
-        }
-        .title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 12px;
-            color: var(--main);
-        }
-        .post img, .private img {
-            width: 100%;
-            border-radius: 12px;
-            margin-top: 8px;
-        }
-        .post video, .private video {
-            width: 100%;
-            margin-top: 8px;
-            border-radius: 12px;
-        }
-        .post {
-            margin-bottom: 12px;
-            line-height: 1.5;
-        }
-        .countdown {
-            font-size: 12px;
-            color: var(--main);
-            margin-top: 6px;
-        }
-        #imgViewer {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: none;
-            place-items: center;
-            z-index: 999;
-        }
-        #viewerImg {
-            max-width: 90%;
-            max-height: 90vh;
-            border-radius: 12px;
-        }
+        *{margin:0;padding:0;box-sizing:border-box;font-family:PingFang SC,Helvetica Neue,sans-serif}
+        :root{--bg:#fdf6fb;--card:#fff;--text:#444;--sub:#999;--main:#ff8fb7;--tag:#ffe0f0;--tagtext:#ff5a95}
+        body{background:var(--bg);color:var(--text);padding:20px 15px 60px}
+        .card{background:var(--card);border-radius:16px;padding:18px;margin-bottom:14px}
+        .profile{text-align:center}
+        .avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;margin-bottom:10px}
+        .name{font-size:20px;font-weight:700;margin-bottom:8px}
+        .tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
+        .tag{background:var(--tag);color:var(--tagtext);padding:4px 9px;border-radius:12px;font-size:12px}
+        .info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0}
+        .info-label{color:var(--sub)}
+        .title{font-size:16px;font-weight:700;margin-bottom:12px;color:var(--main)}
+        .post img,.post video{width:100%;border-radius:12px;margin-top:8px}
+        .post{margin-bottom:12px}
+        .like-bar{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:14px;color:#666}
+        .like{color:var(--main);cursor:pointer}
+        .comment-box{margin-top:10px}
+        .comment-input{width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;margin-top:6px}
+        .comment-item{font-size:13px;color:#555;margin-top:6px;padding-left:4px}
+        .countdown{font-size:12px;color:var(--main);margin-top:6px}
+        #imgViewer{position:fixed;inset:0;background:#000000e6;display:none;place-items:center;z-index:999}
+        #viewerImg{max-width:90%;max-height:90vh;border-radius:12px}
     </style>
 </head>
 <body>
 
 <div class="card profile">
-    <img class="avatar" id="avatar">
+    < img class="avatar" id="avatar">
     <div class="name" id="name"></div>
     <div class="tags" id="tags"></div>
 </div>
@@ -130,7 +50,7 @@
         <span class="info-label">尺寸</span>
         <span id="size">--</span>
     </div>
-    <img id="sizeImg" style="width:100%;border-radius:12px;margin-top:12px;display:none">
+    < img id="sizeImg" style="width:100%;border-radius:12px;margin-top:12px;display:none">
 </div>
 
 <div class="card">
@@ -144,13 +64,13 @@
 </div>
 
 <div id="imgViewer" onclick="closeViewer()">
-    <img id="viewerImg">
+    < img id="viewerImg">
 </div>
 
 <script>
-let user = JSON.parse(localStorage.getItem('user')) || {}
-let posts = JSON.parse(localStorage.getItem('posts')) || []
-let privates = JSON.parse(localStorage.getItem('private')) || []
+let user = JSON.parse(localStorage.user) || {}
+let posts = JSON.parse(localStorage.posts) || []
+let privates = JSON.parse(localStorage.private) || []
 
 document.getElementById('avatar').src = user.avatar || ''
 document.getElementById('name').innerText = user.name || '小可爱'
@@ -158,52 +78,85 @@ document.getElementById('height').innerText = user.height || '--'
 document.getElementById('weight').innerText = user.weight || '--'
 document.getElementById('size').innerText = user.size || '--'
 
-if (user.sizeImg) {
+if(user.sizeImg){
     let img = document.getElementById('sizeImg')
     img.src = user.sizeImg
     img.style.display = 'block'
 }
 
 let tagHtml = ''
-;(user.style || []).forEach(t => {
-    tagHtml += `<span class="tag">${t}</span>`
+;(user.style||[]).forEach(t=>{
+    tagHtml+=`<span class="tag">${t}</span>`
 })
 document.getElementById('tags').innerHTML = tagHtml
 
-let postHtml = ''
-posts.forEach(p => {
-    postHtml += `
-    <div class="post card">
-        ${p.txt || ''}
-        ${p.type === 'img' ? `<img src="${p.url}" onclick="view(this)">` : ''}
-        ${p.type === 'vid' ? `<video src="${p.url}" controls></video>` : ''}
-    </div>
-    `
-})
-document.getElementById('posts').innerHTML = postHtml
-
-privates = privates.filter(p => p.exp > Date.now())
-let privateHtml = ''
-privates.forEach(p => {
-    let left = p.exp - Date.now()
-    let h = Math.floor(left / 3600000)
-    let m = Math.floor((left % 3600000) / 60000)
-    privateHtml += `
-    <div class="private card">
-        ${p.type === 'img' ? `<img src="${p.url}" onclick="view(this)">` : ''}
-        ${p.type === 'vid' ? `<video src="${p.url}" controls></video>` : ''}
-        <div class="countdown">剩余 ${h}时${m}分</div>
-    </div>
-    `
-})
-document.getElementById('privates').innerHTML = privateHtml
-
-function view(img) {
-    document.getElementById('viewerImg').src = img.src
-    document.getElementById('imgViewer').style.display = 'grid'
+function toggleLike(i){
+    let posts = JSON.parse(localStorage.posts)||[]
+    posts[i].like = !posts[i].like
+    localStorage.posts = JSON.stringify(posts)
+    renderPosts()
 }
-function closeViewer() {
-    document.getElementById('imgViewer').style.display = 'none'
+
+function addComment(i){
+    let val = document.getElementById('commentInput'+i).value.trim()
+    if(!val)return
+    let posts = JSON.parse(localStorage.posts)||[]
+    if(!posts[i].comments) posts[i].comments=[]
+    posts[i].comments.push(val)
+    localStorage.posts = JSON.stringify(posts)
+    document.getElementById('commentInput'+i).value=''
+    renderPosts()
+}
+
+function renderPosts(){
+    let posts = JSON.parse(localStorage.posts)||[]
+    let html=''
+    posts.forEach((p,i)=>{
+        html+=`
+        <div class="post card">
+            ${p.txt||''}
+            ${p.type==='img'?`< img src="${p.url}" onclick="view(this)">`:''}
+            ${p.type==='vid'?`<video src="${p.url}" controls></video>`:''}
+            <div class="like-bar">
+                <div class="like" onclick="toggleLike(${i})">
+                    ${p.like?'❤️ 已点赞':'🤍 点赞'}
+                </div>
+                <div>评论</div>
+            </div>
+            <div class="comment-box">
+                <input class="comment-input" id="commentInput${i}" placeholder="说点什么...">
+                <button class="btn" onclick="addComment(${i})" style="padding:6;width:100%;margin-top:4px;background:var(--main);color:#fff;border:none;border-radius:8px">发送</button>
+                <div id="comments${i}">
+                    ${(p.comments||[]).map(c=>`<div class="comment-item">• ${c}</div>`).join('')}
+                </div>
+            </div>
+        </div>`
+    })
+    document.getElementById('posts').innerHTML=html
+}
+renderPosts()
+
+privates = privates.filter(p=>p.exp>Date.now())
+let privateHtml=''
+privates.forEach(p=>{
+    let left = p.exp-Date.now()
+    let h=Math.floor(left/3600000)
+    let m=Math.floor((left%3600000)/60000)
+    privateHtml+=`
+    <div class="private card">
+        ${p.type==='img'?`< img src="${p.url}" onclick="view(this)">`:''}
+        ${p.type==='vid'?`<video src="${p.url}" controls></video>`:''}
+        <div class="countdown">剩余 ${h}时${m}分</div>
+    </div>`
+})
+document.getElementById('privates').innerHTML=privateHtml
+
+function view(img){
+    document.getElementById('viewerImg').src=img.src
+    document.getElementById('imgViewer').style.display='grid'
+}
+function closeViewer(){
+    document.getElementById('imgViewer').style.display='none'
 }
 </script>
 </body>

@@ -26,6 +26,7 @@
     <input placeholder="体重 kg" id="weight">
     <input placeholder="尺寸" id="size">
     尺寸图：<input type="file" id="sizeImg" accept="image/*">
+    <div id="sizeImgPreview" style="margin-top:8px;"></div>
     <button class="btn" onclick="saveProfile()">保存资料</button>
 </div>
 
@@ -56,57 +57,215 @@
 </div>
 
 <script>
-function saveProfile(){
-    let user={
-        name:document.getElementById('name').value,
-        height:document.getElementById('height').value,
-        weight:document.getElementById('weight').value,
-        size:document.getElementById('size').value,
-        avatar:'https://picsum.photos/200',
-        style:['可爱','御姐']
+// 初始化 IndexedDB
+let db;
+const request = indexedDB.open('AdminDB', 1);
+
+request.onupgradeneeded = function(event) {
+    db = event.target.result;
+    if (!db.objectStoreNames.contains('files')) {
+        db.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
     }
-    let f=document.getElementById('sizeImg').files[0]
-    if(f){let r=new FileReader();r.onload=e=>{user.sizeImg=e.target.result;localStorage.user=JSON.stringify(user);alert('保存')};r.readAsDataURL(f)}
-    else{localStorage.user=JSON.stringify(user);alert('保存')}
-}
+};
 
-function publish(){
-    let t=document.getElementById('postTxt').value
-    let f=document.getElementById('postFile').files[0]
-    if(!t&&!f)return
-    let p={txt:t,type:'',url:'',time:Date.now()}
-    if(f){let r=new FileReader();r.onload=e=>{p.type=f.type.startsWith('image')?'img':'vid';p.url=e.target.result;let a=JSON.parse(localStorage.posts||'[]');a.unshift(p);localStorage.posts=JSON.stringify(a);alert('发布')};r.readAsDataURL(f)}
-    else{let a=JSON.parse(localStorage.posts||'[]');a.unshift(p);localStorage.posts=JSON.stringify(a);alert('发布')}
-    show()
-}
+request.onsuccess = function(event) {
+    db = event.target.result;
+    loadProfile(); // 页面加载时先回填资料
+    show();         // 再显示动态列表
+};
 
-function addPrivate(){
-    let f=document.getElementById('privateFile').files[0]
-    let h=document.getElementById('hour').value
-    if(!f)return
-    let r=new FileReader()
-    r.onload=e=>{
-        let p={type:f.type.startsWith('image')?'img':'vid',url:e.target.result,exp:Date.now()+ +h}
-        let a=JSON.parse(localStorage.private||'[]');a.unshift(p);localStorage.private=JSON.stringify(a);alert('发布')
-        show()
+request.onerror = function(event) {
+    console.error('IndexedDB 打开失败:', event.target.errorCode);
+};
+
+// 页面加载时自动回填用户资料
+function loadProfile() {
+    const userStr = localStorage.user;
+    if (!userStr) return;
+
+    try {
+        const user = JSON.parse(userStr);
+        document.getElementById('name').value = user.name || '';
+        document.getElementById('height').value = user.height || '';
+        document.getElementById('weight').value = user.weight || '';
+        document.getElementById('size').value = user.size || '';
+
+        // 如果有尺寸图ID，尝试加载预览
+        if (user.sizeImg) {
+            getFileFromDB(user.sizeImg).then(url => {
+                document.getElementById('sizeImgPreview').innerHTML =
+                    `<img src="${url}" style="max-width:200px;max-height:200px;">`;
+            }).catch(e => {
+                console.error('加载尺寸图失败:', e);
+                document.getElementById('sizeImgPreview').innerHTML = '<p>尺寸图加载失败</p>';
+            });
+        }
+    } catch (e) {
+        console.error('解析用户资料失败:', e);
     }
-    r.readAsDataURL(f)
 }
 
-function show(){
-    let posts=JSON.parse(localStorage.posts||'[]')
-    let h=''
-    posts.forEach((o,i)=>{
-        h+=`<div class="card">${o.txt||''}${o.type=='img'?'<img src="'+o.url+'">':o.type=='vid'?'<video src="'+o.url+'" controls>':''}<br><button class="btn del" onclick="del(${i})">删除</button></div>`
-    })
-    document.getElementById('list').innerHTML=h
+// 保存资料
+async function saveProfile() {
+    let user = {
+        name: document.getElementById('name').value,
+        height: document.getElementById('height').value,
+        weight: document.getElementById('weight').value,
+        size: document.getElementById('size').value,
+        avatar: 'https://picsum.photos/200',
+        style: ['可爱', '御姐'],
+        sizeImg: null
+    };
+
+    let f = document.getElementById('sizeImg').files[0];
+    if (f) {
+        try {
+            const fileId = await saveFileToDB(f);
+            user.sizeImg = fileId;
+        } catch (e) {
+            alert('保存图片失败: ' + e.message);
+            return;
+        }
+    } else {
+        // 如果没有选择新图片，保留原有的sizeImg
+        const oldUser = JSON.parse(localStorage.user || '{}');
+        user.sizeImg = oldUser.sizeImg || null;
+    }
+
+    localStorage.user = JSON.stringify(user);
+    alert('保存成功');
+    loadProfile(); // 保存后重新加载资料显示
 }
 
-function del(i){
-    let a=JSON.parse(localStorage.posts||'[]');a.splice(i,1);localStorage.posts=JSON.stringify(a);show()}
-function view(i){document.getElementById('viewImg').src=i.src;document.getElementById('imgViewer').style.display='grid'}
-function closeViewer(){document.getElementById('imgViewer').style.display='none'}
-show()
+// 发布动态
+async function publish() {
+    let t = document.getElementById('postTxt').value;
+    let f = document.getElementById('postFile').files[0];
+
+    if (!t && !f) {
+        alert('请输入内容或选择文件');
+        return;
+    }
+
+    let p = { txt: t, type: '', fileId: null, time: Date.now() };
+
+    if (f) {
+        try {
+            const fileId = await saveFileToDB(f);
+            p.type = f.type.startsWith('image') ? 'img' : 'vid';
+            p.fileId = fileId;
+        } catch (e) {
+            alert('上传文件失败: ' + e.message);
+            return;
+        }
+    }
+
+    let a = JSON.parse(localStorage.posts || '[]');
+    a.unshift(p);
+    localStorage.posts = JSON.stringify(a);
+    alert('发布成功');
+    show();
+}
+
+// 发布私房
+async function addPrivate() {
+    let f = document.getElementById('privateFile').files[0];
+    let h = document.getElementById('hour').value;
+
+    if (!f) {
+        alert('请选择文件');
+        return;
+    }
+
+    try {
+        const fileId = await saveFileToDB(f);
+        let p = {
+            type: f.type.startsWith('image') ? 'img' : 'vid',
+            fileId: fileId,
+            exp: Date.now() + parseInt(h)
+        };
+        let a = JSON.parse(localStorage.private || '[]');
+        a.unshift(p);
+        localStorage.private = JSON.stringify(a);
+        alert('发布成功');
+        show();
+    } catch (e) {
+        alert('上传文件失败: ' + e.message);
+    }
+}
+
+// 保存文件到 IndexedDB
+function saveFileToDB(file) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['files'], 'readwrite');
+        const store = transaction.objectStore('files');
+        const request = store.add({ file: file });
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+// 从 IndexedDB 读取文件
+function getFileFromDB(id) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['files'], 'readonly');
+        const store = transaction.objectStore('files');
+        const request = store.get(id);
+
+        request.onsuccess = () => {
+            if (request.result) {
+                const url = URL.createObjectURL(request.result.file);
+                resolve(url);
+            } else {
+                reject('文件不存在');
+            }
+        };
+        request.onerror = () => reject(request.error);
+    });
+}
+
+// 显示动态列表
+async function show() {
+    let posts = JSON.parse(localStorage.posts || '[]');
+    let h = '';
+
+    for (const o of posts) {
+        let mediaHtml = '';
+        if (o.fileId) {
+            try {
+                const url = await getFileFromDB(o.fileId);
+                mediaHtml = o.type === 'img'
+                    ? `<img src="${url}" onclick="view(this)">`
+                    : `<video src="${url}" controls></video>`;
+            } catch (e) {
+                mediaHtml = `<p>文件加载失败: ${e}</p>`;
+            }
+        }
+        h += `<div class="card">${o.txt || ''}${mediaHtml}<br><button class="btn del" onclick="del(${posts.indexOf(o)})">删除</button></div>`;
+    }
+
+    document.getElementById('list').innerHTML = h;
+}
+
+// 删除动态
+function del(i) {
+    let a = JSON.parse(localStorage.posts || '[]');
+    a.splice(i, 1);
+    localStorage.posts = JSON.stringify(a);
+    show();
+}
+
+// 查看大图
+function view(img) {
+    document.getElementById('viewImg').src = img.src;
+    document.getElementById('imgViewer').style.display = 'grid';
+}
+
+// 关闭查看器
+function closeViewer() {
+    document.getElementById('imgViewer').style.display = 'none';
+}
 </script>
 </body>
 </html>

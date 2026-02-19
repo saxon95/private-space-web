@@ -1,4 +1,4 @@
-msgs<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -690,7 +690,7 @@ function sendMsg() {
     let name = msgName.value || '匿名';
     let content = msgContent.value;
     if (!content) return alert('请输入内容');
-.unshift({ id: Date.now(), name, content });
+    msgs.unshift({ id: Date.now(), name, content });
     localStorage.setItem('msgs', JSON.stringify(msgs));
     refreshMsg();
     closeModal('msgModal');

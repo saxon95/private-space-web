@@ -275,16 +275,6 @@
             margin-bottom: 4px;
         }
 
-        .qrcard {
-            text-align: center;
-            margin-top: 20px;
-        }
-        #qrcode {
-            width: 120px;
-            border-radius: 12px;
-            margin: 10px auto;
-        }
-
         /* 图片预览弹窗 */
         #imgViewer {
             position: fixed;
@@ -414,17 +404,11 @@
         </div>
 
         <div id="postList" style="margin-top:14px"></div>
-
-        <div class="card qrcard">
-            <h3 style="color:var(--main)">📱 扫码快速进入</h3>
-            <img id="qrcode">
-            <p style="font-size:12px;color:var(--sub)">扫一扫打开小空间</p>
-        </div>
     </div>
 
     <div id="profilePage" class="page">
         <div class="card profile-header">
-            <img class="avatar" id="avatarShow" onclick="openModal('editProfileModal')">
+            <img class="avatar" id="avatarShow">
             <div class="name" id="nameShow"></div>
             <div class="style-tags" id="styleTagsBelowAvatar"></div>
         </div>
@@ -485,9 +469,7 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <script>
-// 5个可爱卡通头像（已按你要求更换）
 const avatars = [
   "https://picsum.photos/id/50/200/200",
   "https://picsum.photos/id/51/200/200",
@@ -495,6 +477,8 @@ const avatars = [
   "https://picsum.photos/id/53/200/200",
   "https://picsum.photos/id/54/200/200"
 ];
+
+const IS_OWNER = true;
 
 let user = JSON.parse(localStorage.getItem('user')) || {
     name: '小可爱',
@@ -537,7 +521,6 @@ window.onload = () => {
         views++;
         localStorage.setItem('views', views);
         refreshAll();
-        genQrcode();
     }
 }
 
@@ -550,7 +533,6 @@ function verifyAge() {
     views++;
     localStorage.setItem('views', views);
     refreshAll();
-    genQrcode();
 }
 
 function go(id) {
@@ -561,6 +543,10 @@ function go(id) {
 }
 
 function openModal(m) {
+    if (!IS_OWNER) {
+        alert("只有主人可以操作");
+        return;
+    }
     if (m === 'editProfileModal') renderAvatarOptions();
     document.getElementById(m).classList.remove('hide');
 }
@@ -584,6 +570,7 @@ function renderAvatarOptions() {
 }
 
 function publishPost() {
+    if (!IS_OWNER) return alert("只有主人可以发布");
     let txt = postText.value;
     let file = postMedia.files[0];
     if (!txt && !file) return alert('请输入内容');
@@ -605,20 +592,22 @@ function refreshPosts() {
             <div>${p.txt}</div>
             ${p.type === 'img' ? `<img src="${p.url}" style="width:100%;border-radius:12px;margin-top:8px;cursor:pointer" onclick="previewImg(this)">` : ''}
             ${p.type === 'vid' ? `<video src="${p.url}" controls style="width:100%;margin-top:8px"></video>` : ''}
-            <div style="text-align:right;margin-top:8px">
+            ${IS_OWNER ? `<div style="text-align:right;margin-top:8px">
                 <button onclick="delPost(${p.id})" style="color:var(--main);border:none;background:none;font-size:12px">删除</button>
-            </div>
+            </div>` : ''}
         `;
         postList.appendChild(d);
     })
 }
 function delPost(id) {
+    if (!IS_OWNER) return;
     posts = posts.filter(x => x.id !== id);
     localStorage.setItem('posts', JSON.stringify(posts));
     refreshPosts();
 }
 
 function saveProfile() {
+    if (!IS_OWNER) return alert("只有主人可以编辑");
     user.name = editName.value || user.name;
     user.height = editHeight.value;
     user.weight = editWeight.value;
@@ -663,6 +652,7 @@ function refreshProfile() {
 }
 
 function addPrivate() {
+    if (!IS_OWNER) return alert("只有主人可以发布");
     let f = privateFile.files[0];
     if (!f) return alert('请选择图片/视频');
     let t = privateHour.value;
@@ -692,12 +682,13 @@ function refreshPrivate() {
             ${p.type === 'img' ? `<img src="${p.url}" style="width:100%;border-radius:12px;cursor:pointer" onclick="previewImg(this)">` : ''}
             ${p.type === 'vid' ? `<video src="${p.url}" controls style="width:100%"></video>` : ''}
             <div class="countdown">剩余 ${h}时${m}分</div>
-            <button class="btn btn-danger" onclick="delPrivate(${p.id})">删除</button>
+            ${IS_OWNER ? `<button class="btn btn-danger" onclick="delPrivate(${p.id})">删除</button>` : ''}
         `;
         privateList.appendChild(d);
     })
 }
 function delPrivate(id) {
+    if (!IS_OWNER) return;
     privateList = privateList.filter(p => p.id !== id);
     localStorage.setItem('private', JSON.stringify(privateList));
     refreshPrivate();
@@ -722,14 +713,15 @@ function refreshMsg() {
         item.innerHTML = `
             <div class="item-name">${m.name}</div>
             <div>${m.content}</div>
-            <div style="text-align:right;margin-top:4px">
+            ${IS_OWNER ? `<div style="text-align:right;margin-top:4px">
                 <button onclick="delMsg(${m.id})" style="font-size:10px;color:var(--sub);border:none;background:none">删除</button>
-            </div>
+            </div>` : ''}
         `;
         msgList.appendChild(item);
     })
 }
 function delMsg(id) {
+    if (!IS_OWNER) return;
     msgs = msgs.filter(m => m.id !== id);
     localStorage.setItem('msgs', JSON.stringify(msgs));
     refreshMsg();
@@ -754,14 +746,15 @@ function refreshChat() {
         item.innerHTML = `
             <div class="item-name">${c.name}</div>
             <div>${c.content}</div>
-            <div style="text-align:right;margin-top:4px">
+            ${IS_OWNER ? `<div style="text-align:right;margin-top:4px">
                 <button onclick="delChat(${c.id})" style="font-size:10px;color:var(--sub);border:none;background:none">删除</button>
-            </div>
+            </div>` : ''}
         `;
         chatList.appendChild(item);
     })
 }
 function delChat(id) {
+    if (!IS_OWNER) return;
     chats = chats.filter(c => c.id !== id);
     localStorage.setItem('chats', JSON.stringify(chats));
     refreshChat();
@@ -769,15 +762,6 @@ function delChat(id) {
 
 function refreshView() {
     document.getElementById('viewCount').innerText = `👀 浏览量：${views}（仅自己可见）`;
-}
-
-function genQrcode() {
-    try {
-        QRCode.toCanvas(document.getElementById('qrcode'), window.location.href, {
-            width: 120, margin:1,
-            color:{ dark:'#ff70a6', light:'#fff' }
-        });
-    } catch(e){}
 }
 
 function refreshAll() {

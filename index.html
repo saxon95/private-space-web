@@ -2,13 +2,34 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>私密世界 · 仅限成人</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<title>Private Moments</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-user-select:none;user-select:none}
-body{background:#f8f5ff;padding-bottom:60px}
-img{pointer-events:none;-webkit-user-drag:none}
-
+:root {
+  --bg-white: #fff;
+  --bg-pink: #fddae9;
+  --bg-black: #1a1a1a;
+  --text-white: #fff;
+  --text-black: #333;
+  --accent: #ff69b4;
+  --shadow: 0 2px 18px rgba(0,0,0,0.1);
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+body {
+  background-color: var(--bg-white);
+  color: var(--text-black);
+  transition: all 0.3s ease;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 /* 2026新年横幅 · 元宵节后自动隐藏 */
 .newYearBanner{
   background:linear-gradient(90deg,#9f7aea,#d49fff);
@@ -18,7 +39,6 @@ img{pointer-events:none;-webkit-user-drag:none}
 .newYearBanner span{
   font-weight:bold;
 }
-
 #ageModal{
   position:fixed;top:0;left:0;width:100%;height:100%;
   background:rgba(0,0,0,0.7);z-index:99999;
@@ -39,7 +59,6 @@ img{pointer-events:none;-webkit-user-drag:none}
   background:#9f7aea;color:#fff;width:100%;margin-bottom:8px;
 }
 .ageBtn.no{background:#f2f2f2;color:#666}
-
 #accessModal{
   position:fixed;top:0;left:0;width:100%;height:100%;
   background:rgba(0,0,0,0.6);z-index:9999;
@@ -59,17 +78,14 @@ img{pointer-events:none;-webkit-user-drag:none}
   padding:12px;border-radius:12px;border:none;
   background:#9f7aea;color:#fff;width:100%;margin-bottom:8px;
 }
-
 #loading{position:fixed;inset:0;background:#fff;display:grid;place-items:center;z-index:9999}
 .loader{width:45px;height:45px;border:4px solid #f0f0f0;border-top:4px solid #9f7aea;border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
 .warning{
   background:#f3eeff;color:#9f7aea;text-align:center;
   padding:10px 14px;font-size:12px;border-radius:12px;
   margin:10px 20px;
 }
-
 #register{
   background:#fff;margin:20px;border-radius:20px;padding:25px;display:none;
 }
@@ -80,17 +96,14 @@ img{pointer-events:none;-webkit-user-drag:none}
 #register button{
   width:100%;margin-top:10px;padding:12px;background:#9f7aea;color:#fff;border:none;border-radius:12px;
 }
-
 .profile{
   background:#fff;margin:0 20px 15px;border-radius:20px;padding:30px 20px;text-align:center;
 }
-.avatar{width:90px;height:90px;border-radius:50%;border:3px solid #e2d9ff;margin:0 auto 12px}
+.avatar{width:90px;height:90px;border-radius:50%;border:3px solid #e2d9ff;margin:0 auto 12px;object-fit:cover;}
 .name{font-size:22px;font-weight:600;color:#333;margin-bottom:6px}
 .bio{color:#999;margin-bottom:16px}
-
 .btns{display:flex;justify-content:center;gap:10px;margin:20px 0}
 .btn{padding:10px 16px;border-radius:12px;border:none;background:#9f7aea;color:#fff}
-
 .album{background:#fff;margin:20px;border-radius:20px;padding:20px;display:none}
 .album h3{color:#9f7aea;margin-bottom:14px}
 .album-warning{
@@ -100,10 +113,9 @@ img{pointer-events:none;-webkit-user-drag:none}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .grid img{
   width:100%;aspect-ratio:1;border-radius:12px;
-  filter:blur(18px);transition:all 0.3s;
+  filter:blur(18px);transition:all 0.3s;object-fit:cover;
 }
 .grid img.show{filter:blur(0)}
-
 .chat-room{
   background:#fff;margin:20px;border-radius:20px;padding:20px;
 }
@@ -121,21 +133,18 @@ img{pointer-events:none;-webkit-user-drag:none}
 .chatBtn{
   width:100%;padding:12px;background:#9f7aea;color:#fff;border:none;border-radius:12px;
 }
-
 .qrcode{
   background:#fff;margin:20px;padding:20px;border-radius:20px;text-align:center;
 }
-.qrcode img{width:160px;margin:10px auto;border-radius:12px}
+.qrcode img{width:160px;margin:10px auto;border-radius:12px;object-fit:cover;}
 </style>
 </head>
 <body>
-
 <!-- 新年横幅会自动判断时间，元宵节后自动消失 -->
 <div id="newYearBanner" class="newYearBanner" style="display:none;">
 🎉 <span>2026马年大吉 · 万事顺意</span> 🎉
 <br>祝您和家人新春快乐，平安喜乐
 </div>
-
 <div id="ageModal">
   <div class="ageBox">
     <h3>⚠️ 年龄认证</h3>
@@ -145,7 +154,6 @@ img{pointer-events:none;-webkit-user-drag:none}
     <button class="ageBtn no" onclick="closePage()">我未满18周岁</button>
   </div>
 </div>
-
 <div id="accessModal">
   <div class="accessBox">
     <h3>🔒 访问受限</h3>
@@ -155,13 +163,10 @@ img{pointer-events:none;-webkit-user-drag:none}
     <button class="accessBtn" style="background:#f2f2f2;color:#333" onclick="sendApply()">申请访问权限</button>
   </div>
 </div>
-
 <div id="loading"><div class="loader"></div></div>
-
 <div class="warning">
   ⚠️ 未满18岁禁止访问 · 内容仅对受邀用户开放
 </div>
-
 <div id="register">
   <h3>🌸 进入私密世界</h3>
   <input type="text" id="name" placeholder="昵称">
@@ -177,7 +182,6 @@ img{pointer-events:none;-webkit-user-drag:none}
   <input type="text" id="style" placeholder="风格展示">
   <button onclick="userRegister()">完成注册</button>
 </div>
-
 <div id="content" style="display:none">
   <div class="profile">
     < img class="avatar" src="https://picsum.photos/200/200">
@@ -188,14 +192,12 @@ img{pointer-events:none;-webkit-user-drag:none}
       <button class="btn" onclick="unlockContent()">管理员解锁清晰图</button>
     </div>
   </div>
-
   <div class="qrcode" id="qrcodeBox" style="display:none">
     <h4>分享访问</h4>
     < img src="https://picsum.photos/300/300">
     <p>扫码或用分享密钥访问</p >
-    <p style="margin-top:8px;font-weight:bold">分享密钥：private2025</p >
+    <p style="margin-top:8px;font-weight:bold">分享密钥：Saxon95</p >
   </div>
-
   <div class="album" id="album">
     <div class="album-warning">
       ⚠️ 私密内容 · 未满18周岁禁止查看
@@ -210,7 +212,6 @@ img{pointer-events:none;-webkit-user-drag:none}
       < img src="https://picsum.photos/300/300?6">
     </div>
   </div>
-
   <div class="chat-room">
     <h3>💬 私密聊天</h3>
     <div id="chatMessages"></div>
@@ -218,18 +219,15 @@ img{pointer-events:none;-webkit-user-drag:none}
     <button class="chatBtn" onclick="sendChat()">发送</button>
   </div>
 </div>
-
 <script>
-const SHARE_KEY = "private2025";
+const SHARE_KEY = "Saxon95";
 const ADMIN_PASS = "admin888";
-
 // 屏蔽辱骂、人身攻击、诈骗相关（安全合规）
 const filterList = [
   "骂人","脏话","侮辱","攻击","滚蛋","有病","白痴","傻瓜","废物",
   "骗子","诈骗","借钱","转账","汇款","红包","付费","收费","充值",
   "贷款","套现","刷单","担保","押金","返现","银行卡"
 ];
-
 function filterText(text){
   let res = text;
   filterList.forEach(w => {
@@ -238,7 +236,6 @@ function filterText(text){
   });
   return res;
 }
-
 // ========== 2026新年横幅 · 元宵节（2026-03-03）后自动消失 ==========
 function showNewYearBanner(){
   const today = new Date();
@@ -250,7 +247,6 @@ function showNewYearBanner(){
     banner.style.display = 'none';
   }
 }
-
 // 年龄验证
 function checkRealAge(){
   var birth = document.getElementById("birthYear").value;
@@ -262,11 +258,9 @@ function checkRealAge(){
     alert("未满18周岁，禁止访问");
   }
 }
-
 function closePage(){
   document.body.innerHTML="<h1 style='text-align:center;margin-top:50px'>请未成年人离开</h1>";
 }
-
 // 访问权限
 function useShareKey(){
   const key=document.getElementById("shareKey").value.trim();
@@ -277,11 +271,9 @@ function useShareKey(){
     alert("分享密钥不正确");
   }
 }
-
 function sendApply(){
   alert("已提交访问申请，请等待主人同意");
 }
-
 // 注册
 function userRegister(){
   const name=document.getElementById("name").value.trim();
@@ -295,7 +287,6 @@ function userRegister(){
   document.getElementById("album").style.display="block";
   alert("注册成功，欢迎进入私密世界");
 }
-
 // 解锁相册
 function unlockContent(){
   const p=prompt("请输入管理员密码：");
@@ -304,11 +295,9 @@ function unlockContent(){
     alert("已解锁全部清晰内容");
   }
 }
-
 function showShare(){
   document.getElementById("qrcodeBox").style.display="block";
 }
-
 // 聊天发送
 function sendChat(){
   const input=document.getElementById("chatInput");
@@ -324,7 +313,6 @@ function sendChat(){
   box.scrollTop=box.scrollHeight;
   input.value="";
 }
-
 // 页面加载
 window.onload=function(){
   showNewYearBanner(); // 新年横幅自动显示/隐藏
@@ -337,7 +325,6 @@ window.onload=function(){
     }
   },500);
 }
-
 // 防右键、防截图
 document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('keydown',e=>{

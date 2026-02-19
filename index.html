@@ -1,123 +1,54 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>我的小空间</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:PingFang SC,Helvetica Neue,sans-serif}
-:root{--bg:#fdf6fb;--card:#fff;--text:#444;--sub:#999;--main:#ff8fb7;--tag:#ffe0f0;--tagtext:#ff5a95}
-body{background:var(--bg);color:var(--text);padding:20px 15px 60px}
-.card{background:var(--card);border-radius:16px;padding:18px;margin-bottom:14px}
-.profile{text-align:center}
-.avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;margin-bottom:10px}
-.name{font-size:20px;font-weight:700;margin-bottom:8px}
-.tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
-.tag{background:var(--tag);color:var(--tagtext);padding:4px 9px;border-radius:12px;font-size:12px}
-.info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0}
-.info-label{color:var(--sub)}
-.title{font-size:16px;font-weight:700;margin-bottom:12px;color:var(--main)}
-.post img,.post video{width:100%;border-radius:12px;margin-top:8px}
-.post{margin-bottom:12px}
-.like-bar{margin-top:10px;font-size:14px;color:var(--main);cursor:pointer}
-.countdown{font-size:12px;color:var(--main);margin-top:6px}
-</style>
+    <meta charset="UTF-8">
+    <title>我的小空间</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:PingFang SC,sans-serif}
+        body{background:#fdf6fb;padding:20px}
+        .card{background:#fff;border-radius:16px;padding:18px;margin-bottom:14px}
+        .profile{text-align:center}
+        .avatar{width:90px;height:90px;border-radius:50%;object-fit:cover}
+        .tag{background:#ffe0f0;color:#ff5a95;padding:4px 8px;border-radius:12px;font-size:12px}
+        .info-row{display:flex;justify-content:space-between;padding:10px 0}
+        .post img,.post video{width:100%;border-radius:12px;margin-top:8px}
+    </style>
 </head>
 <body>
 
 <div class="card profile">
-< img class="avatar" id="avatar">
-<div class="name" id="name"></div>
-<div class="tags" id="tags"></div>
+    < img class="avatar" id="avatar">
+    <h2 id="name"></h2>
 </div>
 
 <div class="card">
-<div class="info-row">
-<span class="info-label">身高</span>
-<span id="height">--</span>
-</div>
-<div class="info-row">
-<span class="info-label">体重</span>
-<span id="weight">--</span>
-</div>
-<div class="info-row">
-<span class="info-label">尺寸</span>
-<span id="size">--</span>
-</div>
-< img id="sizeImg" style="width:100%;border-radius:12px;margin-top:12px;display:none">
+    <div class="info-row"><span>身高</span><span id="height"></span></div>
+    <div class="info-row"><span>体重</span><span id="weight"></span></div>
+    <div class="info-row"><span>尺寸</span><span id="size"></span></div>
+    < img id="sizeImg" style="width:100%;margin-top:10px;display:block">
 </div>
 
 <div class="card">
-<div class="title">📝 动态</div>
-<div id="posts"></div>
-</div>
-
-<div class="card">
-<div class="title">🔒 限时私房</div>
-<div id="privates"></div>
+    <h3>📝 动态</h3>
+    <div id="posts"></div>
 </div>
 
 <script>
-let user = JSON.parse(localStorage.getItem('user')) || {}
-let posts = JSON.parse(localStorage.getItem('posts')) || []
-let privates = JSON.parse(localStorage.getItem('private')) || []
+let user = JSON.parse(localStorage.user || '{}')
+let posts = JSON.parse(localStorage.posts || '[]')
 
 document.getElementById('avatar').src = user.avatar || ''
-document.getElementById('name').innerText = user.name || '小可爱'
-document.getElementById('height').innerText = user.height || '--'
-document.getElementById('weight').innerText = user.weight || '--'
-document.getElementById('size').innerText = user.size || '--'
+document.getElementById('name').innerText = user.name || ''
+document.getElementById('height').innerText = user.height || ''
+document.getElementById('weight').innerText = user.weight || ''
+document.getElementById('size').innerText = user.size || ''
+if(user.sizeImg) document.getElementById('sizeImg').src = user.sizeImg
 
-if (user.sizeImg) {
-let img = document.getElementById('sizeImg')
-img.src = user.sizeImg
-img.style.display = 'block'
-}
-
-let tagHtml = ''
-;(user.style || []).forEach(t => {
-tagHtml += `<span class="tag">${t}</span>`
-})
-document.getElementById('tags').innerHTML = tagHtml
-
-function toggleLike(i){
-posts[i].like = !posts[i].like
-localStorage.setItem('posts', JSON.stringify(posts))
-renderPosts()
-}
-
-function renderPosts(){
 let html = ''
-posts.forEach((p,i)=>{
-html += `
-<div class="post card">
-${p.txt || ''}
-${p.type === 'img' ? `< img src="${p.url}">` : ''}
-${p.type === 'vid' ? `<video src="${p.url}" controls></video>` : ''}
-<div class="like-bar" onclick="toggleLike(${i})">
-${p.like ? '❤️ 已点赞' : '🤍 点赞'}
-</div>
-</div>`
+posts.forEach(p=>{
+  html+=`<div class="post">${p.txt||''}${p.type=='img'?`< img src="${p.url}">`:''}${p.type=='vid'?`<video src="${p.url}" controls></video>`:''}</div>`
 })
 document.getElementById('posts').innerHTML = html
-}
-renderPosts()
-
-privates = privates.filter(p => p.exp > Date.now())
-let privateHtml = ''
-privates.forEach(p => {
-let left = p.exp - Date.now()
-let h = Math.floor(left / 3600000)
-let m = Math.floor((left % 3600000) / 60000)
-privateHtml += `
-<div class="private card">
-${p.type === 'img' ? `< img src="${p.url}">` : ''}
-${p.type === 'vid' ? `<video src="${p.url}" controls></video>` : ''}
-<div class="countdown">剩余 ${h}时${m}分</div>
-</div>
-`
-})
-document.getElementById('privates').innerHTML = privateHtml
 </script>
 </body>
 </html>

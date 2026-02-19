@@ -13,7 +13,6 @@
             transition: background 0.3s, color 0.2s;
         }
 
-        /* 主题：默认清新粉白 */
         :root {
             --bg: #fdf6fb;
             --card: #ffffff;
@@ -49,7 +48,6 @@
         }
         .hide { display: none !important; }
 
-        /* 顶部主题切换 */
         .top-bar {
             display: flex;
             gap: 8px;
@@ -69,7 +67,6 @@
             color: #fff;
         }
 
-        /* 小木鱼 */
         .wooden-fish {
             text-align: center;
             margin: 10px 0;
@@ -89,7 +86,6 @@
             margin-top: 4px;
         }
 
-        /* 加载 */
         #loading {
             position: fixed;
             inset: 0;
@@ -108,7 +104,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* 模态框 */
         .modal {
             position: fixed;
             inset: 0;
@@ -160,7 +155,6 @@
             margin-top: 8px;
         }
 
-        /* 头像选择（5个） */
         .avatar-grid {
             display: flex;
             gap: 8px;
@@ -180,7 +174,6 @@
             border-color: var(--main);
         }
 
-        /* 底部导航 */
         .tab-bar {
             position: fixed;
             bottom: 0;
@@ -204,7 +197,6 @@
             margin-bottom: 4px;
         }
 
-        /* 页面 */
         .page { padding: 16px; display: none; }
         .page.active { display: block; }
 
@@ -215,7 +207,6 @@
             margin-bottom: 14px;
         }
 
-        /* Show 头像缩小 */
         .profile-header { text-align: center; padding: 20px 0; }
         .avatar {
             width: 80px;
@@ -226,7 +217,6 @@
         }
         .name { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
 
-        /* 风格标签 */
         .style-tags {
             display: flex;
             flex-wrap: wrap;
@@ -248,15 +238,15 @@
             border-bottom: 1px solid var(--tag);
         }
         .info-label { color: var(--sub); font-size: 14px; }
+
         .size-img {
             width: 100%;
-            height: 120px;
-            object-fit: cover;
+            max-height: none;
             border-radius: 12px;
-            margin-top: 8px;
+            margin-top: 10px;
+            cursor: pointer;
         }
 
-        /* 私密空间 */
         .private-space h3 {
             margin-bottom: 12px;
             color: var(--main);
@@ -268,7 +258,6 @@
             margin: 6px 0;
         }
 
-        /* 留言 / 私信 */
         .board h3 {
             margin-bottom: 12px;
             color: var(--main);
@@ -285,20 +274,47 @@
             color: var(--main);
             margin-bottom: 4px;
         }
+
+        .qrcard {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #qrcode {
+            width: 120px;
+            border-radius: 12px;
+            margin: 10px auto;
+        }
+
+        /* 图片预览弹窗 */
+        #imgViewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 9999;
+            display: none;
+            place-items: center;
+            padding: 20px;
+        }
+        #viewerImg {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 12px;
+        }
     </style>
 </head>
 <body>
 
 <div id="loading"><div class="loader"></div></div>
 
-<!-- 顶部主题 -->
 <div class="top-bar">
     <button class="theme-btn active" onclick="setTheme('')">清新</button>
     <button class="theme-btn" onclick="setTheme('theme-pink')">粉色</button>
     <button class="theme-btn" onclick="setTheme('theme-dark')">夜间</button>
 </div>
 
-<!-- 年龄验证 -->
 <div id="ageModal" class="modal">
     <div class="modal-content">
         <h2>年龄验证</h2>
@@ -309,7 +325,6 @@
     </div>
 </div>
 
-<!-- 发布动态 -->
 <div id="postModal" class="modal hide">
     <div class="modal-content">
         <h2>发布动态</h2>
@@ -320,7 +335,6 @@
     </div>
 </div>
 
-<!-- 编辑资料（5头像） -->
 <div id="editProfileModal" class="modal hide">
     <div class="modal-content">
         <h2>编辑资料</h2>
@@ -352,7 +366,6 @@
     </div>
 </div>
 
-<!-- 私密发布 -->
 <div id="privateModal" class="modal hide">
     <div class="modal-content">
         <h2>私密发布</h2>
@@ -366,7 +379,6 @@
     </div>
 </div>
 
-<!-- 留言 -->
 <div id="msgModal" class="modal hide">
     <div class="modal-content">
         <h2>写留言</h2>
@@ -377,7 +389,6 @@
     </div>
 </div>
 
-<!-- 私信 -->
 <div id="chatModal" class="modal hide">
     <div class="modal-content">
         <h2>发私信</h2>
@@ -388,9 +399,12 @@
     </div>
 </div>
 
-<!-- 主界面 -->
+<!-- 图片预览 -->
+<div id="imgViewer" onclick="closeViewer()">
+    <img id="viewerImg">
+</div>
+
 <div id="app" class="hide">
-    <!-- 首页 + 小木鱼 -->
     <div id="home" class="page active">
         <button class="btn" onclick="openModal('postModal')">+ 发布动态</button>
 
@@ -400,9 +414,14 @@
         </div>
 
         <div id="postList" style="margin-top:14px"></div>
+
+        <div class="card qrcard">
+            <h3 style="color:var(--main)">📱 扫码快速进入</h3>
+            <img id="qrcode">
+            <p style="font-size:12px;color:var(--sub)">扫一扫打开小空间</p>
+        </div>
     </div>
 
-    <!-- Show -->
     <div id="profilePage" class="page">
         <div class="card profile-header">
             <img class="avatar" id="avatarShow" onclick="openModal('editProfileModal')">
@@ -427,7 +446,7 @@
                 <span class="info-label">尺寸说明</span>
                 <span>Cm / A-E</span>
             </div>
-            <img id="sizeImgShow" class="size-img hide">
+            <img id="sizeImgShow" class="size-img hide" onclick="previewImg(this)">
         </div>
 
         <div class="card private-space">
@@ -439,7 +458,6 @@
         <button class="btn" onclick="openModal('editProfileModal')">编辑资料</button>
     </div>
 
-    <!-- 关于我 + 留言 + 私信 -->
     <div id="aboutPage" class="page">
         <div class="card">
             <h3 style="color:var(--main);margin-bottom:12px">🌸 关于我</h3>
@@ -460,7 +478,6 @@
         </div>
     </div>
 
-    <!-- 底部 -->
     <div class="tab-bar">
         <div class="tab-item active" onclick="go('home')"><i>🏠</i><span>首页</span></div>
         <div class="tab-item" onclick="go('profilePage')"><i>✨</i><span>Show</span></div>
@@ -468,17 +485,17 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <script>
-// 5个可爱卡通头像
+// 5个可爱卡通头像（已按你要求更换）
 const avatars = [
-    "https://picsum.photos/id/1025/200/200",
-    "https://picsum.photos/id/169/200/200",
-    "https://picsum.photos/id/237/200/200",
-    "https://picsum.photos/id/1062/200/200",
-    "https://picsum.photos/id/1074/200/200"
+  "https://picsum.photos/id/50/200/200",
+  "https://picsum.photos/id/51/200/200",
+  "https://picsum.photos/id/52/200/200",
+  "https://picsum.photos/id/53/200/200",
+  "https://picsum.photos/id/54/200/200"
 ];
 
-// 数据
 let user = JSON.parse(localStorage.getItem('user')) || {
     name: '小可爱',
     height: '', weight: '', size: '',
@@ -492,21 +509,26 @@ let views = +localStorage.getItem('views') || 0
 let love = +localStorage.getItem('love') || 0
 let selectedAvatar = user.avatar;
 
-// 主题
 function setTheme(cls) {
     document.body.className = cls;
     document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
     event?.target.classList.add('active');
 }
 
-// 小木鱼 功德+1 好感+1
 function addGood() {
     love++;
     localStorage.setItem('love', love);
     document.getElementById('loveNum').innerText = love;
 }
 
-// 加载
+function previewImg(img) {
+    document.getElementById('viewerImg').src = img.src;
+    document.getElementById('imgViewer').style.display = 'grid';
+}
+function closeViewer() {
+    document.getElementById('imgViewer').style.display = 'none';
+}
+
 window.onload = () => {
     setTimeout(()=>loading.classList.add('hide'), 500);
     if(localStorage.getItem('age')) {
@@ -515,10 +537,10 @@ window.onload = () => {
         views++;
         localStorage.setItem('views', views);
         refreshAll();
+        genQrcode();
     }
 }
 
-// 年龄
 function verifyAge() {
     let y = +birthYear.value;
     if (!y || new Date().getFullYear() - y < 18) return alert('未满18岁禁止访问');
@@ -528,9 +550,9 @@ function verifyAge() {
     views++;
     localStorage.setItem('views', views);
     refreshAll();
+    genQrcode();
 }
 
-// 页面
 function go(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
@@ -544,7 +566,6 @@ function openModal(m) {
 }
 function closeModal(m) { document.getElementById(m).classList.add('hide'); }
 
-// 头像选择
 function renderAvatarOptions() {
     let list = document.getElementById('avatarList');
     list.innerHTML = '';
@@ -562,7 +583,6 @@ function renderAvatarOptions() {
     })
 }
 
-// 动态
 function publishPost() {
     let txt = postText.value;
     let file = postMedia.files[0];
@@ -583,7 +603,7 @@ function refreshPosts() {
         d.className = 'card';
         d.innerHTML = `
             <div>${p.txt}</div>
-            ${p.type === 'img' ? `<img src="${p.url}" style="width:100%;border-radius:12px;margin-top:8px">` : ''}
+            ${p.type === 'img' ? `<img src="${p.url}" style="width:100%;border-radius:12px;margin-top:8px;cursor:pointer" onclick="previewImg(this)">` : ''}
             ${p.type === 'vid' ? `<video src="${p.url}" controls style="width:100%;margin-top:8px"></video>` : ''}
             <div style="text-align:right;margin-top:8px">
                 <button onclick="delPost(${p.id})" style="color:var(--main);border:none;background:none;font-size:12px">删除</button>
@@ -598,7 +618,6 @@ function delPost(id) {
     refreshPosts();
 }
 
-// 资料
 function saveProfile() {
     user.name = editName.value || user.name;
     user.height = editHeight.value;
@@ -643,7 +662,6 @@ function refreshProfile() {
     })
 }
 
-// 私密
 function addPrivate() {
     let f = privateFile.files[0];
     if (!f) return alert('请选择图片/视频');
@@ -671,7 +689,7 @@ function refreshPrivate() {
         let h = Math.floor(left / 3600000);
         let m = Math.floor((left % 3600000) / 60000);
         d.innerHTML = `
-            ${p.type === 'img' ? `<img src="${p.url}" style="width:100%;border-radius:12px">` : ''}
+            ${p.type === 'img' ? `<img src="${p.url}" style="width:100%;border-radius:12px;cursor:pointer" onclick="previewImg(this)">` : ''}
             ${p.type === 'vid' ? `<video src="${p.url}" controls style="width:100%"></video>` : ''}
             <div class="countdown">剩余 ${h}时${m}分</div>
             <button class="btn btn-danger" onclick="delPrivate(${p.id})">删除</button>
@@ -685,7 +703,6 @@ function delPrivate(id) {
     refreshPrivate();
 }
 
-// 留言
 function sendMsg() {
     let name = msgName.value || '匿名';
     let content = msgContent.value;
@@ -718,7 +735,6 @@ function delMsg(id) {
     refreshMsg();
 }
 
-// 私信
 function sendChat() {
     let name = chatName.value || '匿名';
     let content = chatContent.value;
@@ -751,9 +767,17 @@ function delChat(id) {
     refreshChat();
 }
 
-// 浏览
 function refreshView() {
     document.getElementById('viewCount').innerText = `👀 浏览量：${views}（仅自己可见）`;
+}
+
+function genQrcode() {
+    try {
+        QRCode.toCanvas(document.getElementById('qrcode'), window.location.href, {
+            width: 120, margin:1,
+            color:{ dark:'#ff70a6', light:'#fff' }
+        });
+    } catch(e){}
 }
 
 function refreshAll() {

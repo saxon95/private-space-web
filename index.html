@@ -1,406 +1,192 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private sexy space</title>
-    <style>
-        :root {
-            --light-bg: #f5f6f7;
-            --light-card: #ffffff;
-            --light-text: #1a1a1a;
-            --light-sub: #666666;
-            --light-accent: #ff8fb7;
-            --dark-bg: #121212;
-            --dark-card: #1e1e1e;
-            --dark-text: #e0e0e0;
-            --dark-sub: #a0a0a0;
-            --dark-accent: #ff6b9d;
-        }
-        body.light {
-            --bg: var(--light-bg);
-            --card: var(--light-card);
-            --text: var(--light-text);
-            --sub: var(--light-sub);
-            --accent: var(--light-accent);
-        }
-        body.dark {
-            --bg: var(--dark-bg);
-            --card: var(--dark-card);
-            --text: var(--dark-text);
-            --sub: var(--dark-sub);
-            --accent: var(--dark-accent);
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Helvetica Neue', sans-serif;
-        }
-        body {
-            background: var(--bg);
-            color: var(--text);
-            padding: 0 0 80px;
-            transition: all 0.3s;
-        }
-        header {
-            background: var(--card);
-            padding: 16px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #e5e5e5;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        h1 {
-            font-size: 20px;
-            color: var(--accent);
-            font-weight: 600;
-        }
-        .theme-toggle {
-            background: transparent;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: var(--text);
-        }
-        .tabs {
-            background: var(--card);
-            display: flex;
-            border-bottom: 1px solid #e5e5e5;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        .tab {
-            flex: 1;
-            padding: 12px 0;
-            text-align: center;
-            font-weight: 500;
-            color: var(--sub);
-            cursor: pointer;
-            position: relative;
-            white-space: nowrap;
-        }
-        .tab.active {
-            color: var(--accent);
-            font-weight: 600;
-        }
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40%;
-            height: 2px;
-            background: var(--accent);
-        }
-        .tab-content {
-            display: none;
-            padding: 10px;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .post-card {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .post-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .post-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 12px;
-        }
-        .post-name {
-            font-weight: 600;
-            color: var(--text);
-        }
-        .post-time {
-            font-size: 12px;
-            color: var(--sub);
-            margin-top: 2px;
-        }
-        .post-content {
-            line-height: 1.6;
-            margin-bottom: 12px;
-        }
-        .post-media {
-            margin-bottom: 12px;
-        }
-        .post-media img, .post-media video {
-            width: 100%;
-            border-radius: 8px;
-        }
-        .profile-card {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid var(--accent);
-            margin-bottom: 12px;
-        }
-        .profile-name {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        .profile-info {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e5e5;
-        }
-        .info-item {
-            text-align: center;
-        }
-        .info-value {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--accent);
-        }
-        .info-label {
-            font-size: 12px;
-            color: var(--sub);
-            margin-top: 4px;
-        }
-        .size-img {
-            width: 100%;
-            border-radius: 12px;
-            margin-top: 16px;
-        }
-        .message-list {
-            padding: 10px;
-        }
-        .message-item {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 8px;
-            max-width: 80%;
-        }
-        .message-text {
-            line-height: 1.5;
-        }
-        .message-time {
-            font-size: 11px;
-            color: var(--sub);
-            margin-top: 4px;
-            text-align: right;
-        }
-        .message-input-area {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--card);
-            padding: 12px 15px;
-            border-top: 1px solid #e5e5e5;
-            display: flex;
-            gap: 10px;
-            align-items: flex-end;
-        }
-        .message-input {
-            flex: 1;
-            padding: 10px 14px;
-            border-radius: 20px;
-            border: 1px solid #e5e5e5;
-            background: var(--bg);
-            color: var(--text);
-            font-size: 16px;
-            resize: none;
-            max-height: 80px;
-        }
-        .message-send-btn {
-            padding: 10px 20px;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            border-radius: 20px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Private sexy space</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background: #f5f5f5; padding-bottom: 80px; }
+  header {
+    background: #fff; padding: 16px;
+    display: flex; justify-content: space-between;
+    border-bottom: 1px solid #eee;
+  }
+  .tab-bar {
+    display: flex; background: #fff;
+    border-bottom: 1px solid #eee;
+  }
+  .tab {
+    flex:1; text-align:center; padding:12px 0;
+    font-weight:bold; cursor:pointer;
+  }
+  .tab.active { color: #ff6b9d; }
+  .page { display: none; padding:10px; }
+  .page.active { display: block; }
+
+  .card {
+    background:#fff; border-radius:12px; padding:16px;
+    margin-bottom:10px;
+  }
+
+  /* 四宫格 */
+  .grid-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px; margin-top:10px;
+  }
+  .grid-4 img {
+    width:100%; aspect-ratio:1;
+    object-fit:cover; border-radius:8px;
+  }
+
+  /* 收放区域 */
+  .fold-section {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .fold-section.open {
+    max-height: 500px;
+  }
+
+  .toggle-btn {
+    margin-top:10px;
+    text-align:center;
+    color: #666;
+    font-size:14px;
+    cursor:pointer;
+  }
+</style>
 </head>
-<body class="light">
+
+<body>
 <header>
-    <h1>Private sexy space</h1>
-    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+  <div>Private sexy space</div>
+  <div onclick="toggleDark()">🌓</div>
 </header>
 
-<div class="tabs">
-    <div class="tab active" onclick="switchTab(0)">动态</div>
-    <div class="tab" onclick="switchTab(1)">博主资料</div>
-    <div class="tab" onclick="switchTab(2)">私信</div>
+<div class="tab-bar">
+  <div class="tab active" onclick="tab(0)">动态</div>
+  <div class="tab" onclick="tab(1)">博主资料</div>
+  <div class="tab" onclick="tab(2)">私信</div>
 </div>
 
-<div class="tab-content active" id="tab0">
-    <div id="postsContainer"></div>
+<!-- 动态 -->
+<div class="page active" id="p0">
+  <div id="postList"></div>
 </div>
 
-<div class="tab-content" id="tab1">
-    <div class="profile-card">
-        <!-- 头像标签直接写在 HTML 里 -->
-        < img class="profile-avatar" id="avatar">
-        <div class="profile-name" id="name"></div>
-        <div class="profile-info">
-            <div class="info-item">
-                <div class="info-value" id="height">--</div>
-                <div class="info-label">身高</div>
-            </div>
-            <div class="info-item">
-                <div class="info-value" id="age">--</div>
-                <div class="info-label">年龄</div>
-            </div>
-            <div class="info-item">
-                <div class="info-value" id="size">--</div>
-                <div class="info-label">尺寸</div>
-            </div>
-        </div>
-        <!-- 尺寸图标签直接写在 HTML 里 -->
-        < img id="sizeImg" class="size-img" style="display: none;">
+<!-- 资料 -->
+<div class="page" id="p1">
+  <div class="card">
+    <div id="profileInfo"></div>
+
+    <div class="toggle-btn" onclick="toggleShow()">Show (展开/收起)</div>
+    <div class="fold-section" id="showArea">
+      <div class="grid-4" id="photoWall"></div>
     </div>
+  </div>
 </div>
 
-<div class="tab-content" id="tab2">
-    <div class="message-list" id="messagesList"></div>
-    <div class="message-input-area">
-        <textarea class="message-input" id="messageInput" rows="1" placeholder="说点什么..."></textarea>
-        <button class="message-send-btn" onclick="sendMessage()">发送</button>
-    </div>
+<!-- 私信 -->
+<div class="page" id="p2">
+  <div id="msgList" style="padding:16px"></div>
+  <div style="position:fixed;bottom:0;left:0;width:100%;background:#fff;padding:10px;display:flex;gap:8px;">
+    <input id="msgInput" style="flex:1;padding:10px;border-radius:20px;border:1px solid #eee;">
+    <button onclick="sendMsg()" style="padding:0 16px;border-radius:20px;background:#ff6b9d;color:white;border:none;">发送</button>
+  </div>
 </div>
 
 <script>
-let user = JSON.parse(localStorage.getItem('user')) || {};
-let posts = JSON.parse(localStorage.getItem('posts')) || [];
-let messages = JSON.parse(localStorage.getItem('messages')) || [];
-
-function toggleTheme() {
-    document.body.classList.toggle('dark');
-    document.body.classList.toggle('light');
+// 切换页面
+function tab(i) {
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j==i));
+  document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',j==i));
 }
 
-function switchTab(index) {
-    document.querySelectorAll('.tab').forEach((t, i) => {
-        t.classList.toggle('active', i === index);
-    });
-    document.querySelectorAll('.tab-content').forEach((c, i) => {
-        c.classList.toggle('active', i === index);
-    });
-    if (index === 2) renderMessages();
+// 收放 Show 区域
+function toggleShow() {
+  document.getElementById('showArea').classList.toggle('open');
 }
 
-function sendMessage() {
-    const text = document.getElementById('messageInput').value.trim();
-    if (!text) return;
-    messages.push({ text, time: Date.now() });
-    localStorage.setItem('messages', JSON.stringify(messages));
-    document.getElementById('messageInput').value = '';
-    renderMessages();
+// 暗黑模式
+function toggleDark() {
+  document.body.style.background = document.body.style.background == '#121212' ? '#f5f5f5' : '#121212';
 }
 
-function renderMessages() {
-    const list = document.getElementById('messagesList');
-    list.innerHTML = '';
-    if (messages.length === 0) {
-        list.innerHTML = '<p style="color:var(--sub);text-align:center;padding:20px">暂无私信</p >';
-        return;
-    }
-    messages.forEach(m => {
-        const time = new Date(m.time).toLocaleString();
-        const item = document.createElement('div');
-        item.className = 'message-item';
-        item.innerHTML = `
-            <div class="message-text">${m.text}</div>
-            <div class="message-time">${time}</div>
-        `;
-        list.appendChild(item);
-    });
+// ------------------------------
+// 数据（完全不冲突、不乱码）
+// ------------------------------
+const user = JSON.parse(localStorage.getItem('user') || '{}');
+const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+const messages = JSON.parse(localStorage.getItem('messages') || '[]');
+
+// 渲染资料
+const profile = document.getElementById('profileInfo');
+profile.innerText = `昵称：${user.name || '无'}
+身高：${user.height || '无'}
+年龄：${user.age || '无'}
+尺寸：${user.size || '无'}`;
+
+// 四宫格照片墙（只渲染真实图片，不乱码）
+const wall = document.getElementById('photoWall');
+const photos = user.photos || [];
+for (let i=0; i<4; i++) {
+  const img = document.createElement('img');
+  img.src = photos[i] || 'https://picsum.photos/300?random='+i;
+  wall.appendChild(img);
 }
 
-// 初始化页面：只修改已有 DOM 元素的属性，不拼接 HTML
-document.getElementById('avatar').src = user.avatar || 'https://picsum.photos/200';
-document.getElementById('name').innerText = user.name || '博主';
-document.getElementById('height').innerText = user.height || '--';
-document.getElementById('age').innerText = user.age || '--';
-document.getElementById('size').innerText = user.size || '--';
+// 渲染动态（纯DOM，绝对不乱码）
+const plist = document.getElementById('postList');
+posts.forEach(p=>{
+  const c = document.createElement('div');
+  c.className = 'card';
+  c.innerText = p.txt || '';
 
-if (user.sizeImg) {
-    const sizeImgEl = document.getElementById('sizeImg');
-    sizeImgEl.src = user.sizeImg;
-    sizeImgEl.style.display = 'block';
-}
-
-// 渲染动态：用 createElement 构建，避免 innerHTML
-const postsContainer = document.getElementById('postsContainer');
-postsContainer.innerHTML = '';
-posts.forEach(p => {
-    const postCard = document.createElement('div');
-    postCard.className = 'post-card';
-    
-    const postHeader = document.createElement('div');
-    postHeader.className = 'post-header';
-    const avatarImg = document.createElement('img');
-    avatarImg.className = 'post-avatar';
-    avatarImg.src = user.avatar || 'https://picsum.photos/200';
-    const nameDiv = document.createElement('div');
-    const nameText = document.createElement('div');
-    nameText.className = 'post-name';
-    nameText.innerText = user.name || '博主';
-    const timeText = document.createElement('div');
-    timeText.className = 'post-time';
-    timeText.innerText = new Date(p.time).toLocaleString();
-    nameDiv.appendChild(nameText);
-    nameDiv.appendChild(timeText);
-    postHeader.appendChild(avatarImg);
-    postHeader.appendChild(nameDiv);
-    postCard.appendChild(postHeader);
-    
-    if (p.txt) {
-        const postContent = document.createElement('div');
-        postContent.className = 'post-content';
-        postContent.innerText = p.txt;
-        postCard.appendChild(postContent);
-    }
-    
-    if (p.type === 'img' && p.url) {
-        const media = document.createElement('div');
-        media.className = 'post-media';
-        const img = document.createElement('img');
-        img.src = p.url;
-        media.appendChild(img);
-        postCard.appendChild(media);
-    } else if (p.type === 'vid' && p.url) {
-        const media = document.createElement('div');
-        media.className = 'post-media';
-        const video = document.createElement('video');
-        video.src = p.url;
-        video.controls = true;
-        media.appendChild(video);
-        postCard.appendChild(media);
-    }
-    
-    postsContainer.appendChild(postCard);
+  if (p.type === 'img' && p.url) {
+    const img = document.createElement('img');
+    img.src = p.url;
+    img.style.width = '100%';
+    img.style.borderRadius = '8px';
+    img.style.marginTop = '8px';
+    c.appendChild(img);
+  }
+  if (p.type === 'vid' && p.url) {
+    const v = document.createElement('video');
+    v.src = p.url;
+    v.controls = true;
+    v.style.width = '100%';
+    v.style.marginTop = '8px';
+    c.appendChild(v);
+  }
+  plist.appendChild(c);
 });
+
+// 私信
+function sendMsg() {
+  const t = document.getElementById('msgInput').value.trim();
+  if(!t)return;
+  messages.push({text:t,time:Date.now()});
+  localStorage.setItem('messages',JSON.stringify(messages));
+  renderMsg();
+  document.getElementById('msgInput').value='';
+}
+function renderMsg() {
+  const l = document.getElementById('msgList');
+  l.innerHTML = '';
+  messages.forEach(m=>{
+    const d = document.createElement('div');
+    d.style.background='#fff';
+    d.style.borderRadius='12px';
+    d.style.padding='10px';
+    d.style.marginBottom='8px';
+    d.innerText = m.text;
+    l.appendChild(d);
+  });
+}
+renderMsg();
 </script>
 </body>
 </html>

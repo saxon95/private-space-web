@@ -78,6 +78,25 @@
         .btn-secondary { background: #e5e5ea; margin-top: 8px; }
         .btn-danger { background: #ff3b30; color: #fff; margin-top: 8px; }
 
+        /* 头像选择 */
+        .avatar-grid {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .avatar-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .avatar-option.selected {
+            border-color: #007aff;
+        }
+
         /* 底部导航 */
         .tab-bar {
             position: fixed;
@@ -113,7 +132,7 @@
             margin-bottom: 16px;
         }
 
-        /* 个人秀 */
+        /* Show */
         .profile-header { text-align: center; padding: 24px; }
         .avatar {
             width: 100px;
@@ -123,8 +142,24 @@
             margin-bottom: 16px;
             cursor: pointer;
         }
-        .name { font-size: 24px; font-weight: 700; }
-        .bio { color: #8e8e93; margin-top: 4px; }
+        .name { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+
+        /* 风格标签（头像下方） */
+        .style-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 8px;
+        }
+        .style-tag {
+            background: #e3f2fd;
+            color: #007aff;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
         .info-row {
             display: flex;
             justify-content: space-between;
@@ -138,20 +173,6 @@
             object-fit: cover;
             border-radius: 10px;
             margin-top: 8px;
-        }
-
-        /* 风格标签 */
-        .style-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        .style-tag {
-            background: #e5e5ea;
-            padding: 6px 12px;
-            border-radius: 16px;
-            font-size: 12px;
         }
 
         /* 私密空间 */
@@ -199,7 +220,7 @@
     </div>
 </div>
 
-<!-- 编辑个人资料 → 尺寸可上传图片 + 超多风格 -->
+<!-- 编辑资料 -->
 <div id="editProfileModal" class="modal hide">
     <div class="modal-content">
         <h2>编辑资料</h2>
@@ -223,13 +244,15 @@
         </select>
         <small>可多选风格</small>
 
-        <input type="file" id="editAvatar" accept="image/*" style="margin-top:12px">
+        <p style="margin-top:12px;text-align:left">选择头像</p>
+        <div class="avatar-grid" id="avatarList"></div>
+
         <button class="btn btn-primary" onclick="saveProfile()">保存</button>
         <button class="btn btn-secondary" onclick="closeModal('editProfileModal')">取消</button>
     </div>
 </div>
 
-<!-- 发布私密限时内容 -->
+<!-- 私密发布 -->
 <div id="privateModal" class="modal hide">
     <div class="modal-content">
         <h2>私密发布</h2>
@@ -251,13 +274,13 @@
         <div id="postList" style="margin-top:16px"></div>
     </div>
 
-    <!-- 个人秀 -->
+    <!-- Show -->
     <div id="profilePage" class="page">
         <div class="card profile-header">
             <img class="avatar" id="avatarShow" onclick="openModal('editProfileModal')">
             <div class="name" id="nameShow"></div>
-            <div class="bio" id="styleShow"></div>
-            <div class="style-tags" id="tagList"></div>
+            <!-- 风格标签在这里 -->
+            <div class="style-tags" id="styleTagsBelowAvatar"></div>
         </div>
 
         <div class="card">
@@ -273,10 +296,13 @@
                 <span class="info-label">尺寸</span>
                 <span id="sizeShow">--</span>
             </div>
+            <div class="info-row">
+                <span class="info-label">尺寸说明</span>
+                <span>Cm / A-E</span>
+            </div>
             <img id="sizeImgShow" class="size-img hide">
         </div>
 
-        <!-- 私密空间 -->
         <div class="card private-space">
             <h3>🔒 私密空间</h3>
             <button class="btn btn-primary" onclick="openModal('privateModal')">发布限时照片/视频</button>
@@ -297,22 +323,30 @@
     <!-- 底部栏 -->
     <div class="tab-bar">
         <div class="tab-item active" onclick="go('home')"><i>🏠</i><span>首页</span></div>
-        <div class="tab-item" onclick="go('profilePage')"><i>✨</i><span>个人秀</span></div>
+        <div class="tab-item" onclick="go('profilePage')"><i>✨</i><span>Show</span></div>
         <div class="tab-item" onclick="go('privateCloud')"><i>☁️</i><span>私密云</span></div>
     </div>
 </div>
 
 <script>
-// 数据
+const avatars = [
+    "https://picsum.photos/id/237/200/200",
+    "https://picsum.photos/id/1025/200/200",
+    "https://picsum.photos/id/1062/200/200",
+    "https://picsum.photos/id/1074/200/200",
+    "https://picsum.photos/id/1084/200/200",
+    "https://picsum.photos/id/169/200/200"
+];
+
 let user = JSON.parse(localStorage.getItem('user')) || {
     name: '用户',
     height: '', weight: '', size: '',
-    avatar: '', sizeImg: '', style: []
+    avatar: avatars[0], sizeImg: '', style: []
 }
 let posts = JSON.parse(localStorage.getItem('posts')) || []
 let privateList = JSON.parse(localStorage.getItem('private')) || []
+let selectedAvatar = user.avatar;
 
-// 加载
 window.onload = () => {
     setTimeout(()=>loading.classList.add('hide'),500)
     if(localStorage.getItem('age')){
@@ -322,7 +356,6 @@ window.onload = () => {
     }
 }
 
-// 年龄验证
 function verifyAge(){
     let y = +birthYear.value
     if(!y || new Date().getFullYear()-y <18) return alert('未满18岁禁止访问')
@@ -332,7 +365,6 @@ function verifyAge(){
     refreshAll()
 }
 
-// 页面切换
 function go(id){
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
     document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'))
@@ -340,10 +372,29 @@ function go(id){
     event.currentTarget.classList.add('active')
 }
 
-function openModal(m){ document.getElementById(m).classList.remove('hide') }
+function openModal(m){
+    if(m === 'editProfileModal') renderAvatarOptions()
+    document.getElementById(m).classList.remove('hide')
+}
 function closeModal(m){ document.getElementById(m).classList.add('hide') }
 
-// 发布普通动态
+function renderAvatarOptions(){
+    let list = document.getElementById('avatarList')
+    list.innerHTML = ''
+    avatars.forEach(url => {
+        let img = document.createElement('img')
+        img.src = url
+        img.className = 'avatar-option'
+        if(url === selectedAvatar) img.classList.add('selected')
+        img.onclick = () => {
+            document.querySelectorAll('.avatar-option').forEach(i=>i.classList.remove('selected'))
+            img.classList.add('selected')
+            selectedAvatar = url
+        }
+        list.appendChild(img)
+    })
+}
+
 function publishPost(){
     let txt = postText.value
     let file = postMedia.files[0]
@@ -358,7 +409,6 @@ function publishPost(){
     postMedia.value=''
 }
 
-// 渲染动态
 function refreshPosts(){
     postList.innerHTML = ''
     posts.forEach(p=>{
@@ -381,15 +431,13 @@ function delPost(id){
     refreshPosts()
 }
 
-// 保存资料（尺寸图片 + 多风格）
+// 保存资料并渲染头像下方风格标签
 function saveProfile(){
     user.name = editName.value || user.name
     user.height = editHeight.value
     user.weight = editWeight.value
     user.size = editSize.value
-
-    let ava = editAvatar.files[0]
-    if(ava) user.avatar = URL.createObjectURL(ava)
+    user.avatar = selectedAvatar
 
     let simg = editSizeImg.files[0]
     if(simg) user.sizeImg = URL.createObjectURL(simg)
@@ -403,10 +451,9 @@ function saveProfile(){
     closeModal('editProfileModal')
 }
 
-// 渲染个人秀
 function refreshProfile(){
     nameShow.innerText = user.name
-    avatarShow.src = user.avatar || 'https://picsum.photos/200/200'
+    avatarShow.src = user.avatar
     heightShow.innerText = user.height || '--'
     weightShow.innerText = user.weight || '--'
     sizeShow.innerText = user.size || '--'
@@ -414,19 +461,21 @@ function refreshProfile(){
     if(user.sizeImg){
         sizeImgShow.src = user.sizeImg
         sizeImgShow.classList.remove('hide')
-    } else sizeImgShow.classList.add('hide')
+    } else {
+        sizeImgShow.classList.add('hide')
+    }
 
-    styleShow.innerText = user.style.join(' ') || '点击编辑风格'
-    tagList.innerHTML = ''
-    user.style.forEach(t=>{
+    // 渲染头像下方风格标签
+    let tagContainer = document.getElementById('styleTagsBelowAvatar')
+    tagContainer.innerHTML = ''
+    user.style.forEach(t => {
         let span = document.createElement('span')
-        span.className='style-tag'
+        span.className = 'style-tag'
         span.innerText = t
-        tagList.appendChild(span)
+        tagContainer.appendChild(span)
     })
 }
 
-// 私密限时发布
 function addPrivate(){
     let f = privateFile.files[0]
     if(!f) return alert('请选择图片或视频')
@@ -443,7 +492,6 @@ function addPrivate(){
     privateFile.value=''
 }
 
-// 刷新私密空间
 function refreshPrivate(){
     privateList = privateList.filter(p=>p.exp > Date.now())
     localStorage.setItem('private',JSON.stringify(privateList))

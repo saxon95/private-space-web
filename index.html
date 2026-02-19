@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+msgs<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -67,6 +67,26 @@
         .theme-btn.active {
             background: var(--main);
             color: #fff;
+        }
+
+        /* 小木鱼 */
+        .wooden-fish {
+            text-align: center;
+            margin: 10px 0;
+        }
+        .fish-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: var(--card);
+            color: var(--main);
+            font-size: 24px;
+        }
+        .good-text {
+            font-size: 12px;
+            color: var(--sub);
+            margin-top: 4px;
         }
 
         /* 加载 */
@@ -140,17 +160,17 @@
             margin-top: 8px;
         }
 
-        /* 头像选择 */
+        /* 头像选择（5个） */
         .avatar-grid {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
             margin-bottom: 12px;
             justify-content: center;
         }
         .avatar-option {
-            width: 56px;
-            height: 56px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             object-fit: cover;
             cursor: pointer;
@@ -195,18 +215,18 @@
             margin-bottom: 14px;
         }
 
-        /* Show */
+        /* Show 头像缩小 */
         .profile-header { text-align: center; padding: 20px 0; }
         .avatar {
-            width: 110px;
-            height: 110px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 12px;
         }
-        .name { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+        .name { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
 
-        /* 风格标签（头像下方） */
+        /* 风格标签 */
         .style-tags {
             display: flex;
             flex-wrap: wrap;
@@ -216,8 +236,8 @@
         .style-tag {
             background: var(--tag);
             color: var(--tagtext);
-            padding: 5px 10px;
-            border-radius: 14px;
+            padding: 4px 9px;
+            border-radius: 12px;
             font-size: 12px;
         }
 
@@ -230,7 +250,7 @@
         .info-label { color: var(--sub); font-size: 14px; }
         .size-img {
             width: 100%;
-            height: 130px;
+            height: 120px;
             object-fit: cover;
             border-radius: 12px;
             margin-top: 8px;
@@ -248,33 +268,22 @@
             margin: 6px 0;
         }
 
-        /* 留言板 */
-        .msg-board h3 {
+        /* 留言 / 私信 */
+        .board h3 {
             margin-bottom: 12px;
             color: var(--main);
         }
-        .msg-item {
+        .item {
             background: var(--bg);
             padding: 10px 12px;
             border-radius: 12px;
             margin-bottom: 8px;
             font-size: 14px;
         }
-        .msg-name {
+        .item-name {
             font-weight: 600;
             color: var(--main);
             margin-bottom: 4px;
-        }
-        .msg-content {
-            color: var(--text);
-        }
-
-        /* 浏览量（仅自己可见） */
-        .view-count {
-            text-align: center;
-            font-size: 12px;
-            color: var(--sub);
-            margin-top: 10px;
         }
     </style>
 </head>
@@ -282,7 +291,7 @@
 
 <div id="loading"><div class="loader"></div></div>
 
-<!-- 顶部主题切换 -->
+<!-- 顶部主题 -->
 <div class="top-bar">
     <button class="theme-btn active" onclick="setTheme('')">清新</button>
     <button class="theme-btn" onclick="setTheme('theme-pink')">粉色</button>
@@ -311,7 +320,7 @@
     </div>
 </div>
 
-<!-- 编辑资料 -->
+<!-- 编辑资料（5头像） -->
 <div id="editProfileModal" class="modal hide">
     <div class="modal-content">
         <h2>编辑资料</h2>
@@ -343,7 +352,7 @@
     </div>
 </div>
 
-<!-- 私密限时发布 -->
+<!-- 私密发布 -->
 <div id="privateModal" class="modal hide">
     <div class="modal-content">
         <h2>私密发布</h2>
@@ -357,22 +366,39 @@
     </div>
 </div>
 
-<!-- 发布留言 -->
+<!-- 留言 -->
 <div id="msgModal" class="modal hide">
     <div class="modal-content">
         <h2>写留言</h2>
         <input type="text" id="msgName" placeholder="你的昵称">
         <textarea id="msgContent" placeholder="留言内容..."></textarea>
-        <button class="btn" onclick="sendMsg()">发布留言</button>
+        <button class="btn" onclick="sendMsg()">发布</button>
         <button class="btn btn-secondary" onclick="closeModal('msgModal')">取消</button>
+    </div>
+</div>
+
+<!-- 私信 -->
+<div id="chatModal" class="modal hide">
+    <div class="modal-content">
+        <h2>发私信</h2>
+        <input type="text" id="chatName" placeholder="你的昵称">
+        <textarea id="chatContent" placeholder="说点什么..."></textarea>
+        <button class="btn" onclick="sendChat()">发送</button>
+        <button class="btn btn-secondary" onclick="closeModal('chatModal')">取消</button>
     </div>
 </div>
 
 <!-- 主界面 -->
 <div id="app" class="hide">
-    <!-- 首页 -->
+    <!-- 首页 + 小木鱼 -->
     <div id="home" class="page active">
         <button class="btn" onclick="openModal('postModal')">+ 发布动态</button>
+
+        <div class="wooden-fish">
+            <button class="fish-btn" onclick="addGood()">🐟</button>
+            <div class="good-text">功德 +1 | 好感指数：<span id="loveNum">0</span></div>
+        </div>
+
         <div id="postList" style="margin-top:14px"></div>
     </div>
 
@@ -413,22 +439,28 @@
         <button class="btn" onclick="openModal('editProfileModal')">编辑资料</button>
     </div>
 
-    <!-- 关于我 + 留言板 -->
+    <!-- 关于我 + 留言 + 私信 -->
     <div id="aboutPage" class="page">
         <div class="card">
             <h3 style="color:var(--main);margin-bottom:12px">🌸 关于我</h3>
-            <p style="font-size:14px;line-height:1.6">这里是我的可爱小空间～</p>
-            <div class="view-count" id="viewCount">👀 浏览量：--</div>
+            <p style="font-size:14px;line-height:1.6">我的可爱小空间～</p>
+            <div style="font-size:12px;color:var(--sub);margin-top:8px" id="viewCount">👀 浏览量：--</div>
         </div>
 
-        <div class="card msg-board">
+        <div class="card board">
             <h3>💌 留言板</h3>
             <button class="btn" onclick="openModal('msgModal')">写留言</button>
-            <div id="msgList" style="margin-top:14px"></div>
+            <div id="msgList" style="margin-top:12px"></div>
+        </div>
+
+        <div class="card board">
+            <h3>✉️ 私信</h3>
+            <button class="btn" onclick="openModal('chatModal')">发私信</button>
+            <div id="chatList" style="margin-top:12px"></div>
         </div>
     </div>
 
-    <!-- 底部栏 -->
+    <!-- 底部 -->
     <div class="tab-bar">
         <div class="tab-item active" onclick="go('home')"><i>🏠</i><span>首页</span></div>
         <div class="tab-item" onclick="go('profilePage')"><i>✨</i><span>Show</span></div>
@@ -437,14 +469,13 @@
 </div>
 
 <script>
-// 可爱卡通头像
+// 5个可爱卡通头像
 const avatars = [
     "https://picsum.photos/id/1025/200/200",
     "https://picsum.photos/id/169/200/200",
     "https://picsum.photos/id/237/200/200",
     "https://picsum.photos/id/1062/200/200",
-    "https://picsum.photos/id/1074/200/200",
-    "https://picsum.photos/id/1084/200/200"
+    "https://picsum.photos/id/1074/200/200"
 ];
 
 // 数据
@@ -456,14 +487,23 @@ let user = JSON.parse(localStorage.getItem('user')) || {
 let posts = JSON.parse(localStorage.getItem('posts')) || []
 let privateList = JSON.parse(localStorage.getItem('private')) || []
 let msgs = JSON.parse(localStorage.getItem('msgs')) || []
+let chats = JSON.parse(localStorage.getItem('chats')) || []
 let views = +localStorage.getItem('views') || 0
+let love = +localStorage.getItem('love') || 0
 let selectedAvatar = user.avatar;
 
-// 主题切换
+// 主题
 function setTheme(cls) {
     document.body.className = cls;
     document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
     event?.target.classList.add('active');
+}
+
+// 小木鱼 功德+1 好感+1
+function addGood() {
+    love++;
+    localStorage.setItem('love', love);
+    document.getElementById('loveNum').innerText = love;
 }
 
 // 加载
@@ -478,7 +518,7 @@ window.onload = () => {
     }
 }
 
-// 年龄验证
+// 年龄
 function verifyAge() {
     let y = +birthYear.value;
     if (!y || new Date().getFullYear() - y < 18) return alert('未满18岁禁止访问');
@@ -490,7 +530,7 @@ function verifyAge() {
     refreshAll();
 }
 
-// 页面切换
+// 页面
 function go(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
@@ -504,7 +544,7 @@ function openModal(m) {
 }
 function closeModal(m) { document.getElementById(m).classList.add('hide'); }
 
-// 渲染头像选择
+// 头像选择
 function renderAvatarOptions() {
     let list = document.getElementById('avatarList');
     list.innerHTML = '';
@@ -522,7 +562,7 @@ function renderAvatarOptions() {
     })
 }
 
-// 发布动态
+// 动态
 function publishPost() {
     let txt = postText.value;
     let file = postMedia.files[0];
@@ -558,7 +598,7 @@ function delPost(id) {
     refreshPosts();
 }
 
-// 保存资料
+// 资料
 function saveProfile() {
     user.name = editName.value || user.name;
     user.height = editHeight.value;
@@ -578,13 +618,13 @@ function saveProfile() {
     closeModal('editProfileModal');
 }
 
-// 渲染Show
 function refreshProfile() {
     nameShow.innerText = user.name;
     avatarShow.src = user.avatar;
     heightShow.innerText = user.height || '--';
     weightShow.innerText = user.weight || '--';
     sizeShow.innerText = user.size || '--';
+    document.getElementById('loveNum').innerText = love;
 
     if (user.sizeImg) {
         sizeImgShow.src = user.sizeImg;
@@ -603,7 +643,7 @@ function refreshProfile() {
     })
 }
 
-// 私密空间
+// 私密
 function addPrivate() {
     let f = privateFile.files[0];
     if (!f) return alert('请选择图片/视频');
@@ -645,12 +685,12 @@ function delPrivate(id) {
     refreshPrivate();
 }
 
-// 留言板
+// 留言
 function sendMsg() {
     let name = msgName.value || '匿名';
     let content = msgContent.value;
-    if (!content) return alert('请输入留言');
-    msgs.unshift({ id: Date.now(), name, content });
+    if (!content) return alert('请输入内容');
+.unshift({ id: Date.now(), name, content });
     localStorage.setItem('msgs', JSON.stringify(msgs));
     refreshMsg();
     closeModal('msgModal');
@@ -661,10 +701,10 @@ function refreshMsg() {
     msgList.innerHTML = '';
     msgs.forEach(m => {
         let item = document.createElement('div');
-        item.className = 'msg-item';
+        item.className = 'item';
         item.innerHTML = `
-            <div class="msg-name">${m.name}</div>
-            <div class="msg-content">${m.content}</div>
+            <div class="item-name">${m.name}</div>
+            <div>${m.content}</div>
             <div style="text-align:right;margin-top:4px">
                 <button onclick="delMsg(${m.id})" style="font-size:10px;color:var(--sub);border:none;background:none">删除</button>
             </div>
@@ -678,7 +718,40 @@ function delMsg(id) {
     refreshMsg();
 }
 
-// 浏览量
+// 私信
+function sendChat() {
+    let name = chatName.value || '匿名';
+    let content = chatContent.value;
+    if (!content) return alert('请输入内容');
+    chats.unshift({ id: Date.now(), name, content });
+    localStorage.setItem('chats', JSON.stringify(chats));
+    refreshChat();
+    closeModal('chatModal');
+    chatName.value = '';
+    chatContent.value = '';
+}
+function refreshChat() {
+    chatList.innerHTML = '';
+    chats.forEach(c => {
+        let item = document.createElement('div');
+        item.className = 'item';
+        item.innerHTML = `
+            <div class="item-name">${c.name}</div>
+            <div>${c.content}</div>
+            <div style="text-align:right;margin-top:4px">
+                <button onclick="delChat(${c.id})" style="font-size:10px;color:var(--sub);border:none;background:none">删除</button>
+            </div>
+        `;
+        chatList.appendChild(item);
+    })
+}
+function delChat(id) {
+    chats = chats.filter(c => c.id !== id);
+    localStorage.setItem('chats', JSON.stringify(chats));
+    refreshChat();
+}
+
+// 浏览
 function refreshView() {
     document.getElementById('viewCount').innerText = `👀 浏览量：${views}（仅自己可见）`;
 }
@@ -688,6 +761,7 @@ function refreshAll() {
     refreshPosts();
     refreshPrivate();
     refreshMsg();
+    refreshChat();
     refreshView();
 }
 </script>

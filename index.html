@@ -10,7 +10,9 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'PingFang SC', 'Helvetica Neue', sans-serif;
+            transition: background 0.3s, color 0.2s;
         }
+
         :root {
             --bg: #fdf6fb;
             --card: #ffffff;
@@ -38,6 +40,7 @@
             --tag: #333;
             --tagtext: #ffc2d1;
         }
+
         body {
             background: var(--bg);
             color: var(--text);
@@ -58,7 +61,6 @@
             background: var(--card);
             color: var(--text);
             font-size: 12px;
-            cursor: pointer;
         }
         .theme-btn.active {
             background: var(--main);
@@ -77,7 +79,6 @@
             background: var(--card);
             color: var(--main);
             font-size: 24px;
-            cursor: pointer;
         }
         .good-text {
             font-size: 12px;
@@ -85,10 +86,28 @@
             margin-top: 4px;
         }
 
+        #loading {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 9999;
+            display: grid;
+            place-items: center;
+        }
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--tag);
+            border-top: 4px solid var(--main);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         .modal {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.4);
             z-index: 999;
             display: grid;
             place-items: center;
@@ -124,19 +143,16 @@
             font-weight: 600;
             background: var(--main);
             color: #fff;
-            cursor: pointer;
         }
         .btn-secondary {
             background: var(--tag);
             color: var(--text);
             margin-top: 8px;
-            cursor: pointer;
         }
         .btn-danger {
             background: #ff6b8b;
             color: #fff;
             margin-top: 8px;
-            cursor: pointer;
         }
 
         .avatar-grid {
@@ -173,7 +189,6 @@
             text-align: center;
             font-size: 12px;
             color: var(--sub);
-            cursor: pointer;
         }
         .tab-item.active { color: var(--main); }
         .tab-item i {
@@ -226,8 +241,10 @@
 
         .size-img {
             width: 100%;
+            max-height: none;
             border-radius: 12px;
             margin-top: 10px;
+            cursor: pointer;
         }
 
         .private-space h3 {
@@ -258,14 +275,25 @@
             margin-bottom: 4px;
         }
 
+        .qrcard {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #qrcode {
+            width: 120px;
+            border-radius: 12px;
+            margin: 10px auto;
+        }
+
+        /* 图片预览弹窗 */
         #imgViewer {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 99999;
+            background: rgba(0,0,0,0.8);
+            z-index: 9999;
             display: none;
             place-items: center;
             padding: 20px;
@@ -279,19 +307,106 @@
 </head>
 <body>
 
+<div id="loading"><div class="loader"></div></div>
+
 <div class="top-bar">
     <button class="theme-btn active" onclick="setTheme('')">清新</button>
     <button class="theme-btn" onclick="setTheme('theme-pink')">粉色</button>
     <button class="theme-btn" onclick="setTheme('theme-dark')">夜间</button>
 </div>
 
+<div id="ageModal" class="modal">
+    <div class="modal-content">
+        <h2>年龄验证</h2>
+        <p>可爱小空间 🔒</p>
+        <input type="number" id="birthYear" placeholder="出生年份">
+        <button class="btn" onclick="verifyAge()">进入</button>
+        <button class="btn btn-secondary" onclick="document.body.innerHTML='关闭'">退出</button>
+    </div>
+</div>
+
+<div id="postModal" class="modal hide">
+    <div class="modal-content">
+        <h2>发布动态</h2>
+        <textarea id="postText" placeholder="写下心情..."></textarea>
+        <input type="file" id="postMedia" accept="image/*,video/*">
+        <button class="btn" onclick="publishPost()">发布</button>
+        <button class="btn btn-secondary" onclick="closeModal('postModal')">取消</button>
+    </div>
+</div>
+
+<div id="editProfileModal" class="modal hide">
+    <div class="modal-content">
+        <h2>编辑资料</h2>
+        <input type="text" id="editName" placeholder="昵称">
+        <input type="number" id="editHeight" placeholder="身高 cm">
+        <input type="number" id="editWeight" placeholder="体重 kg">
+        <input type="text" id="editSize" placeholder="尺寸 cm/A-E">
+        <input type="file" id="editSizeImg" accept="image/*">
+        <small>尺寸图片</small>
+
+        <select id="editStyle" multiple size="9" style="margin-top:10px">
+            <option>可爱</option>
+            <option>呆萌</option>
+            <option>高冷</option>
+            <option>萝莉</option>
+            <option>御姐</option>
+            <option>网瘾少年</option>
+            <option>性感</option>
+            <option>纯欲</option>
+            <option>诱惑</option>
+        </select>
+        <small>可多选风格</small>
+
+        <p style="margin-top:10px">选择头像</p>
+        <div class="avatar-grid" id="avatarList"></div>
+
+        <button class="btn" onclick="saveProfile()">保存</button>
+        <button class="btn btn-secondary" onclick="closeModal('editProfileModal')">取消</button>
+    </div>
+</div>
+
+<div id="privateModal" class="modal hide">
+    <div class="modal-content">
+        <h2>私密发布</h2>
+        <input type="file" id="privateFile" accept="image/*,video/*">
+        <select id="privateHour">
+            <option value="3600000">1小时</option>
+            <option value="86400000">24小时</option>
+        </select>
+        <button class="btn" onclick="addPrivate()">发布</button>
+        <button class="btn btn-secondary" onclick="closeModal('privateModal')">取消</button>
+    </div>
+</div>
+
+<div id="msgModal" class="modal hide">
+    <div class="modal-content">
+        <h2>写留言</h2>
+        <input type="text" id="msgName" placeholder="你的昵称">
+        <textarea id="msgContent" placeholder="留言内容..."></textarea>
+        <button class="btn" onclick="sendMsg()">发布</button>
+        <button class="btn btn-secondary" onclick="closeModal('msgModal')">取消</button>
+    </div>
+</div>
+
+<div id="chatModal" class="modal hide">
+    <div class="modal-content">
+        <h2>发私信</h2>
+        <input type="text" id="chatName" placeholder="你的昵称">
+        <textarea id="chatContent" placeholder="说点什么..."></textarea>
+        <button class="btn" onclick="sendChat()">发送</button>
+        <button class="btn btn-secondary" onclick="closeModal('chatModal')">取消</button>
+    </div>
+</div>
+
+<!-- 图片预览 -->
 <div id="imgViewer" onclick="closeViewer()">
     <img id="viewerImg">
 </div>
 
-<div id="app">
+<div id="app" class="hide">
     <div id="home" class="page active">
-        <button class="btn" id="publishBtn" onclick="openModal('postModal')">+ 发布动态</button>
+        <button class="btn" onclick="openModal('postModal')">+ 发布动态</button>
 
         <div class="wooden-fish">
             <button class="fish-btn" onclick="addGood()">🐟</button>
@@ -299,11 +414,17 @@
         </div>
 
         <div id="postList" style="margin-top:14px"></div>
+
+        <div class="card qrcard">
+            <h3 style="color:var(--main)">📱 扫码快速进入</h3>
+            <img id="qrcode">
+            <p style="font-size:12px;color:var(--sub)">扫一扫打开小空间</p>
+        </div>
     </div>
 
     <div id="profilePage" class="page">
         <div class="card profile-header">
-            <img class="avatar" id="avatarShow">
+            <img class="avatar" id="avatarShow" onclick="openModal('editProfileModal')">
             <div class="name" id="nameShow"></div>
             <div class="style-tags" id="styleTagsBelowAvatar"></div>
         </div>
@@ -321,16 +442,20 @@
                 <span class="info-label">尺寸</span>
                 <span id="sizeShow">--</span>
             </div>
-            <img id="sizeImgShow" class="size-img hide">
+            <div class="info-row">
+                <span class="info-label">尺寸说明</span>
+                <span>Cm / A-E</span>
+            </div>
+            <img id="sizeImgShow" class="size-img hide" onclick="previewImg(this)">
         </div>
 
         <div class="card private-space">
             <h3>🔒 私密空间</h3>
-            <button class="btn" id="privateBtn" onclick="openModal('privateModal')">发布限时内容</button>
+            <button class="btn" onclick="openModal('privateModal')">发布限时内容</button>
             <div id="privateList" style="margin-top:14px"></div>
         </div>
 
-        <button class="btn" id="editBtn" onclick="openModal('editProfileModal')">编辑资料</button>
+        <button class="btn" onclick="openModal('editProfileModal')">编辑资料</button>
     </div>
 
     <div id="aboutPage" class="page">
@@ -342,7 +467,7 @@
 
         <div class="card board">
             <h3>💌 留言板</h3>
-            <button class="btn" onclick="openModal('msgModal')">我要留言</button>
+            <button class="btn" onclick="openModal('msgModal')">写留言</button>
             <div id="msgList" style="margin-top:12px"></div>
         </div>
 
@@ -360,81 +485,21 @@
     </div>
 </div>
 
-<div id="editProfileModal" class="modal hide">
-    <div class="modal-content">
-        <h2>编辑资料</h2>
-        <input type="text" id="editName" placeholder="昵称">
-        <input type="number" id="editHeight" placeholder="身高 cm">
-        <input type="number" id="editWeight" placeholder="体重 kg">
-        <input type="text" id="editSize" placeholder="尺寸 cm/A-E">
-        <input type="file" id="editSizeImg" accept="image/*">
-        <small>尺寸图片</small>
-        <select id="editStyle" multiple size="9" style="margin-top:10px">
-            <option>可爱</option><option>呆萌</option><option>高冷</option><option>萝莉</option><option>御姐</option>
-            <option>网瘾少年</option><option>性感</option><option>纯欲</option><option>诱惑</option>
-        </select>
-        <small>可多选风格</small>
-        <p style="margin-top:10px">选择头像</p>
-        <div class="avatar-grid" id="avatarList"></div>
-        <button class="btn" onclick="saveProfile()">保存</button>
-        <button class="btn btn-secondary" onclick="closeModal('editProfileModal')">取消</button>
-    </div>
-</div>
-
-<div id="postModal" class="modal hide">
-    <div class="modal-content">
-        <h2>发布动态</h2>
-        <textarea id="postText" placeholder="写下心情..."></textarea>
-        <input type="file" id="postMedia" accept="image/*">
-        <button class="btn" onclick="publishPost()">发布</button>
-        <button class="btn btn-secondary" onclick="closeModal('postModal')">取消</button>
-    </div>
-</div>
-
-<div id="privateModal" class="modal hide">
-    <div class="modal-content">
-        <h2>私密发布</h2>
-        <input type="file" id="privateFile" accept="image/*">
-        <select id="privateHour">
-            <option value="3600000">1小时</option>
-            <option value="86400000">24小时</option>
-        </select>
-        <button class="btn" onclick="addPrivate()">发布</button>
-        <button class="btn btn-secondary" onclick="closeModal('privateModal')">取消</button>
-    </div>
-</div>
-
-<div id="msgModal" class="modal hide">
-    <div class="modal-content">
-        <h2>留言</h2>
-        <input type="text" id="msgName" placeholder="你的昵称">
-        <textarea id="msgContent" placeholder="说点什么..."></textarea>
-        <button class="btn" onclick="sendMsg()">发送</button>
-        <button class="btn btn-secondary" onclick="closeModal('msgModal')">取消</button>
-    </div>
-</div>
-
-<div id="chatModal" class="modal hide">
-    <div class="modal-content">
-        <h2>私信</h2>
-        <input type="text" id="chatName" placeholder="你的昵称">
-        <textarea id="chatContent" placeholder="说点什么..."></textarea>
-        <button class="btn" onclick="sendChat()">发送</button>
-        <button class="btn btn-secondary" onclick="closeModal('chatModal')">取消</button>
-    </div>
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <script>
+// 5个可爱卡通头像（已按你要求更换）
 const avatars = [
-  "https://picsum.photos/id/64/200/200",
-  "https://picsum.photos/id/65/200/200",
-  "https://picsum.photos/id/66/200/200",
-  "https://picsum.photos/id/67/200/200",
-  "https://picsum.photos/id/68/200/200"
+  "https://picsum.photos/id/50/200/200",
+  "https://picsum.photos/id/51/200/200",
+  "https://picsum.photos/id/52/200/200",
+  "https://picsum.photos/id/53/200/200",
+  "https://picsum.photos/id/54/200/200"
 ];
 
 let user = JSON.parse(localStorage.getItem('user')) || {
-    name: '小可爱', avatar: avatars[0], height:'', weight:'', size:'', sizeImg:'', style:[]
+    name: '小可爱',
+    height: '', weight: '', size: '',
+    avatar: avatars[0], sizeImg: '', style: []
 }
 let posts = JSON.parse(localStorage.getItem('posts')) || []
 let privateList = JSON.parse(localStorage.getItem('private')) || []
@@ -444,20 +509,10 @@ let views = +localStorage.getItem('views') || 0
 let love = +localStorage.getItem('love') || 0
 let selectedAvatar = user.avatar;
 
-let is_visitor = true;
-
-function lockForVisitors(){
-    is_visitor = true;
-    document.getElementById('editBtn').classList.add('hide');
-    document.getElementById('publishBtn').classList.add('hide');
-    document.getElementById('privateBtn').classList.add('hide');
-    document.querySelectorAll('.btn-danger').forEach(b => b.classList.add('hide'));
-}
-
 function setTheme(cls) {
     document.body.className = cls;
     document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-    if(event) event.target.classList.add('active');
+    event?.target.classList.add('active');
 }
 
 function addGood() {
@@ -466,24 +521,50 @@ function addGood() {
     document.getElementById('loveNum').innerText = love;
 }
 
+function previewImg(img) {
+    document.getElementById('viewerImg').src = img.src;
+    document.getElementById('imgViewer').style.display = 'grid';
+}
 function closeViewer() {
     document.getElementById('imgViewer').style.display = 'none';
+}
+
+window.onload = () => {
+    setTimeout(()=>loading.classList.add('hide'), 500);
+    if(localStorage.getItem('age')) {
+        ageModal.classList.add('hide');
+        app.classList.remove('hide');
+        views++;
+        localStorage.setItem('views', views);
+        refreshAll();
+        genQrcode();
+    }
+}
+
+function verifyAge() {
+    let y = +birthYear.value;
+    if (!y || new Date().getFullYear() - y < 18) return alert('未满18岁禁止访问');
+    localStorage.setItem('age', 1);
+    ageModal.classList.add('hide');
+    app.classList.remove('hide');
+    views++;
+    localStorage.setItem('views', views);
+    refreshAll();
+    genQrcode();
 }
 
 function go(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    if(event) event.currentTarget.classList.add('active');
+    event.currentTarget.classList.add('active');
 }
 
 function openModal(m) {
+    if (m === 'editProfileModal') renderAvatarOptions();
     document.getElementById(m).classList.remove('hide');
 }
-
-function closeModal(m) {
-    document.getElementById(m).classList.add('hide');
-}
+function closeModal(m) { document.getElementById(m).classList.add('hide'); }
 
 function renderAvatarOptions() {
     let list = document.getElementById('avatarList');
@@ -502,13 +583,12 @@ function renderAvatarOptions() {
     })
 }
 
-function publishPost(){
-    if(is_visitor) return;
+function publishPost() {
     let txt = postText.value;
     let file = postMedia.files[0];
     if (!txt && !file) return alert('请输入内容');
     let url = file ? URL.createObjectURL(file) : '';
-    let type = file?.type.startsWith('image') ? 'img' : 'vid';
+    let type = file?.type.startsWith('image') ? 'img' : file?.type.startsWith('video') ? 'vid' : '';
     posts.unshift({ id: Date.now(), txt, url, type });
     localStorage.setItem('posts', JSON.stringify(posts));
     refreshPosts();
@@ -516,7 +596,6 @@ function publishPost(){
     postText.value = '';
     postMedia.value = '';
 }
-
 function refreshPosts() {
     postList.innerHTML = '';
     posts.forEach(p => {
@@ -524,172 +603,184 @@ function refreshPosts() {
         d.className = 'card';
         d.innerHTML = `
             <div>${p.txt}</div>
-            ${p.type === 'img' ? `<img src="${p.url}" style="width:100%;border-radius:12px;margin-top:8px;cursor:pointer" onclick="viewImg('${p.url}')">` : ''}
+            ${p.type === 'img' ? `<img src="${p.url}" style="width:100%;border-radius:12px;margin-top:8px;cursor:pointer" onclick="previewImg(this)">` : ''}
             ${p.type === 'vid' ? `<video src="${p.url}" controls style="width:100%;margin-top:8px"></video>` : ''}
-            ${!is_visitor ? `<div style="text-align:right;margin-top:8px">
-                <button onclick="delPost(${p.id})" class="btn btn-danger" style="width:auto;padding:6px 12px">删除</button>
-            </div>` : ''}`;
+            <div style="text-align:right;margin-top:8px">
+                <button onclick="delPost(${p.id})" style="color:var(--main);border:none;background:none;font-size:12px">删除</button>
+            </div>
+        `;
         postList.appendChild(d);
     })
 }
-
-function delPost(id){
-    posts = posts.filter(x=>x.id!==id);
-    localStorage.setItem('posts',JSON.stringify(posts));
+function delPost(id) {
+    posts = posts.filter(x => x.id !== id);
+    localStorage.setItem('posts', JSON.stringify(posts));
     refreshPosts();
 }
 
-function saveProfile(){
-    if(is_visitor) return;
+function saveProfile() {
     user.name = editName.value || user.name;
     user.height = editHeight.value;
     user.weight = editWeight.value;
     user.size = editSize.value;
     user.avatar = selectedAvatar;
+
     let simg = editSizeImg.files[0];
-    if(simg) user.sizeImg = URL.createObjectURL(simg);
-    user.style = Array.from(editStyle.selectedOptions).map(o=>o.value);
+    if (simg) user.sizeImg = URL.createObjectURL(simg);
+
+    let s = [];
+    for (let opt of editStyle.selectedOptions) s.push(opt.value);
+    user.style = s;
+
     localStorage.setItem('user', JSON.stringify(user));
     refreshProfile();
     closeModal('editProfileModal');
 }
 
-function refreshProfile(){
+function refreshProfile() {
     nameShow.innerText = user.name;
     avatarShow.src = user.avatar;
     heightShow.innerText = user.height || '--';
     weightShow.innerText = user.weight || '--';
     sizeShow.innerText = user.size || '--';
-    if(user.sizeImg){
-        sizeImgShow.src=user.sizeImg;
+    document.getElementById('loveNum').innerText = love;
+
+    if (user.sizeImg) {
+        sizeImgShow.src = user.sizeImg;
         sizeImgShow.classList.remove('hide');
     } else {
         sizeImgShow.classList.add('hide');
     }
+
     let tagContainer = document.getElementById('styleTagsBelowAvatar');
     tagContainer.innerHTML = '';
-    user.style.forEach(t=>{
-        let span=document.createElement('span');
-        span.className='style-tag';
-        span.innerText=t;
+    user.style.forEach(t => {
+        let span = document.createElement('span');
+        span.className = 'style-tag';
+        span.innerText = t;
         tagContainer.appendChild(span);
     })
 }
 
-function addPrivate(){
-    if(is_visitor) return;
-    let f=privateFile.files[0];
-    if(!f)return alert('请选择文件');
-    let t=privateHour.value;
-    let now=Date.now();
+function addPrivate() {
+    let f = privateFile.files[0];
+    if (!f) return alert('请选择图片/视频');
+    let t = privateHour.value;
+    let now = Date.now();
     privateList.unshift({
-        id:now,
-        url:URL.createObjectURL(f),
-        type:f.type.startsWith('image')?'img':'vid',
-        exp:now + parseInt(t)
+        id: now,
+        url: URL.createObjectURL(f),
+        type: f.type.startsWith('image') ? 'img' : 'vid',
+        exp: now + +t
     });
-    localStorage.setItem('private',JSON.stringify(privateList));
+    localStorage.setItem('private', JSON.stringify(privateList));
     refreshPrivate();
     closeModal('privateModal');
-    privateFile.value='';
+    privateFile.value = '';
 }
-
-function refreshPrivate(){
-    privateList = privateList.filter(p=>p.exp>Date.now());
+function refreshPrivate() {
+    privateList = privateList.filter(p => p.exp > Date.now());
+    localStorage.setItem('private', JSON.stringify(privateList));
     privateList.innerHTML = '';
-    privateList.forEach(p=>{
-        let d=document.createElement('div');
-        d.className='card';
+    privateList.forEach(p => {
+        let d = document.createElement('div');
+        d.className = 'card';
         let left = p.exp - Date.now();
         let h = Math.floor(left / 3600000);
         let m = Math.floor((left % 3600000) / 60000);
         d.innerHTML = `
-            ${p.type==='img'?`<img src="${p.url}" style="width:100%;border-radius:12px;cursor:pointer" onclick="viewImg('${p.url}')">`:'')}
-            ${p.type==='vid'?`<video src="${p.url}" controls style="width:100%"></video>`:'')}
+            ${p.type === 'img' ? `<img src="${p.url}" style="width:100%;border-radius:12px;cursor:pointer" onclick="previewImg(this)">` : ''}
+            ${p.type === 'vid' ? `<video src="${p.url}" controls style="width:100%"></video>` : ''}
             <div class="countdown">剩余 ${h}时${m}分</div>
-            ${!is_visitor ? `<button class="btn btn-danger" onclick="delPrivate(${p.id})">删除</button>` : ''}`;
+            <button class="btn btn-danger" onclick="delPrivate(${p.id})">删除</button>
+        `;
         privateList.appendChild(d);
     })
 }
-
-function delPrivate(id){
-    privateList = privateList.filter(p=>p.id!==id);
-    localStorage.setItem('private',JSON.stringify(privateList));
+function delPrivate(id) {
+    privateList = privateList.filter(p => p.id !== id);
+    localStorage.setItem('private', JSON.stringify(privateList));
     refreshPrivate();
 }
 
-function sendMsg(){
-    let name=msgName.value||'匿名';
-    let content=msgContent.value;
-    if(!content)return alert('请输入内容');
-    msgs.unshift({id:Date.now(),name,content});
-    localStorage.setItem('msgs',JSON.stringify(msgs));
+function sendMsg() {
+    let name = msgName.value || '匿名';
+    let content = msgContent.value;
+    if (!content) return alert('请输入内容');
+    msgs.unshift({ id: Date.now(), name, content });
+    localStorage.setItem('msgs', JSON.stringify(msgs));
     refreshMsg();
     closeModal('msgModal');
-    msgName.value='';
-    msgContent.value='';
+    msgName.value = '';
+    msgContent.value = '';
 }
-
-function refreshMsg(){
-    msgList.innerHTML='';
-    msgs.forEach(m=>{
-        let item=document.createElement('div');
-        item.className='item';
-        item.innerHTML=`<div class="item-name">${m.name}</div><div>${m.content}</div>
-            ${!is_visitor?`<div style="text-align:right">
-                <button onclick="delMsg(${m.id})" class="btn btn-danger" style="width:auto;padding:4px 8px;margin-top:4px">删</button>
-            </div>`:''}`;
+function refreshMsg() {
+    msgList.innerHTML = '';
+    msgs.forEach(m => {
+        let item = document.createElement('div');
+        item.className = 'item';
+        item.innerHTML = `
+            <div class="item-name">${m.name}</div>
+            <div>${m.content}</div>
+            <div style="text-align:right;margin-top:4px">
+                <button onclick="delMsg(${m.id})" style="font-size:10px;color:var(--sub);border:none;background:none">删除</button>
+            </div>
+        `;
         msgList.appendChild(item);
     })
 }
-
-function delMsg(id){
-    msgs=msgs.filter(m=>m.id!==id);
-    localStorage.setItem('msgs',JSON.stringify(msgs));
+function delMsg(id) {
+    msgs = msgs.filter(m => m.id !== id);
+    localStorage.setItem('msgs', JSON.stringify(msgs));
     refreshMsg();
 }
 
-function sendChat(){
-    let name=chatName.value||'匿名';
-    let content=chatContent.value;
-    if(!content)return alert('请输入内容');
-    chats.unshift({id:Date.now(),name,content});
-    localStorage.setItem('chats',JSON.stringify(chats));
+function sendChat() {
+    let name = chatName.value || '匿名';
+    let content = chatContent.value;
+    if (!content) return alert('请输入内容');
+    chats.unshift({ id: Date.now(), name, content });
+    localStorage.setItem('chats', JSON.stringify(chats));
     refreshChat();
     closeModal('chatModal');
-    chatName.value='';
-    chatContent.value='';
+    chatName.value = '';
+    chatContent.value = '';
 }
-
-function refreshChat(){
-    chatList.innerHTML='';
-    chats.forEach(c=>{
-        let item=document.createElement('div');
-        item.className='item';
-        item.innerHTML=`<div class="item-name">${c.name}</div><div>${c.content}</div>
-            ${!is_visitor?`<div style="text-align:right">
-                <button onclick="delChat(${c.id})" class="btn btn-danger" style="width:auto;padding:4px 8px;margin-top:4px">删</button>
-            </div>`:''}`;
+function refreshChat() {
+    chatList.innerHTML = '';
+    chats.forEach(c => {
+        let item = document.createElement('div');
+        item.className = 'item';
+        item.innerHTML = `
+            <div class="item-name">${c.name}</div>
+            <div>${c.content}</div>
+            <div style="text-align:right;margin-top:4px">
+                <button onclick="delChat(${c.id})" style="font-size:10px;color:var(--sub);border:none;background:none">删除</button>
+            </div>
+        `;
         chatList.appendChild(item);
     })
 }
-
-function delChat(id){
-    chats=chats.filter(c=>c.id!==id);
-    localStorage.setItem('chats',JSON.stringify(chats));
+function delChat(id) {
+    chats = chats.filter(c => c.id !== id);
+    localStorage.setItem('chats', JSON.stringify(chats));
     refreshChat();
 }
 
-function viewImg(url){
-    document.getElementById('viewerImg').src = url;
-    document.getElementById('imgViewer').style.display = 'grid';
+function refreshView() {
+    document.getElementById('viewCount').innerText = `👀 浏览量：${views}（仅自己可见）`;
 }
 
-function refreshView(){
-    document.getElementById('viewCount').innerText=`👀 浏览量：${views}（仅自己可见）`;
+function genQrcode() {
+    try {
+        QRCode.toCanvas(document.getElementById('qrcode'), window.location.href, {
+            width: 120, margin:1,
+            color:{ dark:'#ff70a6', light:'#fff' }
+        });
+    } catch(e){}
 }
 
-function refreshAll(){
+function refreshAll() {
     refreshProfile();
     refreshPosts();
     refreshPrivate();
@@ -697,11 +788,6 @@ function refreshAll(){
     refreshChat();
     refreshView();
 }
-
-// 启动
-renderAvatarOptions();
-lockForVisitors();
-refreshAll();
 </script>
 </body>
 </html>

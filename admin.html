@@ -58,130 +58,144 @@
 
 <script>
 window.onload = function(){
-    loadProfile()
-    show()
+    loadProfile();
+    show();
 }
 
 function loadProfile(){
     if(localStorage.user){
-        let u=JSON.parse(localStorage.user)
-        document.getElementById('name').value=u.name||''
-        document.getElementById('height').value=u.height||''
-        document.getElementById('weight').value=u.weight||''
-        document.getElementById('size').value=u.size||''
+        let u = JSON.parse(localStorage.user);
+        document.getElementById('name').value = u.name || '';
+        document.getElementById('height').value = u.height || '';
+        document.getElementById('weight').value = u.weight || '';
+        document.getElementById('size').value = u.size || '';
     }
 }
 
 function saveProfile(){
-    let user={
-        name:document.getElementById('name').value,
-        height:document.getElementById('height').value,
-        weight:document.getElementById('weight').value,
-        size:document.getElementById('size').value,
-        avatar:localStorage.user?JSON.parse(localStorage.user).avatar:'',
-        style:['可爱','御姐'],
-        sizeImg:''
-    }
-    let f=document.getElementById('sizeImg').files[0]
-    let avatarFile=document.getElementById('avatarInput').files[0]
+    let user = {
+        name: document.getElementById('name').value,
+        height: document.getElementById('height').value,
+        weight: document.getElementById('weight').value,
+        size: document.getElementById('size').value,
+        avatar: '',
+        style: ['可爱','御姐'],
+        sizeImg: ''
+    };
 
-    let count=0
-    function done(){
-        count++
-        if(count==2){
-            localStorage.user=JSON.stringify(user)
-            alert('保存成功')
-            loadProfile()
-        }
-    }
+    let f = document.getElementById('sizeImg').files[0];
+    let avatarFile = document.getElementById('avatarInput').files[0];
+    let oldUser = localStorage.user ? JSON.parse(localStorage.user) : {};
 
-    if(avatarFile){
-        let r=new FileReader()
-        r.onload=e=>{user.avatar=e.target.result;done()}
-        r.readAsDataURL(avatarFile)
-    }else{
-        done()
+    let tasks = [];
+
+    if (avatarFile) {
+        tasks.push(new Promise((resolve) => {
+            let r = new FileReader();
+            r.onload = e => { user.avatar = e.target.result; resolve(); };
+            r.readAsDataURL(avatarFile);
+        }));
+    } else {
+        user.avatar = oldUser.avatar || '';
     }
 
-    if(f){
-        let r=new FileReader()
-        r.onload=e=>{user.sizeImg=e.target.result;done()}
-        r.readAsDataURL(f)
-    }else{
-        if(localStorage.user){
-            user.sizeImg=JSON.parse(localStorage.user).sizeImg
-        }
-        done()
+    if (f) {
+        tasks.push(new Promise((resolve) => {
+            let r = new FileReader();
+            r.onload = e => { user.sizeImg = e.target.result; resolve(); };
+            r.readAsDataURL(f);
+        }));
+    } else {
+        user.sizeImg = oldUser.sizeImg || '';
     }
+
+    Promise.all(tasks).then(() => {
+        localStorage.user = JSON.stringify(user);
+        alert('保存成功');
+        loadProfile();
+    });
 }
 
 function publish(){
-    let t=document.getElementById('postTxt').value
-    let f=document.getElementById('postFile').files[0]
-    if(!t&&!f){alert('请输入内容或选择文件');return}
-    let p={txt:t,type:'',url:'',time:Date.now(),like:false,comments:[]}
+    let t = document.getElementById('postTxt').value;
+    let f = document.getElementById('postFile').files[0];
+    if(!t && !f) {
+        alert('请输入内容或选择文件');
+        return;
+    }
+
+    let p = {
+        txt: t,
+        type: '',
+        url: '',
+        time: Date.now(),
+        like: false,
+        comments: []
+    };
+
     if(f){
-        let r=new FileReader()
-        r.onload=e=>{
-            p.type=f.type.startsWith('image')?'img':'vid'
-            p.url=e.target.result
-            let a=JSON.parse(localStorage.posts||'[]')
-            a.unshift(p)
-            localStorage.posts=JSON.stringify(a)
-            alert('发布成功')
-            show()
-        }
-        r.readAsDataURL(f)
-    }else{
-        let a=JSON.parse(localStorage.posts||'[]')
-        a.unshift(p)
-        localStorage.posts=JSON.stringify(a)
-        alert('发布成功')
-        show()
+        let r = new FileReader();
+        r.onload = e => {
+            p.type = f.type.startsWith('image') ? 'img' : 'vid';
+            p.url = e.target.result;
+            let a = JSON.parse(localStorage.posts || '[]');
+            a.unshift(p);
+            localStorage.posts = JSON.stringify(a);
+            alert('发布成功');
+            show();
+        };
+        r.readAsDataURL(f);
+    } else {
+        let a = JSON.parse(localStorage.posts || '[]');
+        a.unshift(p);
+        localStorage.posts = JSON.stringify(a);
+        alert('发布成功');
+        show();
     }
 }
 
 function addPrivate(){
-    let f=document.getElementById('privateFile').files[0]
-    let h=document.getElementById('hour').value
-    if(!f)return
-    let r=new FileReader()
-    r.onload=e=>{
-        let p={
-            type:f.type.startsWith('image')?'img':'vid',
-            url:e.target.result,
-            exp:Date.now()+parseInt(h)
-        }
-        let a=JSON.parse(localStorage.private||'[]')
-        a.unshift(p)
-        localStorage.private=JSON.stringify(a)
-        alert('发布成功')
-    }
-    r.readAsDataURL(f)
+    let f = document.getElementById('privateFile').files[0];
+    let h = document.getElementById('hour').value;
+    if(!f) return;
+
+    let r = new FileReader();
+    r.onload = e => {
+        let p = {
+            type: f.type.startsWith('image') ? 'img' : 'vid',
+            url: e.target.result,
+            exp: Date.now() + parseInt(h)
+        };
+        let a = JSON.parse(localStorage.private || '[]');
+        a.unshift(p);
+        localStorage.private = JSON.stringify(a);
+        alert('发布成功');
+    };
+    r.readAsDataURL(f);
 }
 
 function show(){
-    let posts=JSON.parse(localStorage.posts||'[]')
-    let h=''
-    posts.forEach((o,i)=>{
-        h+=`<div class="card">${o.txt||''}${o.type=='img'?'< img src="'+o.url+'">':o.type=='vid'?'<video src="'+o.url+'" controls>':''}<br><button class="btn del" onclick="del(${i})">删除</button></div>`
-    })
-    document.getElementById('list').innerHTML=h
+    let posts = JSON.parse(localStorage.posts || '[]');
+    let h = '';
+    posts.forEach((o,i) => {
+        h += `<div class="card">${o.txt||''}${o.type=='img'?'< img src="'+o.url+'">':o.type=='vid'?'<video src="'+o.url+'" controls>':''}<br><button class="btn del" onclick="del(${i})">删除</button></div>`;
+    });
+    document.getElementById('list').innerHTML = h;
 }
 
 function del(i){
-    let a=JSON.parse(localStorage.posts||'[]')
-    a.splice(i,1)
-    localStorage.posts=JSON.stringify(a)
-    show()
+    let a = JSON.parse(localStorage.posts || '[]');
+    a.splice(i,1);
+    localStorage.posts = JSON.stringify(a);
+    show();
 }
 
 function view(img){
-    document.getElementById('viewImg').src=img.src
-    document.getElementById('imgViewer').style.display='grid'
+    document.getElementById('viewImg').src = img.src;
+    document.getElementById('imgViewer').style.display = 'grid';
 }
 function closeViewer(){
-    document.getElementById('imgViewer').style.display='none'
+    document.getElementById('imgViewer').style.display = 'none';
 }
 </script>
 </body>

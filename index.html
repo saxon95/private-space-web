@@ -89,24 +89,6 @@
             margin-top: 4px;
         }
 
-        #loading {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 9999;
-            display: grid;
-            place-items: center;
-        }
-        .loader {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--tag);
-            border-top: 4px solid var(--main);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
         .modal {
             position: fixed;
             inset: 0;
@@ -315,29 +297,17 @@
 </head>
 <body>
 
-<div id="loading"><div class="loader"></div></div>
-
 <div class="top-bar">
     <button class="theme-btn active" onclick="setTheme('')">清新</button>
     <button class="theme-btn" onclick="setTheme('theme-pink')">粉色</button>
     <button class="theme-btn" onclick="setTheme('theme-dark')">夜间</button>
 </div>
 
-<div id="ageModal" class="modal">
-    <div class="modal-content">
-        <h2>年龄验证</h2>
-        <p>可爱小空间 🔒</p>
-        <input type="number" id="birthYear" placeholder="出生年份">
-        <button class="btn" onclick="verifyAge()">进入</button>
-        <button class="btn btn-secondary" onclick="document.body.innerHTML='关闭'">退出</button>
-    </div>
-</div>
-
 <div id="imgViewer" onclick="closeViewer()">
     <img id="viewerImg">
 </div>
 
-<div id="app" class="hide">
+<div id="app" class="page active">
     <div id="home" class="page active">
         <button class="btn" id="publishBtn" onclick="openModal('postModal')">+ 发布动态</button>
 
@@ -506,40 +476,17 @@ let views = +localStorage.getItem('views') || 0
 let love = +localStorage.getItem('love') || 0
 let selectedAvatar = user.avatar;
 
-// 防截图/防下载/禁止调试
 document.oncontextmenu = e => e.preventDefault();
 document.onkeydown = e => {
     if(e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key==='I'||e.key==='J'||e.key==='C')))
         e.preventDefault();
 }
 
-// 主人验证
-function verifyAge(){
-    let v = document.getElementById('birthYear').value;
-    if(v === MY_SECRET_KEY){
-        is_visitor = false;
-        localStorage.setItem('IS_MYSELF','OK');
-    }
-    ageModal.classList.add('hide');
-    app.classList.remove('hide');
-    views++;
-    localStorage.setItem('views', views);
-    refreshAll();
-    genQrcode();
-    lockForVisitors();
-}
-
-// 访客权限：只禁编辑/发布/删除，允许留言私信
 function lockForVisitors(){
-    if(localStorage.getItem('IS_MYSELF') === 'OK'){
-        is_visitor = false;
-        return;
-    }
     is_visitor = true;
     document.getElementById('editBtn').classList.add('hide');
     document.getElementById('publishBtn').classList.add('hide');
     document.getElementById('privateBtn').classList.add('hide');
-    // 留言、私信按钮 保留显示
     document.querySelectorAll('.btn-danger').forEach(b => b.classList.add('hide'));
 }
 
@@ -670,7 +617,6 @@ function refreshPrivate(){
 }
 function delPrivate(id){ privateList=privateList.filter(p=>p.id!==id); localStorage.setItem('private',JSON.stringify(privateList)); refreshPrivate(); }
 
-// 留言 + 私信（所有人可用）
 function sendMsg(){
     let name=msgName.value||'匿名';
     let content=msgContent.value;
@@ -733,6 +679,11 @@ function refreshAll(){
     refreshChat();
     refreshView();
 }
+
+// 启动：直接进，不转圈
+lockForVisitors();
+refreshAll();
+genQrcode();
 </script>
 </body>
 </html>

@@ -68,25 +68,26 @@
 </div>
 
 <script>
-let user = JSON.parse(localStorage.user) || {}
-let posts = JSON.parse(localStorage.posts) || []
-let privates = JSON.parse(localStorage.private) || []
+let user = JSON.parse(localStorage.getItem('user')) || {}
+let posts = JSON.parse(localStorage.getItem('posts')) || []
+let privates = JSON.parse(localStorage.getItem('private')) || []
 
+// 修复：正确设置头像和尺寸图的src，而不是innerHTML
 document.getElementById('avatar').src = user.avatar || ''
 document.getElementById('name').innerText = user.name || '小可爱'
 document.getElementById('height').innerText = user.height || '--'
 document.getElementById('weight').innerText = user.weight || '--'
 document.getElementById('size').innerText = user.size || '--'
 
-if(user.sizeImg){
+if (user.sizeImg) {
     let img = document.getElementById('sizeImg')
     img.src = user.sizeImg
     img.style.display = 'block'
 }
 
 let tagHtml = ''
-;(user.style||[]).forEach(t=>{
-    tagHtml+=`<span class="tag">${t}</span>`
+;(user.style || []).forEach(t => {
+    tagHtml += `<span class="tag">${t}</span>`
 })
 document.getElementById('tags').innerHTML = tagHtml
 
@@ -125,7 +126,7 @@ function renderPosts(){
             </div>
             <div class="comment-box">
                 <input class="comment-input" id="commentInput${i}" placeholder="说点什么...">
-                <button class="btn" onclick="addComment(${i})" style="padding:6;width:100%;margin-top:4px;background:var(--main);color:#fff;border:none;border-radius:8px">发送</button>
+                <button class="btn" onclick="addComment(${i})" style="padding:6px;width:100%;margin-top:4px;background:var(--main);color:#fff;border:none;border-radius:8px">发送</button>
                 <div id="comments${i}">
                     ${(p.comments||[]).map(c=>`<div class="comment-item">• ${c}</div>`).join('')}
                 </div>

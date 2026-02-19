@@ -71,17 +71,36 @@ function tab(i){
   if(i==2)loadPreview()
 }
 
-function post(){
-  const text=document.getElementById('text').value
-  const posts=JSON.parse(localStorage.getItem('posts')||'[]')
-  const p={txt:text,type:'',url:'',time:Date.now()}
-  const img=document.getElementById('img').files[0]
-  const vid=document.getElementById('vid').files[0]
-  if(img)p.type='img',p.url=URL.createObjectURL(img)
-  if(vid)p.type='vid',p.url=URL.createObjectURL(vid)
-  posts.unshift(p)
-  localStorage.setItem('posts',JSON.stringify(posts))
-  alert('发布成功')
+// 辅助函数：将文件转为 Base64
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function post(){
+  const text = document.getElementById('text').value;
+  const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+  const p = { txt: text, type: '', url: '', time: Date.now() };
+
+  const img = document.getElementById('img').files[0];
+  const vid = document.getElementById('vid').files[0];
+
+  if (img) {
+    p.type = 'img';
+    p.url = await fileToBase64(img); // 存储 Base64
+  }
+  if (vid) {
+    p.type = 'vid';
+    p.url = await fileToBase64(vid); // 存储 Base64
+  }
+
+  posts.unshift(p);
+  localStorage.setItem('posts', JSON.stringify(posts));
+  alert('发布成功');
 }
 
 function saveProfile(){
@@ -95,17 +114,17 @@ function saveProfile(){
   alert('保存成功')
 }
 
-function saveShow(){
-  const p=[]
+async function saveShow(){
+  const p = [];
   for(let i=1;i<=4;i++){
-    const f=document.getElementById('p'+i).files[0]
-    if(f)p.push(URL.createObjectURL(f))
+    const f = document.getElementById('p'+i).files[0];
+    if(f) p.push(await fileToBase64(f)); // 存储 Base64
   }
-  const u=JSON.parse(localStorage.getItem('user')||'{}')
-  u.photos=p
-  localStorage.setItem('user',JSON.stringify(u))
-  alert('保存成功')
-  loadPreview()
+  const u = JSON.parse(localStorage.getItem('user') || '{}');
+  u.photos = p;
+  localStorage.setItem('user', JSON.stringify(u));
+  alert('保存成功');
+  loadPreview();
 }
 
 function loadPreview(){

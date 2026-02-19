@@ -129,13 +129,13 @@ profile.innerText = `昵称：${user.name || '无'}
 年龄：${user.age || '无'}
 尺寸：${user.size || '无'}`;
 
-// 四宫格照片墙（只读取管理员保存的图片，无预设）
+// 四宫格照片墙（只读取管理员保存的图片，无任何预设）
 const wall = document.getElementById('photoWall');
-wall.innerHTML = ''; // 清空
+wall.innerHTML = ''; // 清空所有内容
 const photos = user.photos || [];
 for (let i=0; i<4; i++) {
   const img = document.createElement('img');
-  img.src = photos[i] || ''; // 没有图片就留空，不显示占位图
+  img.src = photos[i] || ''; // 没有图片就留空，不显示任何东西
   wall.appendChild(img);
 }
 

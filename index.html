@@ -10,9 +10,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'PingFang SC', 'Helvetica Neue', sans-serif;
-            transition: background 0.3s, color 0.2s;
         }
-
         :root {
             --bg: #fdf6fb;
             --card: #ffffff;
@@ -40,15 +38,11 @@
             --tag: #333;
             --tagtext: #ffc2d1;
         }
-
         body {
             background: var(--bg);
             color: var(--text);
             padding-bottom: 80px;
-            -webkit-user-select: none;
-            user-select: none;
         }
-
         .hide { display: none !important; }
 
         .top-bar {
@@ -64,6 +58,7 @@
             background: var(--card);
             color: var(--text);
             font-size: 12px;
+            cursor: pointer;
         }
         .theme-btn.active {
             background: var(--main);
@@ -82,6 +77,7 @@
             background: var(--card);
             color: var(--main);
             font-size: 24px;
+            cursor: pointer;
         }
         .good-text {
             font-size: 12px;
@@ -128,16 +124,19 @@
             font-weight: 600;
             background: var(--main);
             color: #fff;
+            cursor: pointer;
         }
         .btn-secondary {
             background: var(--tag);
             color: var(--text);
             margin-top: 8px;
+            cursor: pointer;
         }
         .btn-danger {
             background: #ff6b8b;
             color: #fff;
             margin-top: 8px;
+            cursor: pointer;
         }
 
         .avatar-grid {
@@ -174,6 +173,7 @@
             text-align: center;
             font-size: 12px;
             color: var(--sub);
+            cursor: pointer;
         }
         .tab-item.active { color: var(--main); }
         .tab-item i {
@@ -228,7 +228,6 @@
             width: 100%;
             border-radius: 12px;
             margin-top: 10px;
-            pointer-events: none;
         }
 
         .private-space h3 {
@@ -275,12 +274,6 @@
             max-width: 100%;
             max-height: 90vh;
             border-radius: 12px;
-            pointer-events: none;
-        }
-
-        img {
-            pointer-events: none !important;
-            -webkit-user-drag: none !important;
         }
     </style>
 </head>
@@ -296,7 +289,7 @@
     <img id="viewerImg">
 </div>
 
-<div id="app" class="page active">
+<div id="app">
     <div id="home" class="page active">
         <button class="btn" id="publishBtn" onclick="openModal('postModal')">+ 发布动态</button>
 
@@ -327,10 +320,6 @@
             <div class="info-row">
                 <span class="info-label">尺寸</span>
                 <span id="sizeShow">--</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">尺寸说明</span>
-                <span>Cm / A-E</span>
             </div>
             <img id="sizeImgShow" class="size-img hide">
         </div>
@@ -436,9 +425,6 @@
 </div>
 
 <script>
-const MY_SECRET_KEY = "MY_SELF_2025";
-let is_visitor = true;
-
 const avatars = [
   "https://picsum.photos/id/64/200/200",
   "https://picsum.photos/id/65/200/200",
@@ -458,11 +444,7 @@ let views = +localStorage.getItem('views') || 0
 let love = +localStorage.getItem('love') || 0
 let selectedAvatar = user.avatar;
 
-document.oncontextmenu = e => e.preventDefault();
-document.onkeydown = e => {
-    if(e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key==='I'||e.key==='J'||e.key==='C')))
-        e.preventDefault();
-}
+let is_visitor = true;
 
 function lockForVisitors(){
     is_visitor = true;
@@ -477,20 +459,31 @@ function setTheme(cls) {
     document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
     if(event) event.target.classList.add('active');
 }
+
 function addGood() {
     love++;
     localStorage.setItem('love', love);
     document.getElementById('loveNum').innerText = love;
 }
-function closeViewer() { document.getElementById('imgViewer').style.display = 'none'; }
+
+function closeViewer() {
+    document.getElementById('imgViewer').style.display = 'none';
+}
+
 function go(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    event.currentTarget.classList.add('active');
+    if(event) event.currentTarget.classList.add('active');
 }
-function openModal(m) { document.getElementById(m).classList.remove('hide'); }
-function closeModal(m) { document.getElementById(m).classList.add('hide'); }
+
+function openModal(m) {
+    document.getElementById(m).classList.remove('hide');
+}
+
+function closeModal(m) {
+    document.getElementById(m).classList.add('hide');
+}
 
 function renderAvatarOptions() {
     let list = document.getElementById('avatarList');
@@ -523,6 +516,7 @@ function publishPost(){
     postText.value = '';
     postMedia.value = '';
 }
+
 function refreshPosts() {
     postList.innerHTML = '';
     posts.forEach(p => {
@@ -530,7 +524,7 @@ function refreshPosts() {
         d.className = 'card';
         d.innerHTML = `
             <div>${p.txt}</div>
-            ${p.type === 'img' ? `<img src="${p.url}" style="width:100%;border-radius:12px;margin-top:8px">` : ''}
+            ${p.type === 'img' ? `<img src="${p.url}" style="width:100%;border-radius:12px;margin-top:8px;cursor:pointer" onclick="viewImg('${p.url}')">` : ''}
             ${p.type === 'vid' ? `<video src="${p.url}" controls style="width:100%;margin-top:8px"></video>` : ''}
             ${!is_visitor ? `<div style="text-align:right;margin-top:8px">
                 <button onclick="delPost(${p.id})" class="btn btn-danger" style="width:auto;padding:6px 12px">删除</button>
@@ -538,7 +532,12 @@ function refreshPosts() {
         postList.appendChild(d);
     })
 }
-function delPost(id){ posts = posts.filter(x=>x.id!==id); localStorage.setItem('posts',JSON.stringify(posts)); refreshPosts(); }
+
+function delPost(id){
+    posts = posts.filter(x=>x.id!==id);
+    localStorage.setItem('posts',JSON.stringify(posts));
+    refreshPosts();
+}
 
 function saveProfile(){
     if(is_visitor) return;
@@ -554,18 +553,25 @@ function saveProfile(){
     refreshProfile();
     closeModal('editProfileModal');
 }
+
 function refreshProfile(){
     nameShow.innerText = user.name;
     avatarShow.src = user.avatar;
     heightShow.innerText = user.height || '--';
     weightShow.innerText = user.weight || '--';
     sizeShow.innerText = user.size || '--';
-    if(user.sizeImg){ sizeImgShow.src=user.sizeImg; sizeImgShow.classList.remove('hide'); }
-    else sizeImgShow.classList.add('hide');
+    if(user.sizeImg){
+        sizeImgShow.src=user.sizeImg;
+        sizeImgShow.classList.remove('hide');
+    } else {
+        sizeImgShow.classList.add('hide');
+    }
     let tagContainer = document.getElementById('styleTagsBelowAvatar');
     tagContainer.innerHTML = '';
     user.style.forEach(t=>{
-        let span=document.createElement('span'); span.className='style-tag'; span.innerText=t;
+        let span=document.createElement('span');
+        span.className='style-tag';
+        span.innerText=t;
         tagContainer.appendChild(span);
     })
 }
@@ -576,28 +582,41 @@ function addPrivate(){
     if(!f)return alert('请选择文件');
     let t=privateHour.value;
     let now=Date.now();
-    privateList.unshift({id:now, url:URL.createObjectURL(f), type:f.type.startsWith('image')?'img':'vid', exp:now + +t});
+    privateList.unshift({
+        id:now,
+        url:URL.createObjectURL(f),
+        type:f.type.startsWith('image')?'img':'vid',
+        exp:now + parseInt(t)
+    });
     localStorage.setItem('private',JSON.stringify(privateList));
     refreshPrivate();
     closeModal('privateModal');
     privateFile.value='';
 }
+
 function refreshPrivate(){
-    privateList=privateList.filter(p=>p.exp>Date.now());
-    privateList.innerHTML='';
+    privateList = privateList.filter(p=>p.exp>Date.now());
+    privateList.innerHTML = '';
     privateList.forEach(p=>{
-        let d=document.createElement('div'); d.className='card';
-        let h=Math.floor((p.exp-Date.now())/3600000);
-        let m=Math.floor(((p.exp-Date.now())%3600000)/60000);
-        d.innerHTML=`
-            ${p.type==='img'?`<img src="${p.url}" style="width:100%;border-radius:12px">`:'')}
+        let d=document.createElement('div');
+        d.className='card';
+        let left = p.exp - Date.now();
+        let h = Math.floor(left / 3600000);
+        let m = Math.floor((left % 3600000) / 60000);
+        d.innerHTML = `
+            ${p.type==='img'?`<img src="${p.url}" style="width:100%;border-radius:12px;cursor:pointer" onclick="viewImg('${p.url}')">`:'')}
             ${p.type==='vid'?`<video src="${p.url}" controls style="width:100%"></video>`:'')}
             <div class="countdown">剩余 ${h}时${m}分</div>
             ${!is_visitor ? `<button class="btn btn-danger" onclick="delPrivate(${p.id})">删除</button>` : ''}`;
         privateList.appendChild(d);
     })
 }
-function delPrivate(id){ privateList=privateList.filter(p=>p.id!==id); localStorage.setItem('private',JSON.stringify(privateList)); refreshPrivate(); }
+
+function delPrivate(id){
+    privateList = privateList.filter(p=>p.id!==id);
+    localStorage.setItem('private',JSON.stringify(privateList));
+    refreshPrivate();
+}
 
 function sendMsg(){
     let name=msgName.value||'匿名';
@@ -610,15 +629,25 @@ function sendMsg(){
     msgName.value='';
     msgContent.value='';
 }
+
 function refreshMsg(){
     msgList.innerHTML='';
     msgs.forEach(m=>{
-        let item=document.createElement('div'); item.className='item';
-        item.innerHTML=`<div class="item-name">${m.name}</div><div>${m.content}</div>${!is_visitor?`<div style="text-align:right"><button onclick="delMsg(${m.id})" class="btn btn-danger" style="width:auto;padding:4px 8px;margin-top:4px">删</button></div>`:''}`;
+        let item=document.createElement('div');
+        item.className='item';
+        item.innerHTML=`<div class="item-name">${m.name}</div><div>${m.content}</div>
+            ${!is_visitor?`<div style="text-align:right">
+                <button onclick="delMsg(${m.id})" class="btn btn-danger" style="width:auto;padding:4px 8px;margin-top:4px">删</button>
+            </div>`:''}`;
         msgList.appendChild(item);
     })
 }
-function delMsg(id){ msgs=msgs.filter(m=>m.id!==id); localStorage.setItem('msgs',JSON.stringify(msgs)); refreshMsg(); }
+
+function delMsg(id){
+    msgs=msgs.filter(m=>m.id!==id);
+    localStorage.setItem('msgs',JSON.stringify(msgs));
+    refreshMsg();
+}
 
 function sendChat(){
     let name=chatName.value||'匿名';
@@ -631,15 +660,30 @@ function sendChat(){
     chatName.value='';
     chatContent.value='';
 }
+
 function refreshChat(){
     chatList.innerHTML='';
     chats.forEach(c=>{
-        let item=document.createElement('div'); item.className='item';
-        item.innerHTML=`<div class="item-name">${c.name}</div><div>${c.content}</div>${!is_visitor?`<div style="text-align:right"><button onclick="delChat(${c.id})" class="btn btn-danger" style="width:auto;padding:4px 8px;margin-top:4px">删</button></div>`:''}`;
+        let item=document.createElement('div');
+        item.className='item';
+        item.innerHTML=`<div class="item-name">${c.name}</div><div>${c.content}</div>
+            ${!is_visitor?`<div style="text-align:right">
+                <button onclick="delChat(${c.id})" class="btn btn-danger" style="width:auto;padding:4px 8px;margin-top:4px">删</button>
+            </div>`:''}`;
         chatList.appendChild(item);
     })
 }
-function delChat(id){ chats=chats.filter(c=>c.id!==id); localStorage.setItem('chats',JSON.stringify(chats)); refreshChat(); }
+
+function delChat(id){
+    chats=chats.filter(c=>c.id!==id);
+    localStorage.setItem('chats',JSON.stringify(chats));
+    refreshChat();
+}
+
+function viewImg(url){
+    document.getElementById('viewerImg').src = url;
+    document.getElementById('imgViewer').style.display = 'grid';
+}
 
 function refreshView(){
     document.getElementById('viewCount').innerText=`👀 浏览量：${views}（仅自己可见）`;
@@ -655,6 +699,7 @@ function refreshAll(){
 }
 
 // 启动
+renderAvatarOptions();
 lockForVisitors();
 refreshAll();
 </script>

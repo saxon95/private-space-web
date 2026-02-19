@@ -10,14 +10,12 @@
             --light-card: #ffffff;
             --light-text: #1a1a1a;
             --light-sub: #666666;
-            --light-accent: #ff6b9d;
-            --light-border: #e5e5e5;
+            --light-accent: #ff8fb7;
             --dark-bg: #121212;
             --dark-card: #1e1e1e;
             --dark-text: #e0e0e0;
             --dark-sub: #a0a0a0;
-            --dark-accent: #ff8fb7;
-            --dark-border: #2c2c2c;
+            --dark-accent: #ff6b9d;
         }
         body.light {
             --bg: var(--light-bg);
@@ -25,7 +23,6 @@
             --text: var(--light-text);
             --sub: var(--light-sub);
             --accent: var(--light-accent);
-            --border: var(--light-border);
         }
         body.dark {
             --bg: var(--dark-bg);
@@ -33,7 +30,6 @@
             --text: var(--dark-text);
             --sub: var(--dark-sub);
             --accent: var(--dark-accent);
-            --border: var(--dark-border);
         }
         * {
             margin: 0;
@@ -53,7 +49,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #e5e5e5;
             position: sticky;
             top: 0;
             z-index: 10;
@@ -73,7 +69,7 @@
         .tabs {
             background: var(--card);
             display: flex;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #e5e5e5;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
@@ -141,16 +137,11 @@
             margin-bottom: 12px;
         }
         .post-media {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 4px;
             margin-bottom: 12px;
         }
         .post-media img, .post-media video {
             width: 100%;
             border-radius: 8px;
-            object-fit: cover;
-            aspect-ratio: 1;
         }
         .profile-card {
             background: var(--card);
@@ -177,7 +168,7 @@
             justify-content: space-around;
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid #e5e5e5;
         }
         .info-item {
             text-align: center;
@@ -223,7 +214,7 @@
             width: 100%;
             background: var(--card);
             padding: 12px 15px;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid #e5e5e5;
             display: flex;
             gap: 10px;
             align-items: flex-end;
@@ -232,7 +223,7 @@
             flex: 1;
             padding: 10px 14px;
             border-radius: 20px;
-            border: 1px solid var(--border);
+            border: 1px solid #e5e5e5;
             background: var(--bg);
             color: var(--text);
             font-size: 16px;
@@ -268,6 +259,7 @@
 
 <div class="tab-content" id="tab1">
     <div class="profile-card">
+        <!-- 头像标签直接写在 HTML 里 -->
         < img class="profile-avatar" id="avatar">
         <div class="profile-name" id="name"></div>
         <div class="profile-info">
@@ -284,7 +276,8 @@
                 <div class="info-label">尺寸</div>
             </div>
         </div>
-        < img id="sizeImg" class="size-img" style="display:none">
+        <!-- 尺寸图标签直接写在 HTML 里 -->
+        < img id="sizeImg" class="size-img" style="display: none;">
     </div>
 </div>
 
@@ -344,7 +337,7 @@ function renderMessages() {
     });
 }
 
-// 初始化页面
+// 初始化页面：只修改已有 DOM 元素的属性，不拼接 HTML
 document.getElementById('avatar').src = user.avatar || 'https://picsum.photos/200';
 document.getElementById('name').innerText = user.name || '博主';
 document.getElementById('height').innerText = user.height || '--';
@@ -357,7 +350,7 @@ if (user.sizeImg) {
     sizeImgEl.style.display = 'block';
 }
 
-// 渲染动态（仿朋友圈/微博卡片）
+// 渲染动态：用 createElement 构建，避免 innerHTML
 const postsContainer = document.getElementById('postsContainer');
 postsContainer.innerHTML = '';
 posts.forEach(p => {
@@ -366,13 +359,20 @@ posts.forEach(p => {
     
     const postHeader = document.createElement('div');
     postHeader.className = 'post-header';
-    postHeader.innerHTML = `
-        < img class="post-avatar" src="${user.avatar || 'https://picsum.photos/200'}">
-        <div>
-            <div class="post-name">${user.name || '博主'}</div>
-            <div class="post-time">${new Date(p.time).toLocaleString()}</div>
-        </div>
-    `;
+    const avatarImg = document.createElement('img');
+    avatarImg.className = 'post-avatar';
+    avatarImg.src = user.avatar || 'https://picsum.photos/200';
+    const nameDiv = document.createElement('div');
+    const nameText = document.createElement('div');
+    nameText.className = 'post-name';
+    nameText.innerText = user.name || '博主';
+    const timeText = document.createElement('div');
+    timeText.className = 'post-time';
+    timeText.innerText = new Date(p.time).toLocaleString();
+    nameDiv.appendChild(nameText);
+    nameDiv.appendChild(timeText);
+    postHeader.appendChild(avatarImg);
+    postHeader.appendChild(nameDiv);
     postCard.appendChild(postHeader);
     
     if (p.txt) {

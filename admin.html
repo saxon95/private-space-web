@@ -52,15 +52,10 @@
 </div>
 
 <div id="imgViewer" onclick="closeViewer()">
-    <img id="viewImg" style="max-width:90%;max-height:90vh">
+    < img id="viewImg" style="max-width:90%;max-height:90vh">
 </div>
 
 <script>
-// 强制清空旧错误数据
-localStorage.removeItem("posts");
-localStorage.removeItem("user");
-localStorage.removeItem("private");
-
 window.onload = function(){
     loadProfile();
     show();
@@ -93,18 +88,23 @@ function saveProfile(){
             user.sizeImg = e.target.result;
             localStorage.user = JSON.stringify(user);
             alert('保存成功');
+            loadProfile();
         }
         r.readAsDataURL(f);
     }else{
         localStorage.user = JSON.stringify(user);
         alert('保存成功');
+        loadProfile();
     }
 }
 
 function publish(){
     let t = document.getElementById('postTxt').value;
     let f = document.getElementById('postFile').files[0];
-    if(!t && !f) return;
+    if(!t && !f){
+        alert('请输入内容或选择文件');
+        return;
+    }
 
     let p = {
         txt: t,
@@ -161,7 +161,7 @@ function show(){
         html += '<div class="card">';
         html += item.txt || '';
         if(item.type == 'img'){
-            html += '<img src="'+item.url+'">';
+            html += '< img src="'+item.url+'">';
         }else if(item.type == 'vid'){
             html += '<video src="'+item.url+'" controls></video>';
         }

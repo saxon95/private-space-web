@@ -161,6 +161,16 @@
             border-radius: 8px;
             font-weight: bold;
         }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text);
+        }
     </style>
 </head>
 <body class="light">
@@ -197,8 +207,9 @@
 
 <button class="message-btn" onclick="openMessage()">💬</button>
 
-<div class="message-modal" id="messageModal">
-    <div class="modal-content">
+<div class="message-modal" id="messageModal" onclick="closeMessage(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="close-modal" onclick="closeMessage()">×</button>
         <div class="modal-title">发送消息</div>
         <textarea class="modal-input" id="messageInput" rows="4" placeholder="说点什么..."></textarea>
         <button class="modal-btn" onclick="sendMessage()">发送</button>
@@ -219,13 +230,20 @@ function openMessage() {
     document.getElementById('messageModal').style.display = 'flex';
 }
 
+function closeMessage(event) {
+    // 点击遮罩层或关闭按钮时关闭弹窗
+    if (!event || event.target === document.getElementById('messageModal') || event.target.classList.contains('close-modal')) {
+        document.getElementById('messageModal').style.display = 'none';
+    }
+}
+
 function sendMessage() {
     const text = document.getElementById('messageInput').value.trim();
     if (!text) return;
     messages.push({ text, time: Date.now() });
     localStorage.setItem('messages', JSON.stringify(messages));
     document.getElementById('messageInput').value = '';
-    document.getElementById('messageModal').style.display = 'none';
+    closeMessage();
     alert('消息已发送');
 }
 

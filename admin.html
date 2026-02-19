@@ -3,33 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private sexy space</title>
+    <title>管理后台</title>
     <style>
         :root {
-            --light-bg: #e6f2ff;
-            --light-card: #ffffff;
-            --light-text: #222;
-            --light-sub: #666;
-            --light-accent: #ff8fb7;
-            --dark-bg: #1a1a2e;
-            --dark-card: #16213e;
-            --dark-text: #eee;
-            --dark-sub: #aaa;
-            --dark-accent: #ff6b9d;
-        }
-        body.light {
-            --bg: var(--light-bg);
-            --card: var(--light-card);
-            --text: var(--light-text);
-            --sub: var(--light-sub);
-            --accent: var(--light-accent);
-        }
-        body.dark {
-            --bg: var(--dark-bg);
-            --card: var(--dark-card);
-            --text: var(--dark-text);
-            --sub: var(--dark-sub);
-            --accent: var(--dark-accent);
+            --bg: #e6f2ff;
+            --card: #ffffff;
+            --text: #222;
+            --sub: #666;
+            --accent: #ff8fb7;
         }
         * {
             margin: 0;
@@ -41,25 +22,33 @@
             background: var(--bg);
             color: var(--text);
             padding: 20px 15px 80px;
-            transition: all 0.3s;
         }
-        header {
+        .tabs {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            gap: 10px;
             margin-bottom: 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
-        h1 {
-            font-size: 20px;
-            color: var(--accent);
-        }
-        .theme-toggle {
+        .tab {
+            flex: 0 0 auto;
+            padding: 10px 16px;
+            text-align: center;
             background: var(--card);
-            border: none;
-            padding: 8px 12px;
             border-radius: 8px;
-            color: var(--text);
             cursor: pointer;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .tab.active {
+            background: var(--accent);
+            color: #fff;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
         }
         .card {
             background: var(--card);
@@ -67,141 +56,97 @@
             padding: 18px;
             margin-bottom: 14px;
         }
-        .profile {
-            text-align: center;
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 10px;
         }
-        .avatar {
-            width: 90px;
-            height: 90px;
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: #fff;
+        }
+        .title {
+            color: var(--accent);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 10px;
+            display: block;
         }
-        .name {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 8px;
+        .message-item {
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
         }
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #f0f0f030;
+        .message-text {
+            margin-bottom: 4px;
         }
-        .info-label {
+        .message-time {
+            font-size: 12px;
             color: var(--sub);
         }
-        .title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 12px;
-            color: var(--accent);
-        }
-        .post img, .post video {
-            width: 100%;
-            border-radius: 12px;
+        img, video {
+            max-width: 100%;
+            border-radius: 8px;
             margin-top: 8px;
         }
-        .post {
-            margin-bottom: 12px;
-            line-height: 1.5;
-        }
-        .message-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        .message-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-content {
-            background: var(--card);
-            width: 90%;
-            max-width: 400px;
-            border-radius: 16px;
-            padding: 20px;
-        }
-        .modal-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 16px;
-            color: var(--accent);
-        }
-        .modal-input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            margin-bottom: 12px;
-            background: var(--bg);
-            color: var(--text);
-        }
-        .modal-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
+        .del {
+            background: #ff6b8b;
+            margin-top: 10px;
         }
     </style>
 </head>
-<body class="light">
-<header>
-    <h1>Private sexy space</h1>
-    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
-</header>
-
-<div class="card profile">
-    < img class="avatar" id="avatar">
-    <div class="name" id="name"></div>
+<body>
+<div class="tabs">
+    <div class="tab active" onclick="switchTab(0)">博主资料</div>
+    <div class="tab" onclick="switchTab(1)">动态发布</div>
+    <div class="tab" onclick="switchTab(2)">消息中心</div>
 </div>
 
-<div class="card">
-    <div class="info-row">
-        <span class="info-label">身高</span>
-        <span id="height">--</span>
+<div class="tab-content active" id="tab0">
+    <div class="card">
+        <h3 class="title">⚙️ 博主资料</h3>
+        < img id="avatarPreview" class="avatar-preview" src="https://picsum.photos/200">
+        头像：<input type="file" id="avatarInput" accept="image/*" onchange="previewAvatar(event)">
+        <input placeholder="昵称" id="name">
+        <input placeholder="身高 cm" id="height">
+        <input placeholder="年龄" id="age">
+        <input placeholder="尺寸" id="size">
+        尺寸图：<input type="file" id="sizeImg" accept="image/*">
+        <button class="btn" onclick="saveProfile()">保存资料</button>
     </div>
-    <div class="info-row">
-        <span class="info-label">年龄</span>
-        <span id="age">--</span>
-    </div>
-    <div class="info-row">
-        <span class="info-label">尺寸</span>
-        <span id="size">--</span>
-    </div>
-    < img id="sizeImg" style="width:100%;border-radius:12px;margin-top:12px;display:none">
 </div>
 
-<div class="card">
-    <div class="title">📝 动态</div>
-    <div id="posts"></div>
+<div class="tab-content" id="tab1">
+    <div class="card">
+        <h3 class="title">📝 发布动态</h3>
+        <textarea placeholder="写点什么..." id="postTxt" rows="3"></textarea>
+        <input type="file" id="postFile" accept="image/*,video/*">
+        <button class="btn" onclick="publish()">发布</button>
+    </div>
+    <div class="card">
+        <h3 class="title">📌 动态管理</h3>
+        <div id="postsList"></div>
+    </div>
 </div>
 
-<button class="message-btn" onclick="openMessage()">💬</button>
-
-<div class="message-modal" id="messageModal">
-    <div class="modal-content">
-        <div class="modal-title">发送消息</div>
-        <textarea class="modal-input" id="messageInput" rows="4" placeholder="说点什么..."></textarea>
-        <button class="modal-btn" onclick="sendMessage()">发送</button>
+<div class="tab-content" id="tab2">
+    <div class="card">
+        <h3 class="title">💬 消息中心</h3>
+        <div id="messagesList"></div>
     </div>
 </div>
 
@@ -210,50 +155,127 @@ let user = JSON.parse(localStorage.getItem('user')) || {};
 let posts = JSON.parse(localStorage.getItem('posts')) || [];
 let messages = JSON.parse(localStorage.getItem('messages')) || [];
 
-function toggleTheme() {
-    document.body.classList.toggle('dark');
-    document.body.classList.toggle('light');
+function switchTab(index) {
+    document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', i === index);
+    });
+    document.querySelectorAll('.tab-content').forEach((c, i) => {
+        c.classList.toggle('active', i === index);
+    });
+    if (index === 2) renderMessages();
 }
 
-function openMessage() {
-    document.getElementById('messageModal').style.display = 'flex';
+function previewAvatar(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            document.getElementById('avatarPreview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
 }
 
-function sendMessage() {
-    const text = document.getElementById('messageInput').value.trim();
-    if (!text) return;
-    messages.push({ text, time: Date.now() });
-    localStorage.setItem('messages', JSON.stringify(messages));
-    document.getElementById('messageInput').value = '';
-    document.getElementById('messageModal').style.display = 'none';
-    alert('消息已发送');
+function saveProfile() {
+    const newUser = {
+        name: document.getElementById('name').value || user.name,
+        height: document.getElementById('height').value || user.height,
+        age: document.getElementById('age').value || user.age,
+        size: document.getElementById('size').value || user.size,
+        avatar: user.avatar,
+        sizeImg: user.sizeImg
+    };
+    const avatarFile = document.getElementById('avatarInput').files[0];
+    const sizeFile = document.getElementById('sizeImg').files[0];
+    let tasks = [];
+    if (avatarFile) {
+        tasks.push(new Promise(resolve => {
+            const r = new FileReader();
+            r.onload = e => { newUser.avatar = e.target.result; resolve(); };
+            r.readAsDataURL(avatarFile);
+        }));
+    }
+    if (sizeFile) {
+        tasks.push(new Promise(resolve => {
+            const r = new FileReader();
+            r.onload = e => { newUser.sizeImg = e.target.result; resolve(); };
+            r.readAsDataURL(sizeFile);
+        }));
+    }
+    Promise.all(tasks).then(() => {
+        localStorage.setItem('user', JSON.stringify(newUser));
+        alert('保存成功');
+    });
 }
 
-// 初始化页面
-document.getElementById('avatar').src = user.avatar || 'https://picsum.photos/200';
-document.getElementById('name').innerText = user.name || '博主';
-document.getElementById('height').innerText = user.height || '--';
-document.getElementById('age').innerText = user.age || '--';
-document.getElementById('size').innerText = user.size || '--';
-
-if (user.sizeImg) {
-    const sizeImgEl = document.getElementById('sizeImg');
-    sizeImgEl.src = user.sizeImg;
-    sizeImgEl.style.display = 'block';
+function publish() {
+    const txt = document.getElementById('postTxt').value;
+    const file = document.getElementById('postFile').files[0];
+    if (!txt && !file) return alert('请输入内容或选择文件');
+    const p = { txt, type: '', url: '', time: Date.now() };
+    if (file) {
+        const r = new FileReader();
+        r.onload = e => {
+            p.type = file.type.startsWith('image') ? 'img' : 'vid';
+            p.url = e.target.result;
+            posts.unshift(p);
+            localStorage.setItem('posts', JSON.stringify(posts));
+            alert('发布成功');
+            renderPosts();
+        };
+        r.readAsDataURL(file);
+    } else {
+        posts.unshift(p);
+        localStorage.setItem('posts', JSON.stringify(posts));
+        alert('发布成功');
+        renderPosts();
+    }
 }
 
-// 渲染动态
-let postHtml = '';
-posts.forEach(p => {
-    postHtml += `
-    <div class="post card">
-        ${p.txt || ''}
-        ${p.type === 'img' ? `< img src="${p.url}">` : ''}
-        ${p.type === 'vid' ? `<video src="${p.url}" controls></video>` : ''}
-    </div>
-    `;
-});
-document.getElementById('posts').innerHTML = postHtml;
+function renderPosts() {
+    let html = '';
+    posts.forEach((item, i) => {
+        html += `
+        <div class="post card">
+            ${item.txt || ''}
+            ${item.type === 'img' ? `< img src="${item.url}">` : ''}
+            ${item.type === 'vid' ? `<video src="${item.url}" controls></video>` : ''}
+            <button class="btn del" onclick="delPost(${i})">删除</button>
+        </div>
+        `;
+    });
+    document.getElementById('postsList').innerHTML = html;
+}
+
+function delPost(i) {
+    posts.splice(i, 1);
+    localStorage.setItem('posts', JSON.stringify(posts));
+    renderPosts();
+}
+
+function renderMessages() {
+    let html = '';
+    messages.forEach(m => {
+        const time = new Date(m.time).toLocaleString();
+        html += `
+        <div class="message-item">
+            <div class="message-text">${m.text}</div>
+            <div class="message-time">${time}</div>
+        </div>
+        `;
+    });
+    document.getElementById('messagesList').innerHTML = html || '<p>暂无消息</p >';
+}
+
+// 初始化
+document.getElementById('name').value = user.name || '';
+document.getElementById('height').value = user.height || '';
+document.getElementById('age').value = user.age || '';
+document.getElementById('size').value = user.size || '';
+if (user.avatar) {
+    document.getElementById('avatarPreview').src = user.avatar;
+}
+renderPosts();
 </script>
 </body>
 </html>

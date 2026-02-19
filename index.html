@@ -9,19 +9,15 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-
         body {
             background: #f2f2f7;
             padding-bottom: 80px;
         }
+        .hide { display: none !important; }
 
-        .hide {
-            display: none !important;
-        }
-
-        /* 加载动画 */
+        /* 加载 */
         #loading {
             position: fixed;
             inset: 0;
@@ -38,9 +34,7 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* 模态框 */
         .modal {
@@ -59,14 +53,8 @@
             max-width: 350px;
             text-align: center;
         }
-        .modal-content h2 {
-            margin-bottom: 16px;
-            color: #000;
-        }
-        .modal-content p {
-            color: #666;
-            margin-bottom: 20px;
-        }
+        .modal-content h2 { margin-bottom: 16px; }
+        .modal-content p { color: #666; margin-bottom: 16px; }
         .modal-content input,
         .modal-content textarea,
         .modal-content select {
@@ -74,7 +62,7 @@
             padding: 12px;
             border: 1px solid #d1d1d6;
             border-radius: 10px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             font-size: 16px;
         }
         .btn {
@@ -86,22 +74,11 @@
             font-weight: 600;
             cursor: pointer;
         }
-        .btn-primary {
-            background: #007aff;
-            color: #fff;
-        }
-        .btn-secondary {
-            background: #e5e5ea;
-            color: #000;
-            margin-top: 8px;
-        }
-        .btn-danger {
-            background: #ff3b30;
-            color: #fff;
-            margin-top: 8px;
-        }
+        .btn-primary { background: #007aff; color: #fff; }
+        .btn-secondary { background: #e5e5ea; margin-top: 8px; }
+        .btn-danger { background: #ff3b30; color: #fff; margin-top: 8px; }
 
-        /* 底部导航栏 */
+        /* 底部导航 */
         .tab-bar {
             position: fixed;
             bottom: 0;
@@ -117,87 +94,27 @@
             text-align: center;
             font-size: 12px;
             color: #8e8e93;
-            cursor: pointer;
         }
-        .tab-item.active {
-            color: #007aff;
-        }
+        .tab-item.active { color: #007aff; }
         .tab-item i {
             display: block;
-            font-size: 24px;
+            font-size: 22px;
             margin-bottom: 4px;
         }
 
         /* 页面 */
-        .page {
-            padding: 16px;
-            display: none;
-        }
-        .page.active {
-            display: block;
-        }
+        .page { padding: 16px; display: none; }
+        .page.active { display: block; }
 
-        /* 卡片 */
         .card {
             background: #fff;
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        /* 动态列表 */
-        .post {
-            background: #fff;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .post-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .post-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 12px;
-        }
-        .post-author {
-            font-weight: 600;
-        }
-        .post-time {
-            color: #8e8e93;
-            font-size: 12px;
-        }
-        .post-content {
-            margin-bottom: 12px;
-        }
-        .post-image, .post-video {
-            width: 100%;
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-        .post-actions {
-            display: flex;
-            gap: 16px;
-            margin-top: 12px;
-        }
-        .post-action {
-            color: #8e8e93;
-            cursor: pointer;
-        }
-        .post-action.active {
-            color: #ff3b30;
         }
 
         /* 个人秀 */
-        .profile-header {
-            text-align: center;
-            padding: 24px;
-        }
+        .profile-header { text-align: center; padding: 24px; }
         .avatar {
             width: 100px;
             height: 100px;
@@ -206,27 +123,24 @@
             margin-bottom: 16px;
             cursor: pointer;
         }
-        .name {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .bio {
-            color: #8e8e93;
-            font-size: 16px;
-        }
+        .name { font-size: 24px; font-weight: 700; }
+        .bio { color: #8e8e93; margin-top: 4px; }
         .info-row {
             display: flex;
             justify-content: space-between;
             padding: 12px 0;
             border-bottom: 1px solid #f2f2f7;
         }
-        .info-label {
-            color: #8e8e93;
+        .info-label { color: #8e8e93; }
+        .size-img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-top: 8px;
         }
-        .info-value {
-            font-weight: 500;
-        }
+
+        /* 风格标签 */
         .style-tags {
             display: flex;
             flex-wrap: wrap;
@@ -235,41 +149,27 @@
         }
         .style-tag {
             background: #e5e5ea;
-            color: #000;
             padding: 6px 12px;
             border-radius: 16px;
             font-size: 12px;
         }
 
         /* 私密空间 */
-        .private-space {
-            margin-top: 16px;
-        }
         .private-space h3 {
             margin-bottom: 12px;
             color: #ff3b30;
         }
-        .expired {
-            color: #ff3b30;
-            font-size: 12px;
-            margin-top: 4px;
-        }
         .countdown {
             color: #007aff;
             font-size: 12px;
-            margin-top: 4px;
+            margin: 6px 0;
         }
 
-        /* 私密云 */
-        .empty-state {
+        /* 私密云空状态 */
+        .empty {
             text-align: center;
             padding: 60px 20px;
-            color: #8e8e93;
-        }
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 16px;
-            display: block;
+            color: #999;
         }
     </style>
 </head>
@@ -281,396 +181,299 @@
 <div id="ageModal" class="modal">
     <div class="modal-content">
         <h2>年龄验证</h2>
-        <p>本内容仅限18岁以上用户访问</p>
-        <input type="number" id="birthYear" placeholder="请输入您的出生年份">
+        <p>仅限18岁以上访问</p>
+        <input type="number" id="birthYear" placeholder="输入出生年份">
         <button class="btn btn-primary" onclick="verifyAge()">确认进入</button>
-        <button class="btn btn-secondary" onclick="document.body.innerHTML='<h1>访问已拒绝</h1>'">未满18岁</button>
+        <button class="btn btn-secondary" onclick="document.body.innerHTML='访问已拒绝'">退出</button>
     </div>
 </div>
 
-<!-- 发布动态模态框 -->
+<!-- 发布普通动态 -->
 <div id="postModal" class="modal hide">
     <div class="modal-content">
         <h2>发布动态</h2>
-        <textarea id="postText" placeholder="分享你的想法..."></textarea>
+        <textarea id="postText" placeholder="分享..."></textarea>
         <input type="file" id="postMedia" accept="image/*,video/*">
         <button class="btn btn-primary" onclick="publishPost()">发布</button>
         <button class="btn btn-secondary" onclick="closeModal('postModal')">取消</button>
     </div>
 </div>
 
-<!-- 编辑个人资料模态框 -->
+<!-- 编辑个人资料 → 尺寸可上传图片 + 超多风格 -->
 <div id="editProfileModal" class="modal hide">
     <div class="modal-content">
         <h2>编辑资料</h2>
         <input type="text" id="editName" placeholder="昵称">
-        <input type="number" id="editHeight" placeholder="身高 (cm)">
-        <input type="number" id="editWeight" placeholder="体重 (kg)">
-        <input type="text" id="editSize" placeholder="尺寸 (cm/A-E)">
-        <input type="text" id="editStyle" placeholder="风格（如：性感、纯欲）">
-        <input type="file" id="editAvatar" accept="image/*">
+        <input type="number" id="editHeight" placeholder="身高 cm">
+        <input type="number" id="editWeight" placeholder="体重 kg">
+        <input type="text" id="editSize" placeholder="尺寸 cm/A-E">
+        <input type="file" id="editSizeImg" accept="image/*">
+        <small style="color:#666">尺寸图片</small>
+
+        <select id="editStyle" multiple size="9">
+            <option>可爱</option>
+            <option>呆萌</option>
+            <option>高冷</option>
+            <option>萝莉</option>
+            <option>御姐</option>
+            <option>网瘾少年</option>
+            <option>性感</option>
+            <option>纯欲</option>
+            <option>诱惑</option>
+        </select>
+        <small>可多选风格</small>
+
+        <input type="file" id="editAvatar" accept="image/*" style="margin-top:12px">
         <button class="btn btn-primary" onclick="saveProfile()">保存</button>
         <button class="btn btn-secondary" onclick="closeModal('editProfileModal')">取消</button>
     </div>
 </div>
 
-<!-- 发布私密内容模态框 -->
-<div id="privatePostModal" class="modal hide">
+<!-- 发布私密限时内容 -->
+<div id="privateModal" class="modal hide">
     <div class="modal-content">
-        <h2>发布私密内容</h2>
-        <p>内容将在限时结束后自动删除</p>
-        <input type="file" id="privateMedia" accept="image/*,video/*">
-        <select id="privateDuration">
+        <h2>私密发布</h2>
+        <input type="file" id="privateFile" accept="image/*,video/*">
+        <select id="privateHour">
             <option value="3600000">1小时</option>
-            <option value="7200000">2小时</option>
-            <option value="14400000">4小时</option>
-            <option value="28800000">8小时</option>
             <option value="86400000">24小时</option>
         </select>
-        <button class="btn btn-primary" onclick="publishPrivatePost()">发布</button>
-        <button class="btn btn-secondary" onclick="closeModal('privatePostModal')">取消</button>
+        <button class="btn btn-primary" onclick="addPrivate()">发布</button>
+        <button class="btn btn-secondary" onclick="closeModal('privateModal')">取消</button>
     </div>
 </div>
 
-<!-- 主内容 -->
+<!-- 主界面 -->
 <div id="app" class="hide">
-    <!-- 1. 首页 -->
+    <!-- 首页 -->
     <div id="home" class="page active">
-        <button class="btn btn-primary" style="margin-bottom: 16px;" onclick="openModal('postModal')">+ 发布动态</button>
-        <div id="postList">
-            <!-- 动态列表将由JS动态生成 -->
-        </div>
+        <button class="btn btn-primary" onclick="openModal('postModal')">+ 发布动态</button>
+        <div id="postList" style="margin-top:16px"></div>
     </div>
 
-    <!-- 2. 个人秀 -->
-    <div id="showcase" class="page">
+    <!-- 个人秀 -->
+    <div id="profilePage" class="page">
         <div class="card profile-header">
-            <img class="avatar" id="avatar" src="https://picsum.photos/200/200?1" alt="Avatar" onclick="openModal('editProfileModal')">
-            <div class="name" id="profileName">用户</div>
-            <div class="bio" id="profileBio">点击头像编辑资料</div>
-            <div class="style-tags" id="styleTags"></div>
+            <img class="avatar" id="avatarShow" onclick="openModal('editProfileModal')">
+            <div class="name" id="nameShow"></div>
+            <div class="bio" id="styleShow"></div>
+            <div class="style-tags" id="tagList"></div>
         </div>
 
         <div class="card">
             <div class="info-row">
                 <span class="info-label">身高</span>
-                <span class="info-value" id="profileHeight">--</span>
+                <span id="heightShow">--</span>
             </div>
             <div class="info-row">
                 <span class="info-label">体重</span>
-                <span class="info-value" id="profileWeight">--</span>
+                <span id="weightShow">--</span>
             </div>
             <div class="info-row">
                 <span class="info-label">尺寸</span>
-                <span class="info-value" id="profileSize">--</span>
+                <span id="sizeShow">--</span>
             </div>
+            <img id="sizeImgShow" class="size-img hide">
         </div>
 
-        <!-- 新增：私密空间 -->
+        <!-- 私密空间 -->
         <div class="card private-space">
             <h3>🔒 私密空间</h3>
-            <button class="btn btn-primary" style="margin-bottom: 16px;" onclick="openModal('privatePostModal')">+ 发布限时内容</button>
-            <div id="privatePostList">
-                <!-- 私密内容列表将由JS动态生成 -->
-            </div>
+            <button class="btn btn-primary" onclick="openModal('privateModal')">发布限时照片/视频</button>
+            <div id="privateList" style="margin-top:16px"></div>
         </div>
 
         <button class="btn btn-primary" onclick="openModal('editProfileModal')">编辑资料</button>
     </div>
 
-    <!-- 3. 私密云 -->
-    <div id="private-cloud" class="page">
-        <div class="empty-state">
-            <i>🔒</i>
-            <h3>私密云</h3>
-            <p>这里是你的专属空间，消息和互动将在这里显示</p>
+    <!-- 私密云 -->
+    <div id="privateCloud" class="page">
+        <div class="empty">
+            <div style="font-size:40px">🔒</div>
+            <div style="margin-top:16px">私密云</div>
         </div>
     </div>
 
-    <!-- 底部导航 -->
+    <!-- 底部栏 -->
     <div class="tab-bar">
-        <div class="tab-item active" onclick="switchPage('home')">
-            <i>🏠</i>
-            <span>首页</span>
-        </div>
-        <div class="tab-item" onclick="switchPage('showcase')">
-            <i>✨</i>
-            <span>个人秀</span>
-        </div>
-        <div class="tab-item" onclick="switchPage('private-cloud')">
-            <i>☁️</i>
-            <span>私密云</span>
-        </div>
+        <div class="tab-item active" onclick="go('home')"><i>🏠</i><span>首页</span></div>
+        <div class="tab-item" onclick="go('profilePage')"><i>✨</i><span>个人秀</span></div>
+        <div class="tab-item" onclick="go('privateCloud')"><i>☁️</i><span>私密云</span></div>
     </div>
 </div>
 
 <script>
-    // 数据存储
-    let userData = JSON.parse(localStorage.getItem('userData')) || {
-        name: '用户',
-        height: '',
-        weight: '',
-        size: '',
-        style: '',
-        avatar: 'https://picsum.photos/200/200?1'
-    };
+// 数据
+let user = JSON.parse(localStorage.getItem('user')) || {
+    name: '用户',
+    height: '', weight: '', size: '',
+    avatar: '', sizeImg: '', style: []
+}
+let posts = JSON.parse(localStorage.getItem('posts')) || []
+let privateList = JSON.parse(localStorage.getItem('private')) || []
 
-    let posts = JSON.parse(localStorage.getItem('posts')) || [
-        {
-            id: 1,
-            author: '用户',
-            avatar: 'https://picsum.photos/200/200?1',
-            time: '刚刚',
-            content: '欢迎来到私密云！',
-            media: 'https://picsum.photos/400/200?1',
-            type: 'image',
-            likes: 0
-        }
-    ];
-
-    let privatePosts = JSON.parse(localStorage.getItem('privatePosts')) || [];
-
-    // 页面加载
-    window.onload = () => {
-        setTimeout(() => document.getElementById('loading').classList.add('hide'), 500);
-        if (localStorage.getItem('ageVerified')) {
-            document.getElementById('ageModal').classList.add('hide');
-            document.getElementById('app').classList.remove('hide');
-            renderPosts();
-            renderProfile();
-            renderPrivatePosts(); // 渲染私密内容
-        }
-    };
-
-    // 年龄验证
-    function verifyAge() {
-        const year = document.getElementById('birthYear').value;
-        if (!year || year.length < 4) {
-            alert('请输入正确的出生年份');
-            return;
-        }
-        const age = new Date().getFullYear() - parseInt(year);
-        if (age >= 18) {
-            localStorage.setItem('ageVerified', 'true');
-            document.getElementById('ageModal').classList.add('hide');
-            document.getElementById('app').classList.remove('hide');
-            renderPosts();
-            renderProfile();
-            renderPrivatePosts();
-        } else {
-            alert('未满18岁，禁止访问');
-        }
+// 加载
+window.onload = () => {
+    setTimeout(()=>loading.classList.add('hide'),500)
+    if(localStorage.getItem('age')){
+        ageModal.classList.add('hide')
+        app.classList.remove('hide')
+        refreshAll()
     }
+}
 
-    // 页面切换
-    function switchPage(pageId) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        event.currentTarget.classList.add('active');
-    }
+// 年龄验证
+function verifyAge(){
+    let y = +birthYear.value
+    if(!y || new Date().getFullYear()-y <18) return alert('未满18岁禁止访问')
+    localStorage.setItem('age',1)
+    ageModal.classList.add('hide')
+    app.classList.remove('hide')
+    refreshAll()
+}
 
-    // 模态框操作
-    function openModal(modalId) {
-        document.getElementById(modalId).classList.remove('hide');
-    }
-    function closeModal(modalId) {
-        document.getElementById(modalId).classList.add('hide');
-    }
+// 页面切换
+function go(id){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+    document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'))
+    document.getElementById(id).classList.add('active')
+    event.currentTarget.classList.add('active')
+}
 
-    // 发布动态
-    function publishPost() {
-        const text = document.getElementById('postText').value;
-        const mediaFile = document.getElementById('postMedia').files[0];
-        if (!text && !mediaFile) {
-            alert('请输入内容或选择媒体文件');
-            return;
-        }
+function openModal(m){ document.getElementById(m).classList.remove('hide') }
+function closeModal(m){ document.getElementById(m).classList.add('hide') }
 
-        let mediaUrl = '';
-        let mediaType = '';
-        if (mediaFile) {
-            mediaUrl = URL.createObjectURL(mediaFile);
-            mediaType = mediaFile.type.startsWith('image/') ? 'image' : 'video';
-        }
+// 发布普通动态
+function publishPost(){
+    let txt = postText.value
+    let file = postMedia.files[0]
+    if(!txt && !file) return alert('请输入内容或选择文件')
+    let url = file ? URL.createObjectURL(file) : ''
+    let type = file?.type.startsWith('image') ? 'img' : file?.type.startsWith('video') ? 'vid' : ''
+    posts.unshift({id:Date.now(),txt,url,type})
+    localStorage.setItem('posts',JSON.stringify(posts))
+    refreshPosts()
+    closeModal('postModal')
+    postText.value=''
+    postMedia.value=''
+}
 
-        const newPost = {
-            id: Date.now(),
-            author: userData.name,
-            avatar: userData.avatar,
-            time: '刚刚',
-            content: text,
-            media: mediaUrl,
-            type: mediaType,
-            likes: 0
-        };
+// 渲染动态
+function refreshPosts(){
+    postList.innerHTML = ''
+    posts.forEach(p=>{
+        let d = document.createElement('div')
+        d.className='card'
+        d.innerHTML = `
+            <div>${p.txt}</div>
+            ${p.type=='img'?`<img src="${p.url}" style="width:100%;border-radius:10px;margin-top:8px">`:''}
+            ${p.type=='vid'?`<video src="${p.url}" controls style="width:100%;margin-top:8px"></video>`:''}
+            <div style="text-align:right;margin-top:8px">
+                <button onclick="delPost(${p.id})" style="color:red;border:none;background:none">删除</button>
+            </div>
+        `
+        postList.appendChild(d)
+    })
+}
+function delPost(id){
+    posts = posts.filter(x=>x.id!=id)
+    localStorage.setItem('posts',JSON.stringify(posts))
+    refreshPosts()
+}
 
-        posts.unshift(newPost);
-        localStorage.setItem('posts', JSON.stringify(posts));
-        renderPosts();
-        closeModal('postModal');
-    }
+// 保存资料（尺寸图片 + 多风格）
+function saveProfile(){
+    user.name = editName.value || user.name
+    user.height = editHeight.value
+    user.weight = editWeight.value
+    user.size = editSize.value
 
-    // 渲染动态列表
-    function renderPosts() {
-        const postList = document.getElementById('postList');
-        postList.innerHTML = '';
-        posts.forEach(post => {
-            const postElement = document.createElement('div');
-            postElement.className = 'post';
-            postElement.id = `post-${post.id}`;
-            postElement.innerHTML = `
-                <div class="post-header">
-                    <img class="post-avatar" src="${post.avatar}" alt="Avatar">
-                    <div>
-                        <div class="post-author">${post.author}</div>
-                        <div class="post-time">${post.time}</div>
-                    </div>
-                </div>
-                <div class="post-content">${post.content}</div>
-                ${post.type === 'image' ? `<img class="post-image" src="${post.media}" alt="Post image">` : ''}
-                ${post.type === 'video' ? `<video class="post-video" src="${post.media}" controls></video>` : ''}
-                <div class="post-actions">
-                    <span class="post-action ${post.likes > 0 ? 'active' : ''}" onclick="likePost(${post.id})">❤️ ${post.likes}</span>
-                    <span class="post-action" onclick="commentPost(${post.id})">💬 评论</span>
-                    <span class="post-action" onclick="deletePost(${post.id})">🗑️ 删除</span>
-                </div>
-            `;
-            postList.appendChild(postElement);
-        });
-    }
+    let ava = editAvatar.files[0]
+    if(ava) user.avatar = URL.createObjectURL(ava)
 
-    // 点赞动态
-    function likePost(postId) {
-        const post = posts.find(p => p.id === postId);
-        if (post) {
-            post.likes++;
-            localStorage.setItem('posts', JSON.stringify(posts));
-            renderPosts();
-        }
-    }
+    let simg = editSizeImg.files[0]
+    if(simg) user.sizeImg = URL.createObjectURL(simg)
 
-    // 评论动态
-    function commentPost(postId) {
-        alert('评论功能开发中...');
-    }
+    let s = []
+    for(let opt of editStyle.selectedOptions) s.push(opt.value)
+    user.style = s
 
-    // 删除动态
-    function deletePost(postId) {
-        if (confirm('确定要删除这条动态吗？')) {
-            posts = posts.filter(p => p.id !== postId);
-            localStorage.setItem('posts', JSON.stringify(posts));
-            renderPosts();
-        }
-    }
+    localStorage.setItem('user',JSON.stringify(user))
+    refreshProfile()
+    closeModal('editProfileModal')
+}
 
-    // 渲染个人资料
-    function renderProfile() {
-        document.getElementById('avatar').src = userData.avatar;
-        document.getElementById('profileName').innerText = userData.name;
-        document.getElementById('profileHeight').innerText = userData.height || '--';
-        document.getElementById('profileWeight').innerText = userData.weight || '--';
-        document.getElementById('profileSize').innerText = userData.size || '--';
-        document.getElementById('profileBio').innerText = userData.style || '点击头像编辑资料';
+// 渲染个人秀
+function refreshProfile(){
+    nameShow.innerText = user.name
+    avatarShow.src = user.avatar || 'https://picsum.photos/200/200'
+    heightShow.innerText = user.height || '--'
+    weightShow.innerText = user.weight || '--'
+    sizeShow.innerText = user.size || '--'
 
-        const styleTags = document.getElementById('styleTags');
-        styleTags.innerHTML = '';
-        if (userData.style) {
-            userData.style.split('、').forEach(style => {
-                const tag = document.createElement('span');
-                tag.className = 'style-tag';
-                tag.innerText = style;
-                styleTags.appendChild(tag);
-            });
-        }
-    }
+    if(user.sizeImg){
+        sizeImgShow.src = user.sizeImg
+        sizeImgShow.classList.remove('hide')
+    } else sizeImgShow.classList.add('hide')
 
-    // 保存个人资料
-    function saveProfile() {
-        userData.name = document.getElementById('editName').value || userData.name;
-        userData.height = document.getElementById('editHeight').value;
-        userData.weight = document.getElementById('editWeight').value;
-        userData.size = document.getElementById('editSize').value;
-        userData.style = document.getElementById('editStyle').value;
+    styleShow.innerText = user.style.join(' ') || '点击编辑风格'
+    tagList.innerHTML = ''
+    user.style.forEach(t=>{
+        let span = document.createElement('span')
+        span.className='style-tag'
+        span.innerText = t
+        tagList.appendChild(span)
+    })
+}
 
-        const avatarFile = document.getElementById('editAvatar').files[0];
-        if (avatarFile) {
-            userData.avatar = URL.createObjectURL(avatarFile);
-        }
+// 私密限时发布
+function addPrivate(){
+    let f = privateFile.files[0]
+    if(!f) return alert('请选择图片或视频')
+    let t = privateHour.value
+    let now = Date.now()
+    privateList.unshift({
+        id:now, url:URL.createObjectURL(f),
+        type:f.type.startsWith('image')?'img':'vid',
+        exp:now + +t
+    })
+    localStorage.setItem('private',JSON.stringify(privateList))
+    refreshPrivate()
+    closeModal('privateModal')
+    privateFile.value=''
+}
 
-        localStorage.setItem('userData', JSON.stringify(userData));
-        renderProfile();
-        renderPosts(); // 更新动态中的头像
-        closeModal('editProfileModal');
-    }
+// 刷新私密空间
+function refreshPrivate(){
+    privateList = privateList.filter(p=>p.exp > Date.now())
+    localStorage.setItem('private',JSON.stringify(privateList))
+    privateList.innerHTML = ''
+    privateList.forEach(p=>{
+        let d = document.createElement('div')
+        d.className='card'
+        let left = p.exp - Date.now()
+        let h = Math.floor(left/3600000)
+        let m = Math.floor((left%3600000)/60000)
+        d.innerHTML = `
+            ${p.type=='img'?`<img src="${p.url}" style="width:100%;border-radius:10px">`:''}
+            ${p.type=='vid'?`<video src="${p.url}" controls style="width:100%"></video>`:''}
+            <div class="countdown">剩余 ${h}时${m}分</div>
+            <button class="btn btn-danger" onclick="delPrivate(${p.id})">立即删除</button>
+        `
+        privateList.appendChild(d)
+    })
+}
+function delPrivate(id){
+    privateList = privateList.filter(p=>p.id!=id)
+    localStorage.setItem('private',JSON.stringify(privateList))
+    refreshPrivate()
+}
 
-    // --- 新增：私密空间功能 ---
-    function publishPrivatePost() {
-        const mediaFile = document.getElementById('privateMedia').files[0];
-        const duration = parseInt(document.getElementById('privateDuration').value);
-
-        if (!mediaFile) {
-            alert('请选择要发布的照片或视频');
-            return;
-        }
-
-        const mediaUrl = URL.createObjectURL(mediaFile);
-        const mediaType = mediaFile.type.startsWith('image/') ? 'image' : 'video';
-        const now = Date.now();
-        const expireAt = now + duration;
-
-        const newPrivatePost = {
-            id: Date.now(),
-            media: mediaUrl,
-            type: mediaType,
-            createdAt: now,
-            expireAt: expireAt
-        };
-
-        privatePosts.unshift(newPrivatePost);
-        localStorage.setItem('privatePosts', JSON.stringify(privatePosts));
-        renderPrivatePosts();
-        closeModal('privatePostModal');
-    }
-
-    function renderPrivatePosts() {
-        const list = document.getElementById('privatePostList');
-        list.innerHTML = '';
-        const now = Date.now();
-
-        // 过滤掉已过期的内容
-        privatePosts = privatePosts.filter(p => p.expireAt > now);
-        localStorage.setItem('privatePosts', JSON.stringify(privatePosts));
-
-        if (privatePosts.length === 0) {
-            list.innerHTML = '<p style="color: #8e8e93; text-align: center;">暂无私密内容</p>';
-            return;
-        }
-
-        privatePosts.forEach(p => {
-            const item = document.createElement('div');
-            item.className = 'post';
-            const remaining = p.expireAt - Date.now();
-            const hours = Math.floor(remaining / 3600000);
-            const minutes = Math.floor((remaining % 3600000) / 60000);
-
-            item.innerHTML = `
-                ${p.type === 'image' ? `<img class="post-image" src="${p.media}">` : ''}
-                ${p.type === 'video' ? `<video class="post-video" src="${p.media}" controls></video>` : ''}
-                <div class="countdown">剩余 ${hours}小时 ${minutes}分钟后自动删除</div>
-                <button class="btn btn-danger" onclick="deletePrivatePost(${p.id})">立即删除</button>
-            `;
-            list.appendChild(item);
-        });
-    }
-
-    function deletePrivatePost(id) {
-        if (confirm('确定要立即删除这条私密内容吗？')) {
-            privatePosts = privatePosts.filter(p => p.id !== id);
-            localStorage.setItem('privatePosts', JSON.stringify(privatePosts));
-            renderPrivatePosts();
-        }
-    }
+function refreshAll(){
+    refreshProfile()
+    refreshPosts()
+    refreshPrivate()
+}
 </script>
 </body>
 </html>

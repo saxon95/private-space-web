@@ -14,11 +14,6 @@ header{background:#fff;padding:16px;display:flex;justify-content:space-between;b
 .page{display:none;padding:10px}
 .page.active{display:block}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:10px}
-.grid-4{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
-.grid-4 img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px}
-.fold-section{max-height:0;overflow:hidden;transition:all .3s}
-.fold-section.open{max-height:500px}
-.toggle-btn{margin-top:10px;text-align:center;color:#666;cursor:pointer}
 </style>
 </head>
 <body>
@@ -38,13 +33,7 @@ header{background:#fff;padding:16px;display:flex;justify-content:space-between;b
 </div>
 
 <div class="page" id="p1">
-  <div class="card">
-    <div id="profileInfo"></div>
-    <div class="toggle-btn" onclick="toggleShow()">Show · 展开/收起</div>
-    <div class="fold-section" id="showArea">
-      <div class="grid-4" id="photoWall"></div>
-    </div>
-  </div>
+  <div class="card" id="profileInfo"></div>
 </div>
 
 <div class="page" id="p2">
@@ -60,7 +49,6 @@ function tab(i){
   document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j==i))
   document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',j==i))
 }
-function toggleShow(){document.getElementById('showArea').classList.toggle('open')}
 
 const user = JSON.parse(localStorage.getItem('user')||'{}')
 const posts = JSON.parse(localStorage.getItem('posts')||'[]')
@@ -71,15 +59,6 @@ document.getElementById('profileInfo').innerText =
 身高：${user.height||'无'}
 年龄：${user.age||'无'}
 尺寸：${user.size||'无'}`
-
-const wall = document.getElementById('photoWall')
-wall.innerHTML = ''
-const photos = user.photos||[]
-for(let i=0;i<4;i++){
-  const img = document.createElement('img')
-  img.src = photos[i]||''
-  wall.appendChild(img)
-}
 
 const plist = document.getElementById('postList')
 posts.forEach(p=>{

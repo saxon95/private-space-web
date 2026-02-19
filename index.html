@@ -1,347 +1,77 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>私密空间</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui; }
-  body { background: #f7f7f7; padding-bottom: 60px; }
-  .hide { display: none !important; }
-
-  /* 加载 */
-  #loading { position: fixed; inset: 0; background: #fff; z-index: 9999; display: grid; place-items: center; }
-  .loader { width: 40px; height: 40px; border: 4px solid #eee; border-top: 4px solid #9f7aea; border-radius: 50%; animation: spin .6s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* 年龄验证 */
-  #ageModal { position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 999; display: grid; place-items: center; }
-  .age-box { background: #fff; padding: 30px; border-radius: 20px; width: 90%; max-width: 340px; text-align: center; }
-  .age-box h3 { color: #9f7aea; margin-bottom: 10px; }
-  .age-box input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; margin: 10px 0; text-align: center; }
-  .age-box button { width: 100%; padding: 12px; border-radius: 12px; background: #9f7aea; color: #fff; border: none; margin-top: 6px; }
-  .age-box .no { background: #f2f2f2; color: #333; }
-
-  /* 访问密钥 */
-  #keyModal { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 998; display: grid; place-items: center; }
-  .key-box { background: #fff; padding: 30px; border-radius: 20px; width: 90%; max-width: 340px; text-align: center; }
-  .key-box h3 { color: #9f7aea; margin-bottom: 10px; }
-  .key-box input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; margin: 10px 0; }
-  .key-box button { width: 100%; padding: 12px; border-radius: 12px; background: #9f7aea; color: #fff; border: none; margin-top: 6px; }
-  .admin-btn { background: #f2f2f2 !important; color: #333 !important; margin-top: 8px !important; }
-
-  /* 管理员登录 */
-  #adminLogin { position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 1000; display: none; place-items: center; }
-  .admin-login-box { background: #fff; padding: 30px; border-radius: 20px; width: 90%; max-width: 340px; text-align: center; }
-  .admin-login-box h3 { color: #9f7aea; }
-  .admin-login-box input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; margin: 12px 0; }
-  .admin-login-box button { width: 100%; padding: 12px; background: #9f7aea; color: #fff; border: none; border-radius: 12px; }
-
-  /* 管理员面板 */
-  #adminPanel { position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 1001; display: none; place-items: center; }
-  .admin-box { background: #fff; width: 90%; max-width: 360px; padding: 25px; border-radius: 20px; }
-  .admin-box h3 { color: #9f7aea; margin-bottom: 16px; }
-  .admin-card { background: #f8f5ff; padding: 16px; border-radius: 14px; margin-bottom: 12px; }
-  .admin-card h4 { margin-bottom: 8px; }
-  .switch { display: flex; justify-content: space-between; align-items: center; }
-  .switch input { display: none; }
-  .switch label { width: 50px; height: 26px; background: #ddd; border-radius: 20px; position: relative; }
-  .switch label::after { content: ''; position: absolute; width: 22px; height: 22px; background: #fff; border-radius: 50%; top: 2px; left: 2px; transition: .2s; }
-  .switch input:checked + label { background: #9f7aea; }
-  .switch input:checked + label::after { left: 26px; }
-  .admin-box button { padding: 10px 14px; background: #9f7aea; color: #fff; border: none; border-radius: 12px; width: 100%; margin-top: 10px; }
-  .btn-gray { background: #f2f2f2 !important; color: #333 !important; }
-
-  /* 注册 */
-  #register { display: none; padding: 20px; }
-  #register h3 { color: #9f7aea; text-align: center; margin-bottom: 16px; }
-  #register input, #register select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; margin: 8px 0; }
-  .avatar-picker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; }
-  .avatar-option { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid transparent; cursor: pointer; }
-  .avatar-option.selected { border-color: #9f7aea; }
-  #register button { width: 100%; padding: 12px; background: #9f7aea; color: #fff; border: none; border-radius: 12px; margin-top: 6px; }
-
-  /* 导航 */
-  .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; border-top: 1px solid #eee; display: flex; padding: 10px 0; z-index: 10; }
-  .nav-item { flex: 1; text-align: center; font-size: 12px; color: #999; }
-  .nav-item.active { color: #9f7aea; }
-  .nav-item i { display: block; font-size: 20px; margin-bottom: 4px; }
-
-  /* 页面 */
-  .page { padding: 20px; display: none; }
-  .page.active { display: block; }
-
-  /* 首页 */
-  .profile-card { background: #fff; border-radius: 20px; padding: 25px; text-align: center; margin-bottom: 16px; }
-  .avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #e2d9ff; }
-  .name { font-size: 22px; font-weight: bold; margin-top: 10px; }
-  .style { color: #999; margin: 6px 0 16px; }
-  .stats { display: flex; justify-content: space-around; margin: 16px 0; }
-  .stat-item { text-align: center; }
-  .stat-number { font-size: 20px; font-weight: 600; color: #9f7aea; }
-  .stat-label { font-size: 12px; color: #999; margin-top: 4px; }
-  .btn-row { display: flex; gap: 10px; justify-content: center; }
-  .btn { padding: 10px 14px; background: #9f7aea; color: #fff; border: none; border-radius: 12px; }
-
-  /* 相册 */
-  .album { background: #fff; padding: 20px; border-radius: 20px; }
-  .album h3 { color: #9f7aea; margin-bottom: 12px; }
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .grid img { width: 100%; aspect-ratio: 1; border-radius: 10px; object-fit: cover; }
-
-  /* 个人资料 */
-  .profile-page { background: #fff; padding: 25px; border-radius: 20px; text-align: center; }
-  .profile-page .avatar { width: 120px; height: 120px; }
-  .info-list { margin-top: 20px; text-align: left; }
-  .info-item { padding: 12px 0; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; }
-  .info-label { color: #666; }
-  .info-value { font-weight: 500; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>私密空间 - 基础版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui; }
+        body { background: #f7f7f7; padding: 20px; }
+        .hide { display: none !important; }
+        img { max-width: 100%; height: auto; }
+        .avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #e2d9ff; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 20px; }
+        .grid img { width: 100%; aspect-ratio: 1; border-radius: 10px; object-fit: cover; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: grid; place-items: center; }
+        .box { background: #fff; padding: 30px; border-radius: 20px; width: 90%; max-width: 340px; text-align: center; }
+        .box h3 { color: #9f7aea; margin-bottom: 10px; }
+        input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; margin: 10px 0; }
+        button { width: 100%; padding: 12px; border-radius: 12px; background: #9f7aea; color: #fff; border: none; margin-top: 6px; }
+        .btn-gray { background: #f2f2f2; color: #333; }
+    </style>
 </head>
 <body>
-
-<div id="loading"><div class="loader"></div></div>
-
-<!-- 年龄验证 -->
-<div id="ageModal">
-  <div class="age-box">
-    <h3>年龄认证</h3>
-    <p>仅限18岁以上访问</p >
-    <input type="number" id="birthYear" placeholder="输入出生年份">
-    <button onclick="checkAge()">确认进入</button>
-    <button class="no" onclick="closePage()">未满18岁</button>
-  </div>
-</div>
-
-<!-- 访问密钥 -->
-<div id="keyModal">
-  <div class="key-box">
-    <h3>访问密钥</h3>
-    <input id="keyInput" placeholder="请输入分享密钥">
-    <button onclick="useKey()">确定进入</button>
-    <button class="admin-btn" onclick="openAdminLogin()">管理员登录</button>
-  </div>
-</div>
-
-<!-- 管理员登录 -->
-<div id="adminLogin">
-  <div class="admin-login-box">
-    <h3>管理员登录</h3>
-    <input id="adminPwd" type="password" placeholder="输入管理员密码">
-    <button onclick="adminLogin()">登录</button>
-    <button class="btn-gray" onclick="closeAdminLogin()">返回</button>
-  </div>
-</div>
-
-<!-- 管理员面板 -->
-<div id="adminPanel">
-  <div class="admin-box">
-    <h3>⚙️ 管理员后台</h3>
-    <div class="admin-card">
-      <h4>私密相册访问权限</h4>
-      <div class="switch">
-        <span>允许普通用户查看相册</span>
-        <input type="checkbox" id="albumOpen">
-        <label for="albumOpen"></label>
-      </div>
-    </div>
-    <div class="admin-card">
-      <h4>访问统计</h4>
-      <p>总访问：<span id="totalVisit">0</span></p >
-    </div>
-    <button onclick="saveAdminSetting()">保存设置</button>
-    <button class="btn-gray" onclick="closeAdminPanel()">关闭</button>
-  </div>
-</div>
-
-<!-- 注册 -->
-<div id="register">
-  <h3>完善资料</h3>
-  <input id="nick" placeholder="昵称">
-  <input id="age" placeholder="年龄" type="number">
-  <select id="gender">
-    <option value="男">男</option>
-    <option value="女">女</option>
-    <option value="保密">保密</option>
-  </select>
-  <input id="style" placeholder="风格（如：性感、纯欲）">
-  <div class="avatar-picker">
-    < img class="avatar-option" src="https://picsum.photos/200/200?1" onclick="selectAvatar(this)">
-    < img class="avatar-option" src="https://picsum.photos/200/200?2" onclick="selectAvatar(this)">
-    < img class="avatar-option" src="https://picsum.photos/200/200?3" onclick="selectAvatar(this)">
-    < img class="avatar-option" src="https://picsum.photos/200/200?4" onclick="selectAvatar(this)">
-  </div>
-  <button onclick="doRegister()">完成注册</button>
-</div>
-
-<!-- 主内容 -->
-<div id="main" class="hide">
-  <!-- 首页 -->
-  <div id="home" class="page active">
-    <div class="profile-card">
-      < img class="avatar" id="mainAvatar" src="https://picsum.photos/200/200">
-      <div class="name" id="mainName">私密空间</div>
-      <div class="style" id="mainStyle">风格展示</div>
-      <div class="stats">
-        <div class="stat-item">
-          <div class="stat-number" id="visitCount">0</div>
-          <div class="stat-label">访问人数</div>
+    <div id="ageModal" class="modal">
+        <div class="box">
+            <h3>年龄验证</h3>
+            <p>仅限18岁以上访问</p >
+            <input type="number" id="birthYear" placeholder="输入出生年份">
+            <button onclick="checkAge()">确认进入</button>
+            <button class="btn-gray" onclick="document.body.innerHTML='<h1>禁止访问</h1>'">未满18岁</button>
         </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn" onclick="openAdminPanel()">管理员面板</button>
-      </div>
     </div>
 
-    <div class="album">
-      <h3>📸 私密相册</h3>
-      <div class="grid" id="photoGrid">
-        < img src="https://picsum.photos/300/300?1">
-        < img src="https://picsum.photos/300/300?2">
-        < img src="https://picsum.photos/300/300?3">
-        < img src="https://picsum.photos/300/300?4">
-        < img src="https://picsum.photos/300/300?5">
-        < img src="https://picsum.photos/300/300?6">
-      </div>
+    <div id="main" class="hide">
+        <div style="background: #fff; border-radius: 20px; padding: 25px; text-align: center;">
+            < img id="userAvatar" class="avatar" src="https://picsum.photos/200/200">
+            <h2 style="margin-top: 10px;">私密空间</h2>
+            <p style="color: #999; margin: 6px 0 16px;">风格展示</p >
+        </div>
+
+        <div style="background: #fff; border-radius: 20px; padding: 20px; margin-top: 16px;">
+            <h3 style="color: #9f7aea; margin-bottom: 12px;">📸 私密相册</h3>
+            <div class="grid" id="photoGrid">
+                < img src="https://picsum.photos/300/300?1">
+                < img src="https://picsum.photos/300/300?2">
+                < img src="https://picsum.photos/300/300?3">
+                < img src="https://picsum.photos/300/300?4">
+                < img src="https://picsum.photos/300/300?5">
+                < img src="https://picsum.photos/300/300?6">
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- 个人资料 -->
-  <div id="profile" class="page">
-    <div class="profile-page">
-      < img class="avatar" id="profileAvatar" src="https://picsum.photos/200/200">
-      <div class="name" id="profileName">私密空间</div>
-      <div class="style" id="profileStyle">风格展示</div>
-      <div class="info-list">
-        <div class="info-item">
-          <span class="info-label">年龄</span>
-          <span class="info-value" id="profileAge">--</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">性别</span>
-          <span class="info-value" id="profileGender">--</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">风格</span>
-          <span class="info-value" id="profileStyleText">--</span>
-        </div>
-      </div>
-    </div>
-  </div>
+    <script>
+        // 页面加载时检查本地存储
+        window.onload = () => {
+            if (localStorage.getItem("ageOk")) {
+                document.getElementById("ageModal").classList.add("hide");
+                document.getElementById("main").classList.remove("hide");
+            }
+        };
 
-  <!-- 导航 -->
-  <div class="nav">
-    <div class="nav-item active" onclick="goPage('home')"><i>🏠</i><span>首页</span></div>
-    <div class="nav-item" onclick="goPage('profile')"><i>👤</i><span>资料</span></div>
-  </div>
-</div>
-
-<script>
-  const SHARE_KEY = "Saxon95";
-  const ADMIN_PASS = "admin888";
-
-  let config = JSON.parse(localStorage.getItem("config")) || {
-    albumOpen: true,
-    visitCount: 0
-  };
-
-  let user = JSON.parse(localStorage.getItem("user")) || null;
-  let selectedAvatar = "https://picsum.photos/200/200";
-
-  window.onload = () => {
-    setTimeout(() => document.getElementById("loading").classList.add("hide"), 500);
-    config.visitCount++;
-    localStorage.setItem("config", JSON.stringify(config));
-    if (localStorage.getItem("ageOk")) {
-      document.getElementById("ageModal").classList.add("hide");
-      if (user) showMain();
-    }
-  };
-
-  function checkAge() {
-    const y = document.getElementById("birthYear").value;
-    if (!y || y.length < 4) return alert("请输入正确年份");
-    const age = new Date().getFullYear() - parseInt(y);
-    if (age >= 18) {
-      localStorage.setItem("ageOk", "1");
-      document.getElementById("ageModal").classList.add("hide");
-    } else alert("未满18岁禁止访问");
-  }
-
-  function useKey() {
-    if (document.getElementById("keyInput").value.trim() === SHARE_KEY) {
-      document.getElementById("keyModal").classList.add("hide");
-      document.getElementById("register").style.display = "block";
-    } else alert("密钥不正确");
-  }
-
-  function selectAvatar(el) {
-    document.querySelectorAll(".avatar-option").forEach(o => o.classList.remove("selected"));
-    el.classList.add("selected");
-    selectedAvatar = el.src;
-  }
-
-  function doRegister() {
-    const nick = document.getElementById("nick").value.trim();
-    const age = document.getElementById("age").value;
-    if (!nick || !age) return alert("请填写完整信息");
-    user = {
-      nick,
-      age,
-      gender: document.getElementById("gender").value,
-      style: document.getElementById("style").value,
-      avatar: selectedAvatar
-    };
-    localStorage.setItem("user", JSON.stringify(user));
-    document.getElementById("register").style.display = "none";
-    showMain();
-  }
-
-  function showMain() {
-    document.getElementById("main").classList.remove("hide");
-    document.getElementById("mainAvatar").src = user.avatar;
-    document.getElementById("mainName").innerText = user.nick;
-    document.getElementById("mainStyle").innerText = user.style;
-    document.getElementById("profileAvatar").src = user.avatar;
-    document.getElementById("profileName").innerText = user.nick;
-    document.getElementById("profileAge").innerText = user.age;
-    document.getElementById("profileGender").innerText = user.gender;
-    document.getElementById("profileStyle").innerText = user.style;
-    document.getElementById("profileStyleText").innerText = user.style;
-    document.getElementById("visitCount").innerText = config.visitCount;
-    document.getElementById("totalVisit").innerText = config.visitCount;
-  }
-
-  function goPage(id) {
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-    event.currentTarget.classList.add("active");
-  }
-
-  function openAdminLogin() { document.getElementById("adminLogin").style.display = "grid"; }
-  function closeAdminLogin() { document.getElementById("adminLogin").style.display = "none"; }
-  function adminLogin() {
-    if (document.getElementById("adminPwd").value === ADMIN_PASS) {
-      localStorage.setItem("admin", "ok");
-      closeAdminLogin();
-      alert("管理员登录成功");
-    } else alert("密码错误");
-  }
-  function openAdminPanel() {
-    if (!localStorage.getItem("admin")) return alert("请先登录管理员");
-    document.getElementById("albumOpen").checked = config.albumOpen;
-    document.getElementById("adminPanel").style.display = "grid";
-  }
-  function closeAdminPanel() { document.getElementById("adminPanel").style.display = "none"; }
-  function saveAdminSetting() {
-    config.albumOpen = document.getElementById("albumOpen").checked;
-    localStorage.setItem("config", JSON.stringify(config));
-    alert("已保存");
-    closeAdminPanel();
-  }
-
-  function closePage() { document.body.innerHTML = "<h1>禁止访问</h1>"; }
-</script>
+        function checkAge() {
+            const y = document.getElementById("birthYear").value;
+            if (!y || y.length < 4) return alert("请输入正确年份");
+            const age = new Date().getFullYear() - parseInt(y);
+            if (age >= 18) {
+                localStorage.setItem("ageOk", "1");
+                document.getElementById("ageModal").classList.add("hide");
+                document.getElementById("main").classList.remove("hide");
+            } else {
+                alert("未满18岁禁止访问");
+            }
+        }
+    </script>
 </body>
 </html>

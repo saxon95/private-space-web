@@ -5,65 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Private sexy space</title>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background: #f5f5f5; padding-bottom: 80px; }
-  header {
-    background: #fff; padding: 16px;
-    display: flex; justify-content: space-between;
-    border-bottom: 1px solid #eee;
-  }
-  .tab-bar {
-    display: flex; background: #fff;
-    border-bottom: 1px solid #eee;
-  }
-  .tab {
-    flex:1; text-align:center; padding:12px 0;
-    font-weight:bold; cursor:pointer;
-  }
-  .tab.active { color: #ff6b9d; }
-  .page { display: none; padding:10px; }
-  .page.active { display: block; }
-
-  .card {
-    background:#fff; border-radius:12px; padding:16px;
-    margin-bottom:10px;
-  }
-
-  /* 四宫格 */
-  .grid-4 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px; margin-top:10px;
-  }
-  .grid-4 img {
-    width:100%; aspect-ratio:1;
-    object-fit:cover; border-radius:8px;
-  }
-
-  /* 收放区域 */
-  .fold-section {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-  }
-  .fold-section.open {
-    max-height: 500px;
-  }
-
-  .toggle-btn {
-    margin-top:10px;
-    text-align:center;
-    color: #666;
-    font-size:14px;
-    cursor:pointer;
-  }
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f5f5f5;padding-bottom:80px}
+header{background:#fff;padding:16px;display:flex;justify-content:space-between;border-bottom:1px solid #eee}
+.tab-bar{display:flex;background:#fff;border-bottom:1px solid #eee}
+.tab{flex:1;text-align:center;padding:12px 0;font-weight:600;cursor:pointer}
+.tab.active{color:#ff6b9d}
+.page{display:none;padding:10px}
+.page.active{display:block}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:10px}
+.grid-4{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.grid-4 img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px}
+.fold-section{max-height:0;overflow:hidden;transition:all .3s}
+.fold-section.open{max-height:500px}
+.toggle-btn{margin-top:10px;text-align:center;color:#666;cursor:pointer}
 </style>
 </head>
-
 <body>
+
 <header>
   <div>Private sexy space</div>
-  <div onclick="toggleDark()">🌓</div>
 </header>
 
 <div class="tab-bar">
@@ -72,122 +33,91 @@
   <div class="tab" onclick="tab(2)">私信</div>
 </div>
 
-<!-- 动态 -->
 <div class="page active" id="p0">
   <div id="postList"></div>
 </div>
 
-<!-- 资料 -->
 <div class="page" id="p1">
   <div class="card">
     <div id="profileInfo"></div>
-
-    <div class="toggle-btn" onclick="toggleShow()">Show (展开/收起)</div>
+    <div class="toggle-btn" onclick="toggleShow()">Show · 展开/收起</div>
     <div class="fold-section" id="showArea">
       <div class="grid-4" id="photoWall"></div>
     </div>
   </div>
 </div>
 
-<!-- 私信 -->
 <div class="page" id="p2">
   <div id="msgList" style="padding:16px"></div>
-  <div style="position:fixed;bottom:0;left:0;width:100%;background:#fff;padding:10px;display:flex;gap:8px;">
-    <input id="msgInput" style="flex:1;padding:10px;border-radius:20px;border:1px solid #eee;">
-    <button onclick="sendMsg()" style="padding:0 16px;border-radius:20px;background:#ff6b9d;color:white;border:none;">发送</button>
+  <div style="position:fixed;bottom:0;left:0;width:100%;background:#fff;padding:10px;display:flex;gap:8px">
+    <input id="msgInput" style="flex:1;padding:10px;border-radius:20px;border:1px solid #eee">
+    <button onclick="sendMsg()" style="padding:0 16px;border-radius:20px;background:#ff6b9d;color:white;border:none">发送</button>
   </div>
 </div>
 
 <script>
-// 切换页面
-function tab(i) {
-  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j==i));
-  document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',j==i));
+function tab(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j==i))
+  document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',j==i))
+}
+function toggleShow(){document.getElementById('showArea').classList.toggle('open')}
+
+const user = JSON.parse(localStorage.getItem('user')||'{}')
+const posts = JSON.parse(localStorage.getItem('posts')||'[]')
+const messages = JSON.parse(localStorage.getItem('messages')||'[]')
+
+document.getElementById('profileInfo').innerText =
+`昵称：${user.name||'无'}
+身高：${user.height||'无'}
+年龄：${user.age||'无'}
+尺寸：${user.size||'无'}`
+
+const wall = document.getElementById('photoWall')
+wall.innerHTML = ''
+const photos = user.photos||[]
+for(let i=0;i<4;i++){
+  const img = document.createElement('img')
+  img.src = photos[i]||''
+  wall.appendChild(img)
 }
 
-// 收放 Show 区域
-function toggleShow() {
-  document.getElementById('showArea').classList.toggle('open');
-}
-
-// 暗黑模式
-function toggleDark() {
-  document.body.style.background = document.body.style.background == '#121212' ? '#f5f5f5' : '#121212';
-}
-
-// ------------------------------
-// 数据（完全不冲突、不乱码）
-// ------------------------------
-const user = JSON.parse(localStorage.getItem('user') || '{}');
-const posts = JSON.parse(localStorage.getItem('posts') || '[]');
-const messages = JSON.parse(localStorage.getItem('messages') || '[]');
-
-// 渲染资料
-const profile = document.getElementById('profileInfo');
-profile.innerText = `昵称：${user.name || '无'}
-身高：${user.height || '无'}
-年龄：${user.age || '无'}
-尺寸：${user.size || '无'}`;
-
-// 四宫格照片墙（只读取管理员保存的图片，无任何预设）
-const wall = document.getElementById('photoWall');
-wall.innerHTML = ''; // 清空所有内容
-const photos = user.photos || [];
-for (let i=0; i<4; i++) {
-  const img = document.createElement('img');
-  img.src = photos[i] || ''; // 没有图片就留空，不显示任何东西
-  wall.appendChild(img);
-}
-
-// 渲染动态（纯DOM，绝对不乱码）
-const plist = document.getElementById('postList');
+const plist = document.getElementById('postList')
 posts.forEach(p=>{
-  const c = document.createElement('div');
-  c.className = 'card';
-  c.innerText = p.txt || '';
-
-  if (p.type === 'img' && p.url) {
-    const img = document.createElement('img');
-    img.src = p.url;
-    img.style.width = '100%';
-    img.style.borderRadius = '8px';
-    img.style.marginTop = '8px';
-    c.appendChild(img);
+  const c = document.createElement('div')
+  c.className='card'
+  c.innerText = p.txt||''
+  if(p.type==='img'&&p.url){
+    const img=document.createElement('img')
+    img.src=p.url;img.style.width='100%';img.style.borderRadius='8px';img.style.marginTop='8px'
+    c.appendChild(img)
   }
-  if (p.type === 'vid' && p.url) {
-    const v = document.createElement('video');
-    v.src = p.url;
-    v.controls = true;
-    v.style.width = '100%';
-    v.style.marginTop = '8px';
-    c.appendChild(v);
+  if(p.type==='vid'&&p.url){
+    const v=document.createElement('video')
+    v.src=p.url;v.controls=true;v.style.width='100%';v.style.marginTop='8px'
+    c.appendChild(v)
   }
-  plist.appendChild(c);
-});
+  plist.appendChild(c)
+})
 
-// 私信
-function sendMsg() {
-  const t = document.getElementById('msgInput').value.trim();
-  if(!t)return;
-  messages.push({text:t,time:Date.now()});
-  localStorage.setItem('messages',JSON.stringify(messages));
-  renderMsg();
-  document.getElementById('msgInput').value='';
+function sendMsg(){
+  const t=document.getElementById('msgInput').value.trim()
+  if(!t)return
+  messages.push({text:t,time:Date.now()})
+  localStorage.setItem('messages',JSON.stringify(messages))
+  renderMsg()
+  document.getElementById('msgInput').value=''
 }
-function renderMsg() {
-  const l = document.getElementById('msgList');
-  l.innerHTML = '';
+function renderMsg(){
+  const l=document.getElementById('msgList')
+  l.innerHTML=''
   messages.forEach(m=>{
-    const d = document.createElement('div');
-    d.style.background='#fff';
-    d.style.borderRadius='12px';
-    d.style.padding='10px';
-    d.style.marginBottom='8px';
-    d.innerText = m.text;
-    l.appendChild(d);
-  });
+    const d=document.createElement('div')
+    d.style.background='#fff';d.style.borderRadius='12px';d.style.padding='10px';d.style.marginBottom='8px'
+    d.innerText=m.text
+    l.appendChild(d)
+  })
 }
-renderMsg();
+renderMsg()
 </script>
 </body>
 </html>

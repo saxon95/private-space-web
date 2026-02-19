@@ -56,6 +56,11 @@
 </div>
 
 <script>
+// 强制清空旧错误数据
+localStorage.removeItem("posts");
+localStorage.removeItem("user");
+localStorage.removeItem("private");
+
 window.onload = function(){
     loadProfile();
     show();

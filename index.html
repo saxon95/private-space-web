@@ -68,7 +68,8 @@
             margin-bottom: 20px;
         }
         .modal-content input,
-        .modal-content textarea {
+        .modal-content textarea,
+        .modal-content select {
             width: 100%;
             padding: 12px;
             border: 1px solid #d1d1d6;
@@ -92,6 +93,11 @@
         .btn-secondary {
             background: #e5e5ea;
             color: #000;
+            margin-top: 8px;
+        }
+        .btn-danger {
+            background: #ff3b30;
+            color: #fff;
             margin-top: 8px;
         }
 
@@ -235,6 +241,25 @@
             font-size: 12px;
         }
 
+        /* 私密空间 */
+        .private-space {
+            margin-top: 16px;
+        }
+        .private-space h3 {
+            margin-bottom: 12px;
+            color: #ff3b30;
+        }
+        .expired {
+            color: #ff3b30;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        .countdown {
+            color: #007aff;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
         /* 私密云 */
         .empty-state {
             text-align: center;
@@ -289,6 +314,24 @@
     </div>
 </div>
 
+<!-- 发布私密内容模态框 -->
+<div id="privatePostModal" class="modal hide">
+    <div class="modal-content">
+        <h2>发布私密内容</h2>
+        <p>内容将在限时结束后自动删除</p>
+        <input type="file" id="privateMedia" accept="image/*,video/*">
+        <select id="privateDuration">
+            <option value="3600000">1小时</option>
+            <option value="7200000">2小时</option>
+            <option value="14400000">4小时</option>
+            <option value="28800000">8小时</option>
+            <option value="86400000">24小时</option>
+        </select>
+        <button class="btn btn-primary" onclick="publishPrivatePost()">发布</button>
+        <button class="btn btn-secondary" onclick="closeModal('privatePostModal')">取消</button>
+    </div>
+</div>
+
 <!-- 主内容 -->
 <div id="app" class="hide">
     <!-- 1. 首页 -->
@@ -320,6 +363,15 @@
             <div class="info-row">
                 <span class="info-label">尺寸</span>
                 <span class="info-value" id="profileSize">--</span>
+            </div>
+        </div>
+
+        <!-- 新增：私密空间 -->
+        <div class="card private-space">
+            <h3>🔒 私密空间</h3>
+            <button class="btn btn-primary" style="margin-bottom: 16px;" onclick="openModal('privatePostModal')">+ 发布限时内容</button>
+            <div id="privatePostList">
+                <!-- 私密内容列表将由JS动态生成 -->
             </div>
         </div>
 
@@ -376,6 +428,8 @@
         }
     ];
 
+    let privatePosts = JSON.parse(localStorage.getItem('privatePosts')) || [];
+
     // 页面加载
     window.onload = () => {
         setTimeout(() => document.getElementById('loading').classList.add('hide'), 500);
@@ -384,6 +438,7 @@
             document.getElementById('app').classList.remove('hide');
             renderPosts();
             renderProfile();
+            renderPrivatePosts(); // 渲染私密内容
         }
     };
 
@@ -401,6 +456,7 @@
             document.getElementById('app').classList.remove('hide');
             renderPosts();
             renderProfile();
+            renderPrivatePosts();
         } else {
             alert('未满18岁，禁止访问');
         }
@@ -546,6 +602,74 @@
         renderProfile();
         renderPosts(); // 更新动态中的头像
         closeModal('editProfileModal');
+    }
+
+    // --- 新增：私密空间功能 ---
+    function publishPrivatePost() {
+        const mediaFile = document.getElementById('privateMedia').files[0];
+        const duration = parseInt(document.getElementById('privateDuration').value);
+
+        if (!mediaFile) {
+            alert('请选择要发布的照片或视频');
+            return;
+        }
+
+        const mediaUrl = URL.createObjectURL(mediaFile);
+        const mediaType = mediaFile.type.startsWith('image/') ? 'image' : 'video';
+        const now = Date.now();
+        const expireAt = now + duration;
+
+        const newPrivatePost = {
+            id: Date.now(),
+            media: mediaUrl,
+            type: mediaType,
+            createdAt: now,
+            expireAt: expireAt
+        };
+
+        privatePosts.unshift(newPrivatePost);
+        localStorage.setItem('privatePosts', JSON.stringify(privatePosts));
+        renderPrivatePosts();
+        closeModal('privatePostModal');
+    }
+
+    function renderPrivatePosts() {
+        const list = document.getElementById('privatePostList');
+        list.innerHTML = '';
+        const now = Date.now();
+
+        // 过滤掉已过期的内容
+        privatePosts = privatePosts.filter(p => p.expireAt > now);
+        localStorage.setItem('privatePosts', JSON.stringify(privatePosts));
+
+        if (privatePosts.length === 0) {
+            list.innerHTML = '<p style="color: #8e8e93; text-align: center;">暂无私密内容</p>';
+            return;
+        }
+
+        privatePosts.forEach(p => {
+            const item = document.createElement('div');
+            item.className = 'post';
+            const remaining = p.expireAt - Date.now();
+            const hours = Math.floor(remaining / 3600000);
+            const minutes = Math.floor((remaining % 3600000) / 60000);
+
+            item.innerHTML = `
+                ${p.type === 'image' ? `<img class="post-image" src="${p.media}">` : ''}
+                ${p.type === 'video' ? `<video class="post-video" src="${p.media}" controls></video>` : ''}
+                <div class="countdown">剩余 ${hours}小时 ${minutes}分钟后自动删除</div>
+                <button class="btn btn-danger" onclick="deletePrivatePost(${p.id})">立即删除</button>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    function deletePrivatePost(id) {
+        if (confirm('确定要立即删除这条私密内容吗？')) {
+            privatePosts = privatePosts.filter(p => p.id !== id);
+            localStorage.setItem('privatePosts', JSON.stringify(privatePosts));
+            renderPrivatePosts();
+        }
     }
 </script>
 </body>

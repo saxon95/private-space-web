@@ -6,7 +6,7 @@
 <title>管理后台</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#f5f5f5;padding-bottom:60px}
+body{background:#f5f5f5;padding-bottom:60px;font-family:system-ui}
 .tab-bar{display:flex;background:#fff;border-bottom:1px solid #eee}
 .tab{flex:1;text-align:center;padding:14px 0;font-weight:500;cursor:pointer}
 .tab.active{color:#ff6b9d}
@@ -28,9 +28,9 @@ button{background:#ff6b9d;color:white;border:none}
 
 <div class="page active" id="p0">
   <div class="card">
-    <textarea id="text" placeholder="内容"></textarea>
-    <input type="file" id="img" accept="image/*">
-    <input type="file" id="vid" accept="video/*">
+    <textarea id="text" placeholder="文字内容"></textarea>
+    <input type="url" id="imgurl" placeholder="粘贴图片网络地址">
+    <input type="url" id="vidurl" placeholder="粘贴视频网络地址">
     <button onclick="post()">发布动态</button>
   </div>
 </div>
@@ -50,84 +50,87 @@ button{background:#ff6b9d;color:white;border:none}
 </div>
 
 <script>
+const API = "https://jsonblob.com/api/jsonBlob/1186156893246906368";
+let currentData = { posts:[], user:{} };
+
 function tab(i){
-  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j==i))
-  document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',j==i))
-  if(i==2)loadPosts()
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j==i));
+  document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',j==i));
+  if(i==2) loadManage();
 }
 
-// 辅助函数：将文件转为 Base64，确保图片永久可用
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+async function loadData() {
+  const r = await fetch(API);
+  currentData = await r.json() || { posts:[], user:{} };
+}
+
+async function post() {
+  const txt = document.getElementById('text').value;
+  const img = document.getElementById('imgurl').value;
+  const vid = document.getElementById('vidurl').value;
+  await loadData();
+
+  const p = {
+    txt,
+    type: img ? 'img' : vid ? 'vid' : '',
+    url: img || vid || '',
+    time: Date.now()
+  };
+
+  currentData.posts.unshift(p);
+  await fetch(API, {
+    method: 'PUT',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(currentData)
   });
+  alert('发布成功！全世界都能看见了！');
 }
 
-async function post(){
-  const text = document.getElementById('text').value;
-  const posts = JSON.parse(localStorage.getItem('posts') || '[]');
-  const p = { txt: text, type: '', url: '', time: Date.now() };
-
-  const img = document.getElementById('img').files[0];
-  const vid = document.getElementById('vid').files[0];
-
-  if (img) {
-    p.type = 'img';
-    p.url = await fileToBase64(img); // 存储为 Base64
-  }
-  if (vid) {
-    p.type = 'vid';
-    p.url = await fileToBase64(vid); // 存储为 Base64
-  }
-
-  posts.unshift(p);
-  localStorage.setItem('posts', JSON.stringify(posts));
-  alert('发布成功');
+async function saveProfile() {
+  await loadData();
+  currentData.user = {
+    name: document.getElementById('name').value,
+    height: document.getElementById('height').value,
+    age: document.getElementById('age').value,
+    size: document.getElementById('size').value
+  };
+  await fetch(API, {
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(currentData)
+  });
+  alert('资料保存成功');
 }
 
-function saveProfile(){
-  const user={
-    name:document.getElementById('name').value,
-    height:document.getElementById('height').value,
-    age:document.getElementById('age').value,
-    size:document.getElementById('size').value
-  }
-  localStorage.setItem('user',JSON.stringify(user))
-  alert('保存成功')
-}
-
-function loadPosts(){
-  const posts=JSON.parse(localStorage.getItem('posts')||'[]')
-  const pm=document.getElementById('postManage')
-  pm.innerHTML=''
-  posts.forEach((p,idx)=>{
-    const c=document.createElement('div')
-    c.className='card'
-    c.innerText=p.txt||''
+async function loadManage() {
+  await loadData();
+  const pm = document.getElementById('postManage');
+  pm.innerHTML = '';
+  currentData.posts.forEach((p,idx)=>{
+    const c = document.createElement('div');
+    c.className='card';
+    c.innerText = p.txt || '';
     if(p.type==='img'&&p.url){
-      const img=document.createElement('img')
-      img.src=p.url;img.style.width='100%';img.style.borderRadius='8px';img.style.marginTop='8px'
-      c.appendChild(img)
+      const img=document.createElement('img');
+      img.src=p.url;img.style.width='100%';img.style.borderRadius='8px';img.style.marginTop='8px';
+      c.appendChild(img);
     }
     if(p.type==='vid'&&p.url){
-      const v=document.createElement('video')
-      v.src=p.url;v.controls=true;v.style.width='100%';v.style.marginTop='8px'
-      c.appendChild(v)
+      const v=document.createElement('video');
+      v.src=p.url;v.controls=true;v.style.width='100%';img.style.marginTop='8px';
+      c.appendChild(v);
     }
-    const del=document.createElement('button')
-    del.className='del'
-    del.innerText='删除这条动态'
-    del.onclick=()=>{
-      posts.splice(idx,1)
-      localStorage.setItem('posts',JSON.stringify(posts))
-      loadPosts()
-    }
-    c.appendChild(del)
-    pm.appendChild(c)
-  })
+    const del=document.createElement('button');
+    del.className='del';
+    del.innerText='删除';
+    del.onclick=async()=>{
+      currentData.posts.splice(idx,1);
+      await fetch(API,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(currentData)});
+      loadManage();
+    };
+    c.appendChild(del);
+    pm.appendChild(c);
+  });
 }
 </script>
 </body>

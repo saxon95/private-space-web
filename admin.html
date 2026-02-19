@@ -5,25 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>管理后台</title>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
-  body{background:#f5f5f5;padding-bottom:60px}
-  .tab-bar{display:flex;background:#fff;border-bottom:1px solid #eee}
-  .tab{flex:1;text-align:center;padding:14px 0;font-weight:500;cursor:pointer}
-  .tab.active{color:#ff6b9d}
-  .page{display:none;padding:10px}
-  .page.active{display:block}
-
-  .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:10px}
-  input,textarea,button{width:100%;margin:6px 0;padding:12px;border-radius:8px;border:1px solid #ddd}
-  button{background:#ff6b9d;color:white;border:none}
-  .del-btn{background:#ff4444;margin-top:8px}
-
-  /* 四宫格预览 */
-  .grid-4{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
-  .grid-4 img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f5f5f5;padding-bottom:60px}
+.tab-bar{display:flex;background:#fff;border-bottom:1px solid #eee}
+.tab{flex:1;text-align:center;padding:14px 0;font-weight:500;cursor:pointer}
+.tab.active{color:#ff6b9d}
+.page{display:none;padding:10px}
+.page.active{display:block}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:10px}
+input,textarea,button{width:100%;margin:6px 0;padding:12px;border-radius:8px;border:1px solid #ddd}
+button{background:#ff6b9d;color:white;border:none}
+.del{background:#ff4444;margin-top:8px}
+.grid-4{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.grid-4 img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px}
 </style>
 </head>
-
 <body>
 
 <div class="tab-bar">
@@ -31,20 +27,17 @@
   <div class="tab" onclick="tab(1)">资料设置</div>
   <div class="tab" onclick="tab(2)">Show 照片墙</div>
   <div class="tab" onclick="tab(3)">动态管理</div>
-  <div class="tab" onclick="tab(4)">私信查看</div>
 </div>
 
-<!-- 发动态 -->
 <div class="page active" id="p0">
   <div class="card">
-    <textarea id="text" placeholder="文字内容"></textarea>
+    <textarea id="text" placeholder="内容"></textarea>
     <input type="file" id="img" accept="image/*">
     <input type="file" id="vid" accept="video/*">
     <button onclick="post()">发布动态</button>
   </div>
 </div>
 
-<!-- 资料设置 -->
 <div class="page" id="p1">
   <div class="card">
     <input id="name" placeholder="昵称">
@@ -55,60 +48,42 @@
   </div>
 </div>
 
-<!-- Show 照片墙 -->
 <div class="page" id="p2">
   <div class="card">
     <input type="file" id="p1" accept="image/*">
     <input type="file" id="p2" accept="image/*">
     <input type="file" id="p3" accept="image/*">
     <input type="file" id="p4" accept="image/*">
-    <button onclick="saveShow()">保存 Show 四宫格</button>
+    <button onclick="saveShow()">保存Show四宫格</button>
     <div class="grid-4" id="preview"></div>
   </div>
 </div>
 
-<!-- 动态管理（可删除） -->
 <div class="page" id="p3">
   <div id="postManage"></div>
 </div>
 
-<!-- 私信查看 -->
-<div class="page" id="p4">
-  <div class="card" id="msgList"></div>
-</div>
-
 <script>
-// 切换页面
 function tab(i){
   document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j==i))
   document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',j==i))
-  if(i==3) loadPosts()
-  if(i==4) loadMsgs()
-  if(i==2) loadPreview()
+  if(i==3)loadPosts()
+  if(i==2)loadPreview()
 }
 
-// 发动态
 function post(){
   const text=document.getElementById('text').value
   const posts=JSON.parse(localStorage.getItem('posts')||'[]')
   const p={txt:text,type:'',url:'',time:Date.now()}
-
   const img=document.getElementById('img').files[0]
   const vid=document.getElementById('vid').files[0]
-  if(img){
-    p.type='img'
-    p.url=URL.createObjectURL(img)
-  }
-  if(vid){
-    p.type='vid'
-    p.url=URL.createObjectURL(vid)
-  }
+  if(img)p.type='img',p.url=URL.createObjectURL(img)
+  if(vid)p.type='vid',p.url=URL.createObjectURL(vid)
   posts.unshift(p)
   localStorage.setItem('posts',JSON.stringify(posts))
   alert('发布成功')
 }
 
-// 保存资料
 function saveProfile(){
   const user={
     name:document.getElementById('name').value,
@@ -120,7 +95,6 @@ function saveProfile(){
   alert('保存成功')
 }
 
-// 保存 Show 四宫格
 function saveShow(){
   const p=[]
   for(let i=1;i<=4;i++){
@@ -134,7 +108,6 @@ function saveShow(){
   loadPreview()
 }
 
-// 预览照片墙
 function loadPreview(){
   const u=JSON.parse(localStorage.getItem('user')||'{}')
   const ph=u.photos||[]
@@ -147,7 +120,6 @@ function loadPreview(){
   }
 }
 
-// 动态管理（可删除）
 function loadPosts(){
   const posts=JSON.parse(localStorage.getItem('posts')||'[]')
   const pm=document.getElementById('postManage')
@@ -155,25 +127,19 @@ function loadPosts(){
   posts.forEach((p,idx)=>{
     const c=document.createElement('div')
     c.className='card'
-    c.innerText=p.txt||'无内容'
+    c.innerText=p.txt||''
     if(p.type==='img'&&p.url){
       const img=document.createElement('img')
-      img.src=p.url
-      img.style.width='100%'
-      img.style.borderRadius='8px'
-      img.style.marginTop='8px'
+      img.src=p.url;img.style.width='100%';img.style.borderRadius='8px';img.style.marginTop='8px'
       c.appendChild(img)
     }
     if(p.type==='vid'&&p.url){
       const v=document.createElement('video')
-      v.src=p.url
-      v.controls=true
-      v.style.width='100%'
-      v.style.marginTop='8px'
+      v.src=p.url;v.controls=true;v.style.width='100%';v.style.marginTop='8px'
       c.appendChild(v)
     }
     const del=document.createElement('button')
-    del.className='del-btn'
+    del.className='del'
     del.innerText='删除这条动态'
     del.onclick=()=>{
       posts.splice(idx,1)
@@ -182,20 +148,6 @@ function loadPosts(){
     }
     c.appendChild(del)
     pm.appendChild(c)
-  })
-}
-
-// 查看私信
-function loadMsgs(){
-  const m=JSON.parse(localStorage.getItem('messages')||'[]')
-  const l=document.getElementById('msgList')
-  l.innerHTML=''
-  m.forEach(x=>{
-    const d=document.createElement('div')
-    d.style.padding='10px 0'
-    d.style.borderBottom='1px solid #eee'
-    d.innerText=x.text
-    l.appendChild(d)
   })
 }
 </script>

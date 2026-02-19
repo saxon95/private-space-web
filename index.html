@@ -3,29 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Private sexy space</title>
+<title>我的动态主页</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#f5f5f5;padding-bottom:80px}
-header{background:#fff;padding:16px;display:flex;justify-content:space-between;border-bottom:1px solid #eee}
+body{background:#f5f5f5;padding-bottom:60px;font-family:system-ui}
+header{background:#fff;padding:16px;border-bottom:1px solid #eee}
 .tab-bar{display:flex;background:#fff;border-bottom:1px solid #eee}
 .tab{flex:1;text-align:center;padding:12px 0;font-weight:600;cursor:pointer}
 .tab.active{color:#ff6b9d}
 .page{display:none;padding:10px}
 .page.active{display:block}
-.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:10px}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:10px;}
+.card img,.card video{width:100%;max-height:400px;object-fit:cover;border-radius:8px;margin-top:10px}
 </style>
 </head>
 <body>
 
 <header>
-  <div>Private sexy space</div>
+  <div>我的动态主页</div>
 </header>
 
 <div class="tab-bar">
   <div class="tab active" onclick="tab(0)">动态</div>
-  <div class="tab" onclick="tab(1)">博主资料</div>
-  <div class="tab" onclick="tab(2)">私信</div>
+  <div class="tab" onclick="tab(1)">资料</div>
 </div>
 
 <div class="page active" id="p0">
@@ -33,15 +33,7 @@ header{background:#fff;padding:16px;display:flex;justify-content:space-between;b
 </div>
 
 <div class="page" id="p1">
-  <div class="card" id="profileInfo"></div>
-</div>
-
-<div class="page" id="p2">
-  <div id="msgList" style="padding:16px"></div>
-  <div style="position:fixed;bottom:0;left:0;width:100%;background:#fff;padding:10px;display:flex;gap:8px">
-    <input id="msgInput" style="flex:1;padding:10px;border-radius:20px;border:1px solid #eee">
-    <button onclick="sendMsg()" style="padding:0 16px;border-radius:20px;background:#ff6b9d;color:white;border:none">发送</button>
-  </div>
+  <div class="card" id="profile"></div>
 </div>
 
 <script>
@@ -50,53 +42,47 @@ function tab(i){
   document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',j==i))
 }
 
-const user = JSON.parse(localStorage.getItem('user')||'{}')
-const posts = JSON.parse(localStorage.getItem('posts')||'[]')
-const messages = JSON.parse(localStorage.getItem('messages')||'[]')
+const API = "https://jsonblob.com/api/jsonBlob/1186156893246906368";
 
-document.getElementById('profileInfo').innerText =
-`昵称：${user.name||'无'}
-身高：${user.height||'无'}
-年龄：${user.age||'无'}
-尺寸：${user.size||'无'}`
-
-const plist = document.getElementById('postList')
-posts.forEach(p=>{
-  const c = document.createElement('div')
-  c.className='card'
-  c.innerText = p.txt||''
-  if(p.type==='img'&&p.url){
-    const img=document.createElement('img')
-    img.src=p.url;img.style.width='100%';img.style.borderRadius='8px';img.style.marginTop='8px'
-    c.appendChild(img)
+async function loadPosts() {
+  try {
+    const r = await fetch(API);
+    const data = await r.json();
+    render(data.posts || [], data.user || {});
+  } catch(e) {
+    console.log(e);
   }
-  if(p.type==='vid'&&p.url){
-    const v=document.createElement('video')
-    v.src=p.url;v.controls=true;v.style.width='100%';v.style.marginTop='8px'
-    c.appendChild(v)
-  }
-  plist.appendChild(c)
-})
+}
 
-function sendMsg(){
-  const t=document.getElementById('msgInput').value.trim()
-  if(!t)return
-  messages.push({text:t,time:Date.now()})
-  localStorage.setItem('messages',JSON.stringify(messages))
-  renderMsg()
-  document.getElementById('msgInput').value=''
+function render(posts, user) {
+  const plist = document.getElementById('postList');
+  plist.innerHTML = '';
+  posts.forEach(p => {
+    const c = document.createElement('div');
+    c.className = 'card';
+    c.innerText = p.txt || '';
+    if (p.type === 'img' && p.url) {
+      const img = document.createElement('img');
+      img.src = p.url;
+      c.appendChild(img);
+    }
+    if (p.type === 'vid' && p.url) {
+      const v = document.createElement('video');
+      v.src = p.url;
+      v.controls = true;
+      c.appendChild(v);
+    }
+    plist.appendChild(c);
+  });
+
+  document.getElementById('profile').innerText =
+`昵称：${user.name || '无'}
+身高：${user.height || '无'}
+年龄：${user.age || '无'}
+尺寸：${user.size || '无'}`;
 }
-function renderMsg(){
-  const l=document.getElementById('msgList')
-  l.innerHTML=''
-  messages.forEach(m=>{
-    const d=document.createElement('div')
-    d.style.background='#fff';d.style.borderRadius='12px';d.style.padding='10px';d.style.marginBottom='8px'
-    d.innerText=m.text
-    l.appendChild(d)
-  })
-}
-renderMsg()
+
+loadPosts();
 </script>
 </body>
 </html>

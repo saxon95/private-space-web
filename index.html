@@ -247,12 +247,13 @@ function showNewYearBanner(){
     banner.style.display = 'none';
   }
 }
-// 年龄验证
+// 年龄验证（优化：本地存储记住验证状态）
 function checkRealAge(){
   var birth = document.getElementById("birthYear").value;
   if(!birth || birth.length<4){alert("请输入正确出生年份");return;}
   var age = new Date().getFullYear() - birth;
   if(age>=18){
+    localStorage.setItem("ageVerified", "true"); // 记住已验证
     document.getElementById("ageModal").style.display="none";
   }else{
     alert("未满18周岁，禁止访问");
@@ -313,15 +314,19 @@ function sendChat(){
   box.scrollTop=box.scrollHeight;
   input.value="";
 }
-// 页面加载
+// 页面加载（优化：优先检查本地存储）
 window.onload=function(){
   showNewYearBanner(); // 新年横幅自动显示/隐藏
   setTimeout(()=>{
     document.getElementById("loading").style.display="none";
-    if(localStorage.getItem("hasAccess")==="yes"){
-      document.getElementById("accessModal").style.display="none";
-      document.getElementById("content").style.display="block";
-      document.getElementById("album").style.display="block";
+    // 优先检查本地存储
+    if(localStorage.getItem("ageVerified") === "true") {
+      document.getElementById("ageModal").style.display="none";
+      if(localStorage.getItem("hasAccess")==="yes"){
+        document.getElementById("accessModal").style.display="none";
+        document.getElementById("content").style.display="block";
+        document.getElementById("album").style.display="block";
+      }
     }
   },500);
 }

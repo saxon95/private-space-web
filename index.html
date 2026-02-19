@@ -236,27 +236,15 @@
         }
 
         /* 私密云 */
-        .message-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid #f2f2f7;
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8e8e93;
         }
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 12px;
-        }
-        .message-content {
-            flex: 1;
-        }
-        .message-author {
-            font-weight: 600;
-        }
-        .message-text {
-            color: #666;
-            font-size: 14px;
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
         }
     </style>
 </head>
@@ -340,24 +328,10 @@
 
     <!-- 3. 私密云 -->
     <div id="private-cloud" class="page">
-        <div class="card">
-            <h3>消息</h3>
-            <div id="messageList">
-                <div class="message-item">
-                    <img class="message-avatar" src="https://picsum.photos/200/200?2" alt="Avatar">
-                    <div class="message-content">
-                        <div class="message-author">朋友A</div>
-                        <div class="message-text">你的动态很赞！👍</div>
-                    </div>
-                </div>
-                <div class="message-item">
-                    <img class="message-avatar" src="https://picsum.photos/200/200?3" alt="Avatar">
-                    <div class="message-content">
-                        <div class="message-author">朋友B</div>
-                        <div class="message-text">@了你：这个风格太适合你了！</div>
-                    </div>
-                </div>
-            </div>
+        <div class="empty-state">
+            <i>🔒</i>
+            <h3>私密云</h3>
+            <p>这里是你的专属空间，消息和互动将在这里显示</p>
         </div>
     </div>
 
